@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/white"
+    android:orientation="vertical" >
+
+    
+    <include
+        android:id="@+id/header"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        layout="@layout/subheader_layout_blue" />
+    
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="0dip"
+        android:layout_weight="1" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical" >
+
+            <ImageView
+		        android:id="@+id/imageView1"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:layout_marginTop="23dp"
+		        android:src="@drawable/logo_1" />
+
+            
+            
+            
+	        <TextView
+		        android:id="@+id/textView1"
+		        android:layout_width="180dp"
+		        android:layout_height="30dp"
+		        android:layout_marginTop="15dp"
+		        android:textColor="@color/dark_blue"
+		        android:textSize="40sp"
+		        android:textStyle="bold" 
+		        android:background="@drawable/logotxt"/>
+
+		    <TextView
+		        android:id="@+id/textView1"
+		        android:layout_width="160dp"
+		        android:layout_height="20dp"
+		        android:layout_marginTop="10dp"
+		        android:textColor="@color/blue"
+		        android:textSize="17sp"
+		        android:textStyle="bold" 
+		        android:background="@drawable/glidenslide"/>
+
+            
+        <LinearLayout
+	            android:layout_width="fill_parent"
+	            android:layout_height="wrap_content"
+	            android:layout_marginTop="@dimen/dim_10"
+	            android:layout_marginBottom="@dimen/dim_10"
+	            android:layout_marginLeft="@dimen/dim_10"
+	            android:layout_marginRight="@dimen/dim_10"
+	            android:layout_weight="1"
+	            android:gravity="center"
+	            android:orientation="horizontal" >
+
+            
+	            <Button
+			        android:id="@+id/fb"
+			        style="@style/Button_Blue"
+			        android:layout_width="100dp"
+			        android:layout_height="35dp"
+			        android:layout_margin="10dp"
+			        android:background="@drawable/facebook_btn" />
+		            	            
+	            <Button
+			        android:id="@+id/twit"
+			        style="@style/Button_Blue"
+			        android:layout_width="100dp"
+			        android:layout_height="35dp"
+			        android:layout_margin="10dp"
+			        android:background="@drawable/twitter_btn" />
+
+			</LinearLayout>
+			
+        <LinearLayout
+	            android:layout_width="fill_parent"
+	            android:layout_height="wrap_content"
+	            android:layout_marginTop="@dimen/dim_10"
+	            android:layout_marginBottom="@dimen/dim_10"
+	            android:layout_marginLeft="@dimen/dim_10"
+	            android:layout_marginRight="@dimen/dim_10"
+	            android:layout_weight="1"
+	            android:gravity="center"
+	            android:orientation="horizontal" >
+
+            
+	            <Button
+			        android:id="@+id/signin"
+			        style="@style/Button_Blue"
+			        android:layout_width="100dp"
+			        android:layout_height="35dp"
+			        android:text="Sign In"
+			        android:textColor="#ffffff"
+			        android:textSize="17sp"
+			        android:layout_margin="10dp"
+			        android:textStyle="bold" />
+		            	            
+	            <Button
+			        android:id="@+id/signup"
+			        style="@style/Button_Blue"
+			        android:layout_width="100dp"
+			        android:layout_height="35dp"
+			        android:text="Sign Up"
+			        android:textColor="#ffffff"
+			        android:textSize="17sp"
+			        android:layout_margin="10dp"
+			        android:textStyle="bold" />
+
+			</LinearLayout>
+		    
+		    
+	            
+        </LinearLayout>
+        
+        
+    </ScrollView>
+
+    
+</LinearLayout>
