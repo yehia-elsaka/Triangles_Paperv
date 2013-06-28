@@ -6,12 +6,6 @@
     android:orientation="vertical" >
 
 
-	<LinearLayout
-              android:layout_width="fill_parent"
-              android:layout_height="2dp"
-              android:background="@color/gray_189" >
-          </LinearLayout>
-    
 
 	<LinearLayout
             android:layout_width="fill_parent"

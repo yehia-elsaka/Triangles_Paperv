@@ -64,11 +64,13 @@ public class NotificationAdapter extends BaseAdapter {
 		TextView userName = (TextView) view.findViewById(R.id.notification_author_name);
 		TextView notification_msg = (TextView) view.findViewById(R.id.notification_text);
 		
+		TextView date = (TextView) view.findViewById(R.id.notification_date);
+		
 	
 		userName.setText(notificationItem.getUser_name());
 		notification_msg.setText(notificationItem.getMsg());
 		
-		
+		date.setText(notificationItem.getDate());
 		
 		String userImage_url = notificationItem.getUser_image();
 		

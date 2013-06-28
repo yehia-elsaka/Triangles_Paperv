@@ -13,7 +13,6 @@
            android:orientation="vertical" 
            android:layout_marginLeft="@dimen/dim_5"
 	       android:layout_marginRight="@dimen/dim_5"
-	       android:layout_marginTop="@dimen/dim_5"
 	       android:layout_marginBottom="@dimen/dim_5">
 
           <ListView

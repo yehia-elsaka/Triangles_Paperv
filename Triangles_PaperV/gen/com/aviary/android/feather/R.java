@@ -479,7 +479,7 @@ public final class R {
 	}
 	public static final class id {
 		public static final int version_text = 0x7f060058;
-		public static final int edit_save = 0x7f0600d5;
+		public static final int edit_save = 0x7f0600d3;
 		public static final int disable_status = 0x7f060039;
 		public static final int feather_dialogs_container = 0x7f060065;
 		public static final int free = 0x7f060036;
@@ -530,7 +530,7 @@ public final class R {
 		public static final int toolbar = 0x7f06005d;
 		public static final int toolbar_title = 0x7f06007b;
 		public static final int egg_view = 0x7f060048;
-		public static final int mask = 0x7f0600d1;
+		public static final int mask = 0x7f0600cf;
 		public static final int text01 = 0x7f06004c;
 		public static final int layout01 = 0x7f06004b;
 		public static final int clear_button_bottom = 0x7f06006d;
@@ -553,7 +553,7 @@ public final class R {
 		public static final int size_preview = 0x7f06005a;
 		public static final int infocreeen_container = 0x7f060062;
 		public static final int overlay = 0x7f06006a;
-		public static final int edit_premium = 0x7f0600d3;
+		public static final int edit_premium = 0x7f0600d1;
 		public static final int aviary_infoscreen_submit = 0x7f060059;
 		public static final int main_iap_dialog = 0x7f06004e;
 		public static final int icon_small = 0x7f060080;
@@ -562,7 +562,7 @@ public final class R {
 		public static final int top_shadow = 0x7f060070;
 		public static final int circle = 0x7f060074;
 		public static final int tool_image = 0x7f060047;
-		public static final int edit_cancel = 0x7f0600d4;
+		public static final int edit_cancel = 0x7f0600d2;
 		public static final int lens_button = 0x7f06003f;
 		public static final int button1 = 0x7f060025;
 		public static final int toolbar_main_panel = 0x7f060076;
@@ -572,8 +572,8 @@ public final class R {
 		public static final int list = 0x7f060045;
 		public static final int invertCropArrow = 0x7f06003b;
 		public static final int layout_loader = 0x7f060055;
-		public static final int masked = 0x7f0600d0;
-		public static final int edit_reset = 0x7f0600d2;
+		public static final int masked = 0x7f0600ce;
+		public static final int edit_reset = 0x7f0600d0;
 		public static final int tool_text = 0x7f060049;
 		public static final int hidden = 0x7f060041;
 		public static final int bottom_background_overlay = 0x7f060044;

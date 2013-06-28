@@ -4,24 +4,22 @@ public class LikeStory {
 
 	
 	private int story_id;
-	private String title;
-	private String user_name;
-	private String user_image;
+	private String story_title;
+	private String story_image;
 	private String date;
 	
 	
 	public LikeStory(){
 		
 	}
-	
-	
-	public LikeStory(int story_id, String title, String user_name,
-			String user_image, String date) {
+
+
+	public LikeStory(int story_id, String story_title,
+			String story_image, String date) {
 		super();
 		this.story_id = story_id;
-		this.title = title;
-		this.user_name = user_name;
-		this.user_image = user_image;
+		this.story_title = story_title;
+		this.story_image = story_image;
 		this.date = date;
 	}
 
@@ -36,33 +34,25 @@ public class LikeStory {
 	}
 
 
-	public String getTitle() {
-		return title;
+	public String getStory_title() {
+		return story_title;
 	}
 
 
-	public void setTitle(String title) {
-		this.title = title;
+	public void setStory_title(String story_title) {
+		this.story_title = story_title;
 	}
 
 
-	public String getUser_name() {
-		return user_name;
+
+
+	public String getStory_image() {
+		return story_image;
 	}
 
 
-	public void setUser_name(String user_name) {
-		this.user_name = user_name;
-	}
-
-
-	public String getUser_image() {
-		return user_image;
-	}
-
-
-	public void setUser_image(String user_image) {
-		this.user_image = user_image;
+	public void setStory_image(String story_image) {
+		this.story_image = story_image;
 	}
 
 
@@ -74,9 +64,8 @@ public class LikeStory {
 	public void setDate(String date) {
 		this.date = date;
 	}
-	
-	
-	
+
+
 	
 	
 	

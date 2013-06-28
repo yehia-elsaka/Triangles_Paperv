@@ -26,6 +26,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import paperv.models.Comment;
+import paperv.models.LikeStory;
 import paperv.models.NotificationItem;
 import paperv.models.PhotoItem;
 import paperv.models.Story;
@@ -128,6 +129,7 @@ public class DataConnector {
 				this.getFollowers(globalState.user.getId());
 				this.getFollowing(globalState.user.getId());
 				this.getAllNotification();
+				this.getAllLikes();
 
 				login_done = true;
 
@@ -361,7 +363,7 @@ public class DataConnector {
 		// Bind custom cookie store to the local context
 		localContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
 
-		boolean feed_done = false;
+		boolean done = false;
 
 		try {
 			String result = "";
@@ -387,38 +389,32 @@ public class DataConnector {
 				for (int i = 0; i < data.length(); i++) {
 					story_data = data.getJSONObject(i);
 
-					// if (story_data.has("photourl")) {
-					// Story story = new Story();
-					// story.setStory_id(story_data.getInt("ITEMID"));
-					// story.setOwner_id(story_data.getString("user_id"));
-					// story.setPhoto_url(story_data.getString("photourl"));
-					// story.setStory_name(story_data.getString("ITEMTITLE"));
-					// story.setUser_name(story_data.getString("user_name"));
-					// story.setUser_image(story_data.getString("user_image"));
-					// story.setLikes_number(story_data
-					// .getInt("ITEMTOTALLIKE"));
-					// story.setReglide_number(story_data
-					// .getInt("ITEMTOTALREPOST"));
-					// story.setComments_number(story_data
-					// .getInt("ITEMTOTALCOMMENT"));
-					//
-					// globalState.feed_list.add(story);
-					//
-					// }
+					 LikeStory story = new LikeStory();
+					 
+					 story.setStory_id(story_data.getInt("like_id"));
+					 story.setStory_title(story_data.getString("title"));
+					 
+					 // to be repaired when get updates
+					 story.setStory_image("");
+					 
+					 story.setDate(story_data.getString("like_date"));
+					
+					 globalState.like_list.add(story);
+					
 				}
 
-				feed_done = true;
+				done = true;
 			}
 
 			else
-				feed_done = false;
+				done = false;
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		return feed_done;
+		return done;
 	}
 
 	

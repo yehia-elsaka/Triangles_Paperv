@@ -2,6 +2,7 @@ package paperv.tabs_utils;
 
 import java.util.ArrayList;
 
+import paperv.models.LikeStory;
 import paperv.models.NotificationItem;
 import paperv.models.Story;
 import paperv.models.User;
@@ -36,6 +37,8 @@ public class GlobalState {
 	
 	
 	public ArrayList<NotificationItem> notification_list = new ArrayList<NotificationItem>();
+	
+	public ArrayList<LikeStory> like_list = new ArrayList<LikeStory>();
 	
 	
 	public Story story_view = new Story();
