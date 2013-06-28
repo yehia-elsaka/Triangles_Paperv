@@ -325,7 +325,7 @@ public class ProfileActivity extends Fragment implements
 
 		
 		// ### to be repaired
-		lstStories = globalState.feed_list;
+		lstStories = globalState.userStories_list;
 //		getCurrentStories();
 		
 		numberOfStories.setText(""+lstStories.size());

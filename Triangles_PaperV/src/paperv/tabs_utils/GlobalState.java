@@ -2,6 +2,7 @@ package paperv.tabs_utils;
 
 import java.util.ArrayList;
 
+import paperv.models.NotificationItem;
 import paperv.models.Story;
 import paperv.models.User;
 import android.net.Uri;
@@ -32,6 +33,10 @@ public class GlobalState {
 	public ArrayList<Story> feed_list = new ArrayList<Story>();
 	
 	public ArrayList<Story> userStories_list = new ArrayList<Story>();
+	
+	
+	public ArrayList<NotificationItem> notification_list = new ArrayList<NotificationItem>();
+	
 	
 	public Story story_view = new Story();
 	

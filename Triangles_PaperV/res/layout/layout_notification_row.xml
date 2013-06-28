@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/white"
+    android:orientation="vertical" >
+
+
+	<LinearLayout
+              android:layout_width="fill_parent"
+              android:layout_height="2dp"
+              android:background="@color/gray_189" >
+          </LinearLayout>
+    
+
+	<LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/dim_5"
+            android:layout_marginLeft="@dimen/dim_5"
+            android:layout_marginRight="@dimen/dim_5"
+            android:layout_marginTop="@dimen/dim_5"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:orientation="horizontal" >
+
+            
+            <ImageView
+                android:id="@+id/notification_user_image"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:ellipsize="end"
+                android:gravity="left"
+                android:layout_marginRight="10dp"
+                android:src="@drawable/avatar_2" />
+            
+            
+            
+             <LinearLayout
+	            android:layout_width="0dip"
+	            android:layout_height="wrap_content"
+	            android:layout_weight="1"
+	            android:gravity="center_vertical"
+	            android:orientation="vertical" >
+            
+	            <LinearLayout
+		            android:layout_width="fill_parent"
+		            android:layout_height="wrap_content"
+		            android:layout_weight="1"
+		            android:layout_marginBottom="2dp"
+		            android:layout_marginTop="2dp"
+		            android:orientation="horizontal" >
+		            	            
+		            <TextView
+		                android:id="@+id/notification_author_name"
+		                android:layout_width="0dip"
+		                android:layout_height="wrap_content"
+		                android:layout_marginLeft="@dimen/dim_5"
+		                android:tag="bold"
+		                android:text="User Name .."
+		                android:gravity="left"
+		                android:layout_weight="1"
+		                android:textColor="@color/gray_35"
+		                android:textSize="@dimen/tex_size_xlarge"
+		                android:textStyle="bold" />
+		            
+		            
+		            <TextView
+		                android:id="@+id/notification_date"
+		                android:layout_width="wrap_content"
+		                android:layout_height="wrap_content"
+		                android:layout_marginRight="@dimen/dim_5"
+		                android:tag="bold"
+		                android:text="25-6-2013"
+		                android:layout_gravity="right"
+		                android:textColor="@color/gray_167"
+		                android:textSize="@dimen/tex_size_normal"
+		                android:textStyle="bold" />
+		            
+		            </LinearLayout>
+	            
+	            <TextView
+		            android:id="@+id/notification_text"
+		            android:layout_width="fill_parent"
+		            android:layout_height="wrap_content"
+		            android:layout_marginLeft="@dimen/dim_5"
+		            android:layout_marginTop="3dp"
+		            android:layout_marginBottom="3dp"
+		            android:ellipsize="end"
+		            android:text="msg"
+		            android:tag="bold"
+		            android:textColor="@color/gray_79"
+		            android:textSize="@dimen/tex_size_normal"
+		            android:textStyle="bold" />
+            
+            </LinearLayout>
+            
+            
+        </LinearLayout>
+        
+	
+	<LinearLayout
+              android:layout_width="fill_parent"
+              android:layout_height="2dp"
+              android:background="@color/gray_189" >
+          </LinearLayout>
+        
+	</LinearLayout>

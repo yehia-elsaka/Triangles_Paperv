@@ -26,6 +26,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import paperv.models.Comment;
+import paperv.models.NotificationItem;
 import paperv.models.PhotoItem;
 import paperv.models.Story;
 import paperv.tabs_utils.GlobalState;
@@ -126,6 +127,7 @@ public class DataConnector {
 				this.getUserStories();
 				this.getFollowers(globalState.user.getId());
 				this.getFollowing(globalState.user.getId());
+				this.getAllNotification();
 
 				login_done = true;
 
@@ -419,6 +421,68 @@ public class DataConnector {
 		return feed_done;
 	}
 
+	
+	public boolean getAllNotification() {
+
+		// Create local HTTP context
+		HttpContext localContext = new BasicHttpContext();
+		// Bind custom cookie store to the local context
+		localContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
+
+		boolean done = false;
+
+		try {
+			String result = "";
+			HttpClient httpclient = new DefaultHttpClient();
+			HttpGet httpget = new HttpGet(API_URL + "notification.php");
+
+			HttpResponse response = httpclient.execute(httpget, localContext);
+			HttpEntity entity = response.getEntity();
+			if (entity != null) {
+				InputStream instream = entity.getContent();
+				result = convertStreamToString(instream);
+				instream.close();
+			}
+
+			JSONArray array = new JSONArray(result);
+			JSONObject object = array.getJSONObject(0);
+			String status = object.optString("status");
+			if (status.equals("true")) {
+
+				JSONObject notification_data = null;
+
+				JSONArray data = object.getJSONArray("data");
+				for (int i = 0; i < data.length(); i++) {
+					notification_data = data.getJSONObject(i);
+
+					 NotificationItem notification = new NotificationItem();
+					 
+					 notification.setId(notification_data.getInt("notification_id"));
+					 notification.setUser_image(notification_data.getString("user_image"));
+					 notification.setUser_name(notification_data.getString("user_name"));
+					 notification.setMsg(notification_data.getString("message"));
+					 notification.setDate(notification_data.getString("notificationdate"));
+					
+					 
+					 globalState.notification_list.add(notification);
+				}
+
+				done = true;
+			}
+
+			else
+				done = false;
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return done;
+	}
+
+	
+	
 	public boolean getUserStories() {
 
 		// Create local HTTP context

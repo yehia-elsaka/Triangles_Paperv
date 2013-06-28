@@ -6,6 +6,7 @@ import paperv.models.MenuItem;
 import paperv.tabs_adapters.MenuAdapter;
 import paperv.tabs_fragments.About;
 import paperv.tabs_fragments.Contact;
+import paperv.tabs_fragments.Notification;
 import paperv.tabs_fragments.Privacy;
 import paperv.tabs_fragments.Terms;
 import paperv.tabs_utils.GlobalState;
@@ -83,7 +84,7 @@ public class MenuFragment extends Fragment implements OnItemClickListener {
 		lstMenuItems = new ArrayList<MenuItem>();
 
 		addMenuItem(R.string.lbl_home, R.drawable.ico_home_2,null ,args);
-//		addMenuItem(R.string.lbl_notifications, R.drawable.notifications_2,MenuActivity.class ,args);
+		addMenuItem(R.string.lbl_notifications, R.drawable.notifications_2,Notification.class ,args);
 //		addMenuItem(R.string.lbl_settings, R.drawable.settings_2,MenuActivity.class ,args);
 		addMenuItem(R.string.lbl_about, R.drawable.about_2,About.class ,args);
 		addMenuItem(R.string.lbl_privacy, R.drawable.privacy_2,Privacy.class ,args);
@@ -115,7 +116,7 @@ public class MenuFragment extends Fragment implements OnItemClickListener {
         	getActivity().finish();
 		}
 		
-		else if (position == 5)
+		else if (position == 6)
 		{
 			
         	getActivity().finish();
