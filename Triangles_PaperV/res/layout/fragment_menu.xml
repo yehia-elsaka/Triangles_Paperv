@@ -5,6 +5,13 @@
     android:layout_height="match_parent"
     android:background="@color/offwhite"
     android:orientation="vertical" >
+    
+    
+     <LinearLayout
+              android:layout_width="fill_parent"
+              android:layout_height="@dimen/divider_size"
+              android:background="@color/gray_79" >
+     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/layoutred"
@@ -13,19 +20,32 @@
 
         <ImageButton
             android:id="@+id/btn_search"
-            android:layout_width="50dp"
+            android:layout_width="60dp"
             android:layout_height="fill_parent"
             android:background="@drawable/ui_button_gray"
             android:src="@drawable/ico_search" 
             android:contentDescription="@string/desc"/>
+        
+         
 
         <EditText
+            android:id="@+id/search_field"
             style="@style/EditText_Gray"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:hint="@string/txt_some_header" 
-            android:background="@color/gray_35"/>
+            android:hint="Find Your Friends ..." 
+            android:background="@color/gray_35"
+            android:textColor="@color/white"
+		        android:textSize="17sp"
+		        android:textStyle="bold"/>
     </LinearLayout>
+    
+    <LinearLayout
+              android:layout_width="fill_parent"
+              android:layout_height="@dimen/divider_size"
+              android:background="@color/gray_79" >
+     </LinearLayout>
+    
     
     <LinearLayout
         android:id="@+id/person"
@@ -53,10 +73,10 @@
     
     
     <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="@dimen/divider_size"
-        android:background="@color/gray_46" >
-    </LinearLayout>
+              android:layout_width="fill_parent"
+              android:layout_height="@dimen/divider_size"
+              android:background="@color/gray_79" >
+     </LinearLayout>
 
     <ListView
         android:id="@+id/lst_menu"

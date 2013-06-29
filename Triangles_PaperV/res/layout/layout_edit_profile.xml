@@ -125,7 +125,7 @@
 	                android:src="@drawable/avatar_2" />
 		            	            
 	            <Button
-			        android:id="@+id/add_photo"
+			        android:id="@+id/change_photo"
 			        style="@style/Button_Blue"
 			        android:layout_width="170dp"
 			        android:layout_height="35dp"

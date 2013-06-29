@@ -3,22 +3,30 @@ package paperv.core;
 import java.util.ArrayList;
 
 import paperv.models.MenuItem;
+import paperv.network.DataConnector;
 import paperv.tabs_adapters.MenuAdapter;
 import paperv.tabs_fragments.About;
 import paperv.tabs_fragments.Contact;
 import paperv.tabs_fragments.Notification;
 import paperv.tabs_fragments.Privacy;
+import paperv.tabs_fragments.SearchList;
 import paperv.tabs_fragments.Terms;
 import paperv.tabs_utils.GlobalState;
 import paperv.tabs_utils.Utils;
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -30,10 +38,12 @@ public class MenuFragment extends Fragment implements OnItemClickListener {
 	ArrayList<MenuItem> lstMenuItems;
 	View vw_layout;
 
+	EditText search_field;
 	
 	ImageView user_image;
 	TextView user_name;
 	GlobalState globalState = GlobalState.getInstance();
+	DataConnector dataConnector = DataConnector.getInstance();
 	
 	
 	/*
@@ -58,6 +68,28 @@ public class MenuFragment extends Fragment implements OnItemClickListener {
 			return null;
 		}
 		vw_layout = inflater.inflate(R.layout.fragment_menu, container, false);
+		
+		search_field = (EditText) vw_layout.findViewById(R.id.search_field);
+		search_field.requestFocus();
+		search_field.setOnTouchListener(foucsHandler);
+		
+		ImageButton search = (ImageButton) vw_layout.findViewById(R.id.btn_search);
+		search.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				// Perform action on click
+				
+				if (! search_field.getText().toString().equals(""))
+				{
+					
+					GetFriendsTask task = new GetFriendsTask(search_field.getText().toString());
+	    			task.execute();
+	    			
+	    			search_field.setText("");
+				}
+
+			}
+		});
+		
 		
 		user_image = (ImageView) vw_layout.findViewById(R.id.avatar);
 		if (globalState.user.getImage() != null)
@@ -148,6 +180,99 @@ public class MenuFragment extends Fragment implements OnItemClickListener {
 			MainActivity mActivity = (MainActivity) getActivity();
 			mActivity.switchContent(fragment);
 		}
+	}
+	
+	
+	
+	OnTouchListener foucsHandler = new OnTouchListener() {
+		@Override
+		public boolean onTouch(View arg0, MotionEvent event) {
+			// TODO Auto-generated method stub
+			arg0.requestFocusFromTouch();
+			return false;
+		}
+	};
+
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		setUserVisibleHint(true);
+	}
+	
+	
+	
+	
+	
+	//======================================================================
+	
+	
+	
+	private class GetFriendsTask extends AsyncTask<Void, Void, Void> {
+
+		boolean result;
+		ProgressDialog dialog = null;
+		
+		String data;
+		
+		public GetFriendsTask(String data)
+		{
+			this.data = data;
+		}
+
+		@Override
+		protected void onPreExecute() {
+			
+			dialog = new ProgressDialog(getActivity());
+			dialog.setTitle(" PaperV ");
+		
+			dialog.setIcon(R.drawable.ico_dialog);
+			dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+			dialog.setCancelable(false);
+			dialog.setMessage("Searching For Friends ...");
+			dialog.show();
+		}
+
+		@Override
+		protected Void doInBackground(Void... params) {
+
+			try {
+				
+				result = dataConnector.getFriends(data);
+				//result =true;
+			} catch (Exception e) {
+
+				e.printStackTrace();
+			}
+
+			return null;
+
+		}
+
+		@Override
+		protected void onPostExecute(Void result) {
+			
+			try{
+				dialog.dismiss();
+			}
+			catch(Exception e){
+				
+			}
+			
+			if (this.result)
+			{
+				
+				Fragment searchFragment = new SearchList();
+				switchFragment(searchFragment);
+				
+			}
+			
+			else
+			{
+				
+			}
+			
+		}
+
 	}
 
 }

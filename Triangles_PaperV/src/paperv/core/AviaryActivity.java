@@ -110,7 +110,8 @@ public class AviaryActivity extends Activity {
 		super.onCreate( savedInstanceState );
 		setContentView( R.layout.aviary_main );
 		
-		GlobalState.getInstance().image = null;
+		GlobalState.getInstance().glide_image = null;
+		GlobalState.getInstance().profile_image = null;
 		
 		TextView page_title = (TextView) findViewById(R.id.page_title);
 		page_title.setText("Gallery");
@@ -1199,8 +1200,15 @@ public class AviaryActivity extends Activity {
 			bitmap = DecodeUtils.decode( AviaryActivity.this, mUri, imageWidth, imageHeight, sizes );
 			
 			//###
-			GlobalState.getInstance().image = null;
-			GlobalState.getInstance().image = mUri;
+			GlobalState.getInstance().glide_image = null;
+			GlobalState.getInstance().profile_image = null;
+			
+			if (GlobalState.getInstance().is_glide)
+				GlobalState.getInstance().glide_image = mUri;
+			
+			else if (GlobalState.getInstance().is_profile)
+				GlobalState.getInstance().profile_image = mUri;
+			
 			
 			if (feather_done) 
 			{

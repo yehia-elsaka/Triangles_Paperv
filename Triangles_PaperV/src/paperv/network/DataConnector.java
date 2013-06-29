@@ -26,6 +26,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import paperv.models.Comment;
+import paperv.models.Friend;
 import paperv.models.LikeStory;
 import paperv.models.NotificationItem;
 import paperv.models.PhotoItem;
@@ -479,6 +480,73 @@ public class DataConnector {
 
 	
 	
+	
+	public boolean getFriends(String searchData) {
+
+		// Create local HTTP context
+		HttpContext localContext = new BasicHttpContext();
+		// Bind custom cookie store to the local context
+		localContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
+
+		boolean done = false;
+
+		try {
+			String result = "";
+			HttpClient httpclient = new DefaultHttpClient();
+			HttpGet httpget = new HttpGet(API_URL + "search_list.php?query=" + searchData);
+
+			HttpResponse response = httpclient.execute(httpget, localContext);
+			HttpEntity entity = response.getEntity();
+			if (entity != null) {
+				InputStream instream = entity.getContent();
+				result = convertStreamToString(instream);
+				instream.close();
+			}
+
+			JSONArray array = new JSONArray(result);
+			JSONObject object = array.getJSONObject(0);
+			String status = object.optString("status");
+			if (status.equals("true")) {
+
+				globalState.friends_list.clear();
+				
+				JSONObject friend_data = null;
+
+				JSONArray data = object.getJSONArray("data");
+				for (int i = 0; i < data.length(); i++) {
+					friend_data = data.getJSONObject(i);
+
+					 Friend friend = new Friend();
+					 
+ 					 friend.setFriend_id(friend_data.getInt("item_id"));
+					 friend.setFriend_name(friend_data.getString("user_name"));
+					 friend.setFull_name(friend_data.getString("full_name"));
+					 
+					 String url = friend_data.getString("user_image");
+					 
+					 if ( !url.equals("null"))
+						 friend.setFriend_image(friend_data.getString("user_image"));
+					 else
+						 friend.setFriend_image("");
+					 
+					 globalState.friends_list.add(friend);
+				}
+
+				done = true;
+			}
+
+			else
+				done = false;
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return done;
+	}
+	
+	
 	public boolean getUserStories() {
 
 		// Create local HTTP context
@@ -731,6 +799,104 @@ public class DataConnector {
 		return likeDone;
 	}
 
+	
+	
+	public boolean updateProfileData(String fullName, String email) {
+
+		boolean done = false;
+
+		try {
+
+			// Create local HTTP context
+			HttpContext localContext = new BasicHttpContext();
+			// Bind custom cookie store to the local context
+			localContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
+
+			String result = "";
+			HttpClient httpclient = new DefaultHttpClient();
+			HttpGet httpget = new HttpGet(API_URL + "update_setting.php?full_name="
+					+ fullName + "&email=" + email);
+
+			HttpResponse response = httpclient.execute(httpget, localContext);
+			HttpEntity entity = response.getEntity();
+			if (entity != null) {
+				InputStream instream = entity.getContent();
+				result = convertStreamToString(instream);
+				instream.close();
+			}
+
+			JSONArray array = new JSONArray(result);
+			JSONObject object = array.getJSONObject(0);
+			String status = object.optString("status");
+			if (status.equals("true")) {
+
+				done = true;
+			}
+
+			else
+				done = false;
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return done;
+	}
+	
+	
+	public boolean updateProfilePhoto(File photo) {
+
+		boolean done = false;
+
+		try {
+
+			// Create local HTTP context
+			HttpContext localContext = new BasicHttpContext();
+			// Bind custom cookie store to the local context
+			localContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
+
+			String result = "";
+			HttpClient httpclient = new DefaultHttpClient();
+			HttpPost httppost = new HttpPost(API_URL + "add_story.php");
+
+			if (photo != null) {
+				MultipartEntity mpEntity = new MultipartEntity();
+				ContentBody cbFile = new FileBody(photo, "image/*");
+				mpEntity.addPart("image", cbFile);
+
+				httppost.setEntity(mpEntity);
+			}
+
+			HttpResponse response = httpclient.execute(httppost, localContext);
+			HttpEntity entity = response.getEntity();
+			if (entity != null) {
+				InputStream instream = entity.getContent();
+				result = convertStreamToString(instream);
+				instream.close();
+			}
+
+			JSONArray array = new JSONArray(result);
+			JSONObject object = array.getJSONObject(0);
+			String status = object.optString("status");
+			if (status.equals("true")) {
+
+				done = true;
+			}
+
+			else
+				done = false;
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return done;
+	}
+
+	
+	
 	public boolean reglideStory(String story_id, String user_id) {
 
 		boolean reglideDone = false;

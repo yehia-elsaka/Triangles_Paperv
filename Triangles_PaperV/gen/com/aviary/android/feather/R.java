@@ -11,8 +11,8 @@ public final class R {
 		public static final int aviary_default_effects = 0x7f050000;
 	}
 	public static final class anim {
-		public static final int feather_slide_out_right = 0x7f04001b;
 		public static final int feather_push_up_in = 0x7f040015;
+		public static final int feather_slide_out_right = 0x7f04001b;
 		public static final int feather_slide_out_left = 0x7f04001a;
 		public static final int feather_app_zoom_exit_large = 0x7f04000c;
 		public static final int feather_push_up_cannister = 0x7f040014;
@@ -22,8 +22,8 @@ public final class R {
 		public static final int feather_iap_close_animation = 0x7f040010;
 		public static final int feather_push_up_out = 0x7f040016;
 		public static final int feather_push_down_out = 0x7f040013;
-		public static final int feather_app_fade_out = 0x7f040004;
 		public static final int feather_fade_out_fast = 0x7f04000f;
+		public static final int feather_app_fade_out = 0x7f040004;
 		public static final int feather_app_zoom_exit_small = 0x7f04000d;
 		public static final int feather_iap_layout_animation = 0x7f040011;
 		public static final int feather_app_zoom_enter_large = 0x7f04000a;
@@ -63,8 +63,8 @@ public final class R {
 		public static final int config_activityAnimTime = 0x7f080000;
 		public static final int feather_sticker_highlight_padding = 0x7f08001f;
 		public static final int is_sticker = 0x7f080034;
-		public static final int feather_config_infoscreen_animTime = 0x7f08002b;
 		public static final int feather_adjust_tool_enable_3d_flip = 0x7f080003;
+		public static final int feather_config_infoscreen_animTime = 0x7f08002b;
 		public static final int feather_tiltshift_crosshair_stroke_width = 0x7f080012;
 		public static final int feather_sticker_highlight_stroke_width = 0x7f080020;
 		public static final int feather_iap_dialog_width_weight = 0x7f080032;
@@ -80,9 +80,9 @@ public final class R {
 		public static final int toolCount = 0x7f080031;
 		public static final int feather_config_portraitRows = 0x7f08002e;
 		public static final int feather_crop_invert_policy = 0x7f08000f;
+		public static final int feather_iap_dialog_cols_effects = 0x7f080026;
 		public static final int feather_config_mediumAnimTime = 0x7f08002c;
 		public static final int feather_adjust_tool_anim_time = 0x7f080001;
-		public static final int feather_iap_dialog_cols_effects = 0x7f080026;
 		public static final int feather_text_selected_color = 0x7f08000a;
 		public static final int is_tool = 0x7f080036;
 		public static final int border_version = 0x7f080038;
@@ -398,8 +398,8 @@ public final class R {
 		public static final int mainImagePadding = 0x7f010025;
 		public static final int optionPanelBackground = 0x7f010019;
 		public static final int optionPanelShadowHeight = 0x7f010016;
-		public static final int checkedButton = 0x7f01003b;
 		public static final int buttonIcon = 0x7f01002f;
+		public static final int checkedButton = 0x7f01003b;
 		public static final int defaultScreen = 0x7f010040;
 		public static final int horizontalPadding = 0x7f010046;
 		public static final int numRotations = 0x7f010029;
@@ -473,13 +473,13 @@ public final class R {
 		public static final int feather_effects_external_thumb_padding = 0x7f0a001e;
 		public static final int feather_stickers_panel_items_gap = 0x7f0a0035;
 		public static final int feather_main_image_padding = 0x7f0a0007;
-		public static final int feather_effects_panel_items_gap = 0x7f0a001f;
 		public static final int feather_panel_top_line_height = 0x7f0a000f;
+		public static final int feather_effects_panel_items_gap = 0x7f0a001f;
 		public static final int feather_panel_top_line_height_dark = 0x7f0a0010;
 	}
 	public static final class id {
 		public static final int version_text = 0x7f060058;
-		public static final int edit_save = 0x7f0600d3;
+		public static final int edit_save = 0x7f0600d8;
 		public static final int disable_status = 0x7f060039;
 		public static final int feather_dialogs_container = 0x7f060065;
 		public static final int free = 0x7f060036;
@@ -502,8 +502,8 @@ public final class R {
 		public static final int horizontal = 0x7f060001;
 		public static final int image_container = 0x7f060023;
 		public static final int feather_meme_dumb = 0x7f060068;
-		public static final int wheel = 0x7f060081;
 		public static final int clear_button_top = 0x7f06006c;
+		public static final int wheel = 0x7f060081;
 		public static final int rectangle = 0x7f060075;
 		public static final int workspace_container = 0x7f06002d;
 		public static final int switcher = 0x7f06006e;
@@ -530,7 +530,7 @@ public final class R {
 		public static final int toolbar = 0x7f06005d;
 		public static final int toolbar_title = 0x7f06007b;
 		public static final int egg_view = 0x7f060048;
-		public static final int mask = 0x7f0600cf;
+		public static final int mask = 0x7f0600d4;
 		public static final int text01 = 0x7f06004c;
 		public static final int layout01 = 0x7f06004b;
 		public static final int clear_button_bottom = 0x7f06006d;
@@ -553,7 +553,7 @@ public final class R {
 		public static final int size_preview = 0x7f06005a;
 		public static final int infocreeen_container = 0x7f060062;
 		public static final int overlay = 0x7f06006a;
-		public static final int edit_premium = 0x7f0600d1;
+		public static final int edit_premium = 0x7f0600d6;
 		public static final int aviary_infoscreen_submit = 0x7f060059;
 		public static final int main_iap_dialog = 0x7f06004e;
 		public static final int icon_small = 0x7f060080;
@@ -562,7 +562,7 @@ public final class R {
 		public static final int top_shadow = 0x7f060070;
 		public static final int circle = 0x7f060074;
 		public static final int tool_image = 0x7f060047;
-		public static final int edit_cancel = 0x7f0600d2;
+		public static final int edit_cancel = 0x7f0600d7;
 		public static final int lens_button = 0x7f06003f;
 		public static final int button1 = 0x7f060025;
 		public static final int toolbar_main_panel = 0x7f060076;
@@ -572,8 +572,8 @@ public final class R {
 		public static final int list = 0x7f060045;
 		public static final int invertCropArrow = 0x7f06003b;
 		public static final int layout_loader = 0x7f060055;
-		public static final int masked = 0x7f0600ce;
-		public static final int edit_reset = 0x7f0600d0;
+		public static final int masked = 0x7f0600d3;
+		public static final int edit_reset = 0x7f0600d5;
 		public static final int tool_text = 0x7f060049;
 		public static final int hidden = 0x7f060041;
 		public static final int bottom_background_overlay = 0x7f060044;
@@ -777,8 +777,8 @@ public final class R {
 		public static final int draw = 0x7f0b0090;
 		public static final int feather_standalone_vibration_off = 0x7f0b0004;
 		public static final int feather_effects_error_update_pack = 0x7f0b001a;
-		public static final int feather_standalone_pref_acra_user_email_summary = 0x7f0b003c;
 		public static final int feather_standalone_output_image_size = 0x7f0b0024;
+		public static final int feather_standalone_pref_acra_user_email_summary = 0x7f0b003c;
 		public static final int red_eye = 0x7f0b000c;
 		public static final int infoscreen_submit = 0x7f0b0052;
 		public static final int feather_error_saving_image = 0x7f0b002a;

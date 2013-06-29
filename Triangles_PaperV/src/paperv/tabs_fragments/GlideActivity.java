@@ -2,6 +2,8 @@ package paperv.tabs_fragments;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.util.Date;
 
 import paperv.core.AviaryActivity;
 import paperv.core.MainActivity;
@@ -11,15 +13,16 @@ import paperv.network.DataConnector;
 import paperv.tabs_utils.GlobalState;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.util.Base64;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -83,7 +86,10 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 			Bundle savedInstanceState) {
 
 		MainActivity.page_title.setText("Glide");
-		globalState.image = null;
+		globalState.glide_image = null;
+		
+		globalState.is_glide = false;
+		globalState.is_profile = false;
 
 		imageLoader=new ImageLoader(getActivity().getApplicationContext());
 		
@@ -159,6 +165,10 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 				image.setVisibility(View.VISIBLE);
 				video_link.setVisibility(View.GONE);
 				
+				globalState.is_glide = true;
+				globalState.is_profile = false;
+				
+				globalState.glide_image = null;
 				
 				Intent i = new Intent(getActivity(), AviaryActivity.class);
 				startActivity(i);
@@ -230,11 +240,11 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 		// TODO Auto-generated method stub
 		super.onResume();
 
-		if (globalState.image != null) {
+		if (globalState.glide_image != null) {
 
 			// image.setImageBitmap(GlobalState.getInstance().image);
 
-			globalState.images.add(globalState.image);
+			globalState.images.add(globalState.glide_image);
 
 			int image_size = globalState.images.size();
 
@@ -245,20 +255,30 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 			
 				
 			
-			imageFile = new File(getRealPathFromURI(image_uri));
+//			imageFile = new File(getRealPathFromURI(image_uri));
 //			String path = imageFile.getAbsolutePath();
 			
 			try {
 				
 				bitmap = decodeUri(image_uri);
+				File dir = new File(Environment.getExternalStorageDirectory(),"paperv_uploads");
+				dir.mkdir();
+				String fileName = "image"+(new Date()).getTime()+".png";
+				imageFile = new File(dir, fileName);
+				FileOutputStream out = new FileOutputStream(imageFile);
+				bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+				Log.d("bitmap", "File:"+ imageFile.getName()+ " Width:"+bitmap.getWidth() + " Height:"+bitmap.getHeight());
+
+				out.flush();
+				out.close();
 				
-			} catch (FileNotFoundException e) {
+				
+			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
 			image.setImageBitmap(bitmap);
-			
 			
 
 		}
@@ -267,47 +287,37 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 	
 	
 	
+	
+	
 	private Bitmap decodeUri(Uri selectedImage) throws FileNotFoundException {
-
-        // Decode image size
+		Bitmap bitmap;
         BitmapFactory.Options o = new BitmapFactory.Options();
-        o.inJustDecodeBounds = true;
-        BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(selectedImage), null, o);
-
-        // The new size we want to scale to
-        final int REQUIRED_SIZE = 140;
-
-        // Find the correct scale value. It should be the power of 2.
-        int width_tmp = o.outWidth, height_tmp = o.outHeight;
-        int scale = 1;
-        while (true) {
-            if (width_tmp / 2 < REQUIRED_SIZE
-               || height_tmp / 2 < REQUIRED_SIZE) {
-                break;
-            }
-            width_tmp /= 2;
-            height_tmp /= 2;
-            scale *= 2;
-        }
-
-        // Decode with inSampleSize
-        BitmapFactory.Options o2 = new BitmapFactory.Options();
-        o2.inSampleSize = scale;
-        return BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(selectedImage), null, o2);
+        o.inSampleSize = 2;
+        bitmap = BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(selectedImage), null, o);
+        
+        if(bitmap == null)
+		{
+			o.inSampleSize = 4;
+	        bitmap = BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(selectedImage), null, o);
+		}
+        if(bitmap == null)
+		{
+			o.inSampleSize = 8;
+	        bitmap = BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(selectedImage), null, o);
+		}
+		
+		// try again with more downsampling 
+		if(bitmap == null)
+		{
+			o.inSampleSize = 16;
+	        bitmap = BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(selectedImage), null, o);
+		}
+		return bitmap;
+        
 
     }
 	
 	
-	private String getRealPathFromURI(Uri contentURI) {
-	    Cursor cursor = getActivity().getContentResolver().query(contentURI, null, null, null, null);
-	    if (cursor == null) { // Source is Dropbox or other similar local file path
-	        return contentURI.getPath();
-	    } else { 
-	        cursor.moveToFirst(); 
-	        int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA); 
-	        return cursor.getString(idx); 
-	    }
-	}
 	
 	public Bitmap bitmapFromPath(String path){
 		BitmapFactory.Options options = new BitmapFactory.Options();
@@ -639,6 +649,7 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 						video_url_base64 = video_url_base64.replaceAll("\n", "");
 						
 						result = dataConnector.glideNewStory(storyTitle, storyDescription, storyCaption, category, video_url_base64, imageFile);
+						Log.d("bitmap", "FILE: " +  imageFile +" Result: " + result );
 					}
 					
 					else

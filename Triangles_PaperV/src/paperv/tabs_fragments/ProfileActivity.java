@@ -1,7 +1,12 @@
 package paperv.tabs_fragments;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Date;
 
+import paperv.core.AviaryActivity;
 import paperv.core.MainActivity;
 import paperv.core.R;
 import paperv.lazy_adapter_utils.ImageLoader;
@@ -12,10 +17,14 @@ import paperv.tabs_utils.GlobalState;
 import paperv.tabs_utils.Utils;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -100,6 +109,12 @@ public class ProfileActivity extends Fragment implements
 	ProfileAdapter profileAdapter;
 	boolean flag_loading = false;
 
+	File imageFile = null;
+	ImageView editImage;
+	EditText user_name;
+	EditText user_mail;
+	
+	Bitmap bitmap = null;
 	
 
 	/*
@@ -263,7 +278,7 @@ public class ProfileActivity extends Fragment implements
 		
 		
 		this.vw_edit = (View) theLayout.findViewById(R.id.edit_Profile);
-		ImageView editImage = (ImageView) vw_edit.findViewById(R.id.edit_user_image);
+		editImage = (ImageView) vw_edit.findViewById(R.id.edit_user_image);
 		
 		if (globalState.user.getImage() != null)
 		{
@@ -271,11 +286,11 @@ public class ProfileActivity extends Fragment implements
 		}
 		
 		
-		EditText user_name = (EditText) vw_edit.findViewById(R.id.user_name);
+		user_name = (EditText) vw_edit.findViewById(R.id.user_name);
 		user_name.requestFocus();
 		user_name.setOnTouchListener(foucsHandler);
 		
-		EditText user_mail = (EditText) vw_edit.findViewById(R.id.email_field);
+		user_mail = (EditText) vw_edit.findViewById(R.id.email_field);
 		user_mail.setOnTouchListener(foucsHandler);
 		
 
@@ -299,12 +314,31 @@ public class ProfileActivity extends Fragment implements
             public void onClick(View v) {
                 // Perform action on click
             	
-            	_isEdit = false;
-        		showEditView(_isEdit);
+            	
+            	UpdateProfileTask task = new UpdateProfileTask();
+    			task.execute();
+            	
+            	
             	
             }
         });
 		
+		
+		final Button change_photo = (Button) theLayout.findViewById(R.id.change_photo);
+		change_photo.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				// Perform action on click
+
+				globalState.is_glide = false;
+				globalState.is_profile = true;
+				
+				globalState.profile_image = null;
+				
+				Intent i = new Intent(getActivity(), AviaryActivity.class);
+				startActivity(i);
+
+			}
+		});
 		
 		edit_button = (LinearLayout) this.vw_header.findViewById(R.id.edit_button);
 		edit_button.setOnClickListener(new View.OnClickListener() {
@@ -369,6 +403,80 @@ public class ProfileActivity extends Fragment implements
 		Utils.setFontAllView((ViewGroup) vw_detail);
 		return theLayout;
 	}
+	
+	
+	
+	
+	@Override
+	public void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+
+		if (globalState.profile_image != null) {
+
+			Uri image_uri = globalState.profile_image;
+			bitmap = null;
+			
+	
+			try {
+				
+				bitmap = decodeUri(image_uri);
+				File dir = new File(Environment.getExternalStorageDirectory(),"paperv_uploads");
+				dir.mkdir();
+				String fileName = "image"+(new Date()).getTime()+".png";
+				imageFile = new File(dir, fileName);
+				FileOutputStream out = new FileOutputStream(imageFile);
+				bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+				Log.d("bitmap", "File:"+ imageFile.getName()+ " Width:"+bitmap.getWidth() + " Height:"+bitmap.getHeight());
+
+				out.flush();
+				out.close();
+				
+				
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			editImage.setImageBitmap(bitmap);
+			
+
+		}
+
+	}
+	
+	
+	
+	private Bitmap decodeUri(Uri selectedImage) throws FileNotFoundException {
+		Bitmap bitmap;
+        BitmapFactory.Options o = new BitmapFactory.Options();
+        o.inSampleSize = 2;
+        bitmap = BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(selectedImage), null, o);
+        
+        if(bitmap == null)
+		{
+			o.inSampleSize = 4;
+	        bitmap = BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(selectedImage), null, o);
+		}
+        if(bitmap == null)
+		{
+			o.inSampleSize = 8;
+	        bitmap = BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(selectedImage), null, o);
+		}
+		
+		// try again with more downsampling 
+		if(bitmap == null)
+		{
+			o.inSampleSize = 16;
+	        bitmap = BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(selectedImage), null, o);
+		}
+		return bitmap;
+        
+
+    }
+	
+	
+	
 
 	private void initAnimation() {
 		// animation
@@ -904,6 +1012,92 @@ public class ProfileActivity extends Fragment implements
 				} else {
 					
 					Toast.makeText(getActivity(), "You already reglide this story !!", 3000).show();
+					
+				}
+			}
+
+		}
+		
+		
+		
+		private class UpdateProfileTask extends AsyncTask<Void, Void, Void> {
+
+			boolean result;
+			ProgressDialog dialog = null;
+
+			String userName = "";
+			String userMail = "";
+			
+			@Override
+			protected void onPreExecute() {
+				dialog = new ProgressDialog(getActivity());
+				dialog.setTitle(" PaperV ");
+			
+				dialog.setIcon(R.drawable.ico_dialog);
+				dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+				dialog.setCancelable(false);
+				dialog.setMessage("Updating Profile Data ...");
+				dialog.show();
+			}
+
+			@Override
+			protected Void doInBackground(Void... params) {
+
+				try {
+					
+					userName = user_name.getText().toString();
+					userMail = user_mail.getText().toString();
+					
+					result = dataConnector.updateProfileData(userName, userMail);
+					
+					if (globalState.profile_image != null)
+						result = dataConnector.updateProfilePhoto(imageFile);
+						
+					//result =true;
+				} catch (Exception e) {
+
+					e.printStackTrace();
+				}
+
+				return null;
+
+			}
+
+			@Override
+			protected void onPostExecute(Void result) {
+				
+				try{
+					dialog.dismiss();
+				}
+				catch(Exception e){
+					
+				}
+				if (this.result) {
+					
+					
+					if (!userName.equals(""))
+					{
+						globalState.user.setName(userName);
+						user_name.setText("");
+					}
+
+					if (!userMail.equals(""))
+					{
+						globalState.user.setEmail(userMail);
+						user_mail.setText("");
+					}
+					
+					if (globalState.profile_image != null)
+					{
+						globalState.user.setImage(bitmap);
+						globalState.profile_image = null;
+					}
+					
+					_isEdit = false;
+	        		showEditView(_isEdit);
+					
+				} else {
+					
 					
 				}
 			}
