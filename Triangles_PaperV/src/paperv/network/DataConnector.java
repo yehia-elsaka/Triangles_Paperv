@@ -392,7 +392,8 @@ public class DataConnector {
 
 					 LikeStory story = new LikeStory();
 					 
-					 story.setStory_id(story_data.getInt("like_id"));
+					 story.setLike_id(story_data.getInt("like_id"));
+					 story.setStory_id(story_data.getInt("story_id"));
 					 story.setStory_title(story_data.getString("title"));
 					 
 					 // to be repaired when get updates
@@ -792,6 +793,7 @@ public class DataConnector {
 			if (status.equals("true")) {
 
 				likeDone = true;
+				
 			}
 
 			else

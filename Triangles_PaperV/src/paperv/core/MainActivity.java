@@ -165,7 +165,15 @@ public class MainActivity extends FragmentActivity implements
 		
 		// Step 2: Setup TabHost
 		initialiseTabHost(savedInstanceState);
-		if (savedInstanceState != null) {
+		
+		if (globalState.open_profile_tab)
+		{
+			this.onTabChanged("tab" + R.string.lbl_profile);
+			
+			globalState.open_profile_tab = false;
+		}
+		
+		else if (savedInstanceState != null) {
 			// set the tab as per the saved state
 			mTabHost.setCurrentTabByTag(savedInstanceState.getString("tab"));
 		}

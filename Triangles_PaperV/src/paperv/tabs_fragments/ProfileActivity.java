@@ -186,7 +186,8 @@ public class ProfileActivity extends Fragment implements
 		reglideNumber = (TextView) vw_detail.findViewById(R.id.reglides_number_2);
 
 		follow_user = (Button) vw_detail.findViewById(R.id.follow_user);
-		follow_user.setOnClickListener(new View.OnClickListener() {
+		follow_user.setVisibility(View.GONE);
+		/*follow_user.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Perform action on click
             	
@@ -194,7 +195,7 @@ public class ProfileActivity extends Fragment implements
     			task.execute();
     			
             }
-        });
+        });*/
 		
 		storyVideo = (ImageView) this.vw_detail.findViewById(R.id.myvideoview);
 		storyVideo.setVisibility(View.GONE);
@@ -356,6 +357,9 @@ public class ProfileActivity extends Fragment implements
 		this.vw_master.setVisibility(View.VISIBLE);
 		this.vw_edit.setVisibility(View.GONE);
 		this.vw_detail.setVisibility(View.GONE);
+		
+		this.tabs_bar.setVisibility(View.VISIBLE);
+		this.comments_bar.setVisibility(View.GONE);
 
 		
 		// ### to be repaired

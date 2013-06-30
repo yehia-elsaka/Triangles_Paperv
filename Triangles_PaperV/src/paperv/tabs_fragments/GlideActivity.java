@@ -196,8 +196,29 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 			public void onClick(View v) {
 				// Perform action on click
 				
-				GlideStoryTask task = new GlideStoryTask();
-				task.execute();
+				if (title.getText().toString().equals(""))
+				{
+					Toast.makeText(getActivity(), "Can't Glide Story ... Missing title", 3000).show();
+				}
+				else if (desc.getText().toString().equals(""))
+				{ 
+					Toast.makeText(getActivity(), "Can't Glide Story ... Missing description", 3000).show();
+				}
+				else if (caption.getText().toString().equals(""))
+				{ 
+					Toast.makeText(getActivity(), "Can't Glide Story ... Missing caption", 3000).show();
+				}
+				
+				else if (storyCategory == 0)
+				{ 
+					Toast.makeText(getActivity(), "Can't Glide Story ... Missing category", 3000).show();
+				}
+				
+				else
+				{
+					GlideStoryTask task = new GlideStoryTask();
+					task.execute();
+				}
 
 			}
 		});
@@ -682,7 +703,7 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 				
         		
 			} else {
-				Toast.makeText(getActivity(), "Can't Glide Story ... Missing Data", 3000).show();
+				Toast.makeText(getActivity(), "Can't Glide Story ... Missing Media", 3000).show();
 			}
 		}
 

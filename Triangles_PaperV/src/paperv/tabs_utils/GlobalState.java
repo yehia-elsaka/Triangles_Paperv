@@ -1,12 +1,15 @@
 package paperv.tabs_utils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import paperv.models.Friend;
 import paperv.models.LikeStory;
 import paperv.models.NotificationItem;
 import paperv.models.Story;
 import paperv.models.User;
+import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
 import android.net.Uri;
 
@@ -22,6 +25,7 @@ public class GlobalState {
 	}
 	
 	
+	public boolean open_profile_tab = false;
 
 	public User user = new User();
 	public Uri glide_image;
@@ -36,7 +40,7 @@ public class GlobalState {
 	
 	
 	
-	
+	 
 	// Explore Stories List
 	public ArrayList<Story> explore_list = new ArrayList<Story>();
 	

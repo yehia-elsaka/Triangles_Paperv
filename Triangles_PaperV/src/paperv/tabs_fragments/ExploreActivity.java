@@ -554,6 +554,8 @@ public class ExploreActivity extends Fragment implements
 				
 				
 				result = dataConnector.getStoryView(""+current_story_id);
+				
+				
 				//result =true;
 			} catch (Exception e) {
 
@@ -573,6 +575,10 @@ public class ExploreActivity extends Fragment implements
 			catch(Exception e){
 				
 			}
+			
+			if (globalState.story_view.getPhotos().size() == 0)
+				this.result = false;
+			
 			if (this.result) {
 				
 
@@ -635,7 +641,7 @@ public class ExploreActivity extends Fragment implements
 				
 			} else {
 				
-				Toast.makeText(getActivity(), "Can't show this story !!", 3000).show();
+				Toast.makeText(getActivity(), "This Story doesn't contain media !!", 3000).show();
 				
 			}
 		}

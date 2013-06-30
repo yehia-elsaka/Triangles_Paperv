@@ -29,7 +29,9 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TabWidget;
 import android.widget.TextView;
 
 
@@ -40,6 +42,8 @@ public class MenuFragment extends Fragment implements OnItemClickListener {
 	View vw_layout;
 
 	EditText search_field;
+	
+	LinearLayout person_layout;
 	
 	ImageView user_image;
 	TextView user_name;
@@ -92,14 +96,45 @@ public class MenuFragment extends Fragment implements OnItemClickListener {
 		});
 		
 		
+		
 		user_image = (ImageView) vw_layout.findViewById(R.id.avatar);
 		if (globalState.user.getImage() != null)
 		{
 			user_image.setImageBitmap(globalState.user.getImage());
 		}
 
+		user_image.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				// Perform action on click
+				
+				globalState.open_profile_tab = true;
+				
+				Intent i = new Intent(getActivity(), MainActivity.class);
+	        	startActivity(i); 
+	        	
+	        	getActivity().finish();
+
+			}
+		});
+		
+		
 		user_name = (TextView) vw_layout.findViewById(R.id.person_name);
 		user_name.setText(globalState.user.getName());
+		
+		user_name.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				// Perform action on click
+				
+				globalState.open_profile_tab = true;
+				
+				Intent i = new Intent(getActivity(), MainActivity.class);
+	        	startActivity(i); 
+	        	
+	        	getActivity().finish();
+
+			}
+		});
+		
 
 		this.initialiseMenuItems(savedInstanceState);
 		

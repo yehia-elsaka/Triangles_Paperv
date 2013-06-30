@@ -78,6 +78,8 @@ public class LikesActivity extends Fragment  {
 		
 
 		Utils.setFontAllView((ViewGroup) vw_layout);
+		
+		
 
 		return vw_layout;
 	}
