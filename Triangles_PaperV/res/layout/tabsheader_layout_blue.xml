@@ -50,7 +50,7 @@
         </LinearLayout>
 
         <ImageButton
-            android:id="@+id/btnImg_Like"
+            android:id="@+id/btn_reload"
             android:layout_width="@dimen/width"
             android:layout_height="fill_parent"
             android:background="@drawable/ui_button_blue"

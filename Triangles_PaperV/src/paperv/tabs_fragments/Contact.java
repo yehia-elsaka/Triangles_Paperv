@@ -29,28 +29,15 @@ public class Contact extends Fragment{
 			return null;
 		}
 		LinearLayout theLayout = (LinearLayout) inflater.inflate(
-				R.layout.about, container, false);
+				R.layout.contact, container, false);
 		
 //		TextView about = (TextView) theLayout.findViewById(R.id.about_text);
 		
 		
-		String data = "<b>Press:</b>"
-				+"<br class=\"pf_break\">"
-				+"<br class=\"pf_break\">14-4-2013 PaperV launches as first social network from region"
-				+"<br class=\"pf_break\">http://www.ameinfo.com/paperv-launches-social-network-region-337462"
-				+"<br class=\"pf_break\">"
-				+"<br class=\"pf_break\">14-4-2013 First Bahraini social network is launched"
-				+"<br class=\"pf_break\">http://gulf-daily-news.com/NewsDetails.aspx?storyid=351383"
-				+"<br class=\"pf_break\">"
-				+"<br class=\"pf_break\">"
-				+"<br class=\"pf_break\">"
-				+"<br class=\"pf_break\">Public Relations: pr@paperv.com"
-				+"<br class=\"pf_break\">"
-				+"<br class=\"pf_break\">"
-				+"<br class=\"pf_break\">";
+		
 
 		WebView webview = (WebView) theLayout.findViewById(R.id.webview);
-		webview.loadDataWithBaseURL("", data, "text/html", "UTF-8", "");
+		webview.loadUrl("http://paperv.com/mobile/contact");
 		
 		
 		return theLayout;

@@ -15,6 +15,7 @@ import paperv.tabs_utils.GlobalState;
 import paperv.tabs_utils.Utils;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -150,6 +151,11 @@ public class MenuFragment extends Fragment implements OnItemClickListener {
 		
 		else if (position == 6)
 		{
+			SharedPreferences.Editor editor = globalState.prefs.edit();
+			editor.putString("user_name", "");
+			editor.putString("password", "");
+			editor.putBoolean("remember_me", false);
+			editor.commit();
 			
         	getActivity().finish();
 		}
@@ -228,7 +234,7 @@ public class MenuFragment extends Fragment implements OnItemClickListener {
 			dialog.setIcon(R.drawable.ico_dialog);
 			dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 			dialog.setCancelable(false);
-			dialog.setMessage("Searching For Friends ...");
+			dialog.setMessage("Loading search results ...");
 			dialog.show();
 		}
 

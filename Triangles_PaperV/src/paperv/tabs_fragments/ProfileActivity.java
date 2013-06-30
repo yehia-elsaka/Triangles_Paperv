@@ -525,7 +525,7 @@ public class ProfileActivity extends Fragment implements
 			getStoryViewTask task = new getStoryViewTask();
 			task.execute();
 			
-			showView(this._isBack);
+			
 			
 		}
 	}
@@ -659,7 +659,9 @@ public class ProfileActivity extends Fragment implements
 				else if (type.equals("video"))
 				{
 					
-					storyImage.setVisibility(View.GONE);
+					storyImage.setVisibility(View.VISIBLE);
+					storyImageLoader.DisplayImage(globalState.story_view.getPhoto_url(), getActivity(), storyImage);
+					
 					
 					storyVideo.startAnimation(mSlideInLeft);
 					storyVideo.setVisibility(View.VISIBLE);
@@ -699,7 +701,9 @@ public class ProfileActivity extends Fragment implements
 				else if (type.equals("video"))
 				{
 					
-					storyImage.setVisibility(View.GONE);
+					storyImage.setVisibility(View.VISIBLE);
+					storyImageLoader.DisplayImage(globalState.story_view.getPhoto_url(), getActivity(), storyImage);
+					
 					
 					storyVideo.startAnimation(mSlideInRight);
 					storyVideo.setVisibility(View.VISIBLE);
@@ -815,7 +819,9 @@ public class ProfileActivity extends Fragment implements
 					}
 					else if (type.equals("video"))
 					{
-						storyImage.setVisibility(View.GONE);
+						storyImage.setVisibility(View.VISIBLE);
+						storyImageLoader.DisplayImage(globalState.story_view.getPhoto_url(), getActivity(), storyImage);
+						
 						
 						storyVideo.setVisibility(View.VISIBLE);
 						
@@ -842,7 +848,10 @@ public class ProfileActivity extends Fragment implements
 						imageLoader.DisplayImage(globalState.story_view.getComments().get(i).getUser_image_url(), getActivity(), comment_Image);
 						
 						comments_list.addView(view);
+						
 					}
+					
+					showView(_isBack);
 					
 				} else {
 					

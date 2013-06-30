@@ -515,21 +515,27 @@ public class DataConnector {
 				JSONArray data = object.getJSONArray("data");
 				for (int i = 0; i < data.length(); i++) {
 					friend_data = data.getJSONObject(i);
-
-					 Friend friend = new Friend();
+					
+					 String type = friend_data.getString("item_name");
 					 
- 					 friend.setFriend_id(friend_data.getInt("item_id"));
-					 friend.setFriend_name(friend_data.getString("user_name"));
-					 friend.setFull_name(friend_data.getString("full_name"));
-					 
-					 String url = friend_data.getString("user_image");
-					 
-					 if ( !url.equals("null"))
-						 friend.setFriend_image(friend_data.getString("user_image"));
-					 else
-						 friend.setFriend_image("");
-					 
-					 globalState.friends_list.add(friend);
+					 if (type.equals("Members"))
+					 {
+						 Friend friend = new Friend();
+						 
+	 					 friend.setFriend_id(friend_data.getInt("item_id"));
+						 friend.setFriend_name(friend_data.getString("user_name"));
+						 friend.setFull_name(friend_data.getString("full_name"));
+						 
+						 String url = friend_data.getString("user_image");
+						 
+						 if ( !url.equals("null"))
+							 friend.setFriend_image(friend_data.getString("user_image"));
+						 else
+							 friend.setFriend_image("");
+						 
+						 globalState.friends_list.add(friend);
+					 }
+					
 				}
 
 				done = true;

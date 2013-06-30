@@ -38,7 +38,6 @@ public class Login extends Activity {
 	
 	GlobalState globalState = GlobalState.getInstance();
 	DataConnector dataConnector = DataConnector.getInstance();
-	SharedPreferences prefs;
 	public static final String PREFS_NAME = "MyPrefsFile";
 	
 
@@ -57,7 +56,7 @@ public class Login extends Activity {
         user_name_field = (EditText) findViewById(R.id.user_name);
 		password_field = (EditText) findViewById(R.id.password);
 		remember_me = (CheckBox) findViewById(R.id.remember_me);
-		prefs = getSharedPreferences(PREFS_NAME, 0);
+		globalState.prefs = getSharedPreferences(PREFS_NAME, 0);
 		
 		forgot_password = (TextView) findViewById(R.id.forget_pass);
 		forgot_password.setOnClickListener(new View.OnClickListener() {
@@ -73,10 +72,10 @@ public class Login extends Activity {
 		
 
 		
-		if (prefs.getBoolean("remember_me", false)) {
+		if (globalState.prefs.getBoolean("remember_me", false)) {
 			remember_me.setChecked(true);
-			user_name = prefs.getString("user_name", "");
-			password = prefs.getString("password", "");
+			user_name = globalState.prefs.getString("user_name", "");
+			password = globalState.prefs.getString("password", "");
 
 			LoginTask task = new LoginTask();
 			task.execute();
@@ -90,14 +89,14 @@ public class Login extends Activity {
 				password = password_field.getEditableText().toString();
 
 				if (remember_me.isChecked()) {
-					SharedPreferences.Editor editor = prefs.edit();
+					SharedPreferences.Editor editor = globalState.prefs.edit();
 					editor.putString("user_name", user_name);
 					editor.putString("password", password);
 					editor.putBoolean("remember_me", true);
 					editor.commit();
 
 				} else {
-					SharedPreferences.Editor editor = prefs.edit();
+					SharedPreferences.Editor editor = globalState.prefs.edit();
 					editor.putString("user_name", "");
 					editor.putString("password", "");
 					editor.putBoolean("remember_me", false);

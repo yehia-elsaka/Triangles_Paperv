@@ -7,6 +7,7 @@ import paperv.models.LikeStory;
 import paperv.models.NotificationItem;
 import paperv.models.Story;
 import paperv.models.User;
+import android.content.SharedPreferences;
 import android.net.Uri;
 
 
@@ -28,6 +29,8 @@ public class GlobalState {
 	
 	public boolean is_glide;
 	public boolean is_profile;
+	
+	public SharedPreferences prefs;
 	
 	public ArrayList<Uri> images = new ArrayList<Uri>();
 	

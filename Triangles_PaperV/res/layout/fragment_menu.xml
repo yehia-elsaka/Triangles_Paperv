@@ -33,7 +33,7 @@
             style="@style/EditText_Gray"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:hint="Find Your Friends ..." 
+            android:hint="Find People ..." 
             android:background="@color/gray_35"
             android:textColor="@color/white"
 		        android:textSize="17sp"

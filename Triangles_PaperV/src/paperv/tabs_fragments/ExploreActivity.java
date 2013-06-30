@@ -355,7 +355,7 @@ public class ExploreActivity extends Fragment implements
 			getStoryViewTask task = new getStoryViewTask();
 			task.execute();
 			
-			showView(this._isBack);
+			
 			
 		}
 	}
@@ -445,7 +445,9 @@ public class ExploreActivity extends Fragment implements
 			else if (type.equals("video"))
 			{
 				
-				storyImage.setVisibility(View.GONE);
+				storyImage.setVisibility(View.VISIBLE);
+				storyImageLoader.DisplayImage(globalState.story_view.getPhoto_url(), getActivity(), storyImage);
+				
 				
 				storyVideo.startAnimation(mSlideInLeft);
 				storyVideo.setVisibility(View.VISIBLE);
@@ -485,7 +487,9 @@ public class ExploreActivity extends Fragment implements
 			else if (type.equals("video"))
 			{
 				
-				storyImage.setVisibility(View.GONE);
+				storyImage.setVisibility(View.VISIBLE);
+				storyImageLoader.DisplayImage(globalState.story_view.getPhoto_url(), getActivity(), storyImage);
+				
 				
 				storyVideo.startAnimation(mSlideInRight);
 				storyVideo.setVisibility(View.VISIBLE);
@@ -597,7 +601,8 @@ public class ExploreActivity extends Fragment implements
 				}
 				else if (type.equals("video"))
 				{
-					storyImage.setVisibility(View.GONE);
+					storyImage.setVisibility(View.VISIBLE);
+					storyImageLoader.DisplayImage(globalState.story_view.getPhoto_url(), getActivity(), storyImage);
 					
 					storyVideo.setVisibility(View.VISIBLE);
 					
@@ -625,6 +630,8 @@ public class ExploreActivity extends Fragment implements
 					
 					comments_list.addView(view);
 				}
+				
+				showView(_isBack);
 				
 			} else {
 				

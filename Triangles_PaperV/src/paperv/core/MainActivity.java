@@ -2,7 +2,17 @@ package paperv.core;
 
 import java.util.HashMap;
 
+import paperv.network.DataConnector;
+import paperv.tabs_fragments.ExploreActivity;
+import paperv.tabs_fragments.GlideActivity;
+import paperv.tabs_fragments.HomeActivity;
+import paperv.tabs_fragments.LikesActivity;
+import paperv.tabs_fragments.ProfileActivity;
+import paperv.tabs_utils.GlobalState;
+import paperv.tabs_utils.Utils;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -19,14 +29,7 @@ import android.widget.ImageView;
 import android.widget.TabHost;
 import android.widget.TabHost.TabContentFactory;
 import android.widget.TextView;
-
-import paperv.core.R;
-import paperv.tabs_fragments.ExploreActivity;
-import paperv.tabs_fragments.GlideActivity;
-import paperv.tabs_fragments.HomeActivity;
-import paperv.tabs_fragments.LikesActivity;
-import paperv.tabs_fragments.ProfileActivity;
-import paperv.tabs_utils.Utils;
+import android.widget.Toast;
 
 import com.slidingmenu.lib.SlidingMenu;
 
@@ -35,6 +38,7 @@ import com.slidingmenu.lib.SlidingMenu;
 public class MainActivity extends FragmentActivity implements
 		TabHost.OnTabChangeListener, OnClickListener{
 
+	Context myContext = this;
 	
 	private SlidingMenu menu;
 	private Fragment mContent;
@@ -47,6 +51,9 @@ public class MainActivity extends FragmentActivity implements
 	private HashMap<String, TabInfo> mapTabInfo = new HashMap<String, TabInfo>();
 	private TabInfo mLastTab = null;
 
+	GlobalState globalState = GlobalState.getInstance();
+	DataConnector dataConnector = DataConnector.getInstance();
+	
 	private class TabInfo {
 		private String _tag;
 		private int _labelId;
@@ -152,6 +159,9 @@ public class MainActivity extends FragmentActivity implements
 		ImageButton btnList = (ImageButton) findViewById(R.id.btnImg_list);
 		btnList.setOnClickListener(this);
 		
+		
+		ImageButton btnReload = (ImageButton) findViewById(R.id.btn_reload);
+		btnReload.setOnClickListener(this);
 		
 		// Step 2: Setup TabHost
 		initialiseTabHost(savedInstanceState);
@@ -290,6 +300,13 @@ public class MainActivity extends FragmentActivity implements
 			}
 		}
 		
+		
+		if (v.getId() == R.id.btn_reload) {
+			
+			ReloadTask task = new ReloadTask();
+			task.execute();
+		}
+		
 	}
 	
 	OnTouchListener foucsHandler = new OnTouchListener() {
@@ -300,6 +317,76 @@ public class MainActivity extends FragmentActivity implements
 	            return false;
 	    }
 	};
+	
+	
+	
+	private class ReloadTask extends AsyncTask<Void, Void, Void> {
+
+		boolean result;
+		ProgressDialog dialog = null;
+
+		@Override
+		protected void onPreExecute() {
+			dialog = new ProgressDialog(myContext);
+			dialog.setTitle(" PaperV ");
+		
+			dialog.setIcon(R.drawable.ico_dialog);
+			dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+			dialog.setCancelable(false);
+			dialog.setMessage("Reloading data ...");
+			dialog.show();
+		}
+
+		@Override
+		protected Void doInBackground(Void... params) {
+
+			try {
+				
+				globalState.feed_list.clear();
+				globalState.explore_list.clear();
+				globalState.like_list.clear();
+				globalState.notification_list.clear();
+				globalState.userStories_list.clear();
+				
+				// load all data
+				dataConnector.getExploreFeed();
+				dataConnector.getHomeFeed();
+				dataConnector.getUserStories();
+				dataConnector.getFollowers(globalState.user.getId());
+				dataConnector.getFollowing(globalState.user.getId());
+				dataConnector.getAllNotification();
+				dataConnector.getAllLikes();
+				
+//				result = dataConnector.loginIn(user_name, password);
+				result =true;
+			} catch (Exception e) {
+
+				e.printStackTrace();
+			}
+
+			return null;
+
+		}
+
+		@Override
+		protected void onPostExecute(Void result) {
+			
+			try{
+				dialog.dismiss();
+			}
+			catch(Exception e){
+				
+			}
+			if (this.result) {
+				
+				Toast.makeText(myContext, "Loading done ..,", 3000).show();
+				
+			} else {
+				Toast.makeText(myContext, "Username or Password Incorrect", 3000).show();
+			}
+		}
+
+	}
 	
 	
 }

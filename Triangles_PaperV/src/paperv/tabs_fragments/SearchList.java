@@ -39,7 +39,7 @@ public class SearchList extends Fragment{
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 
-		MainActivity.page_title.setText("Find Friends");
+		MainActivity.page_title.setText("Find People");
 		
 		imageLoader=new ImageLoader(getActivity().getApplicationContext());
 		
