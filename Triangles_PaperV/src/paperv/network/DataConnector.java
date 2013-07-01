@@ -88,6 +88,7 @@ public class DataConnector {
 						cookieStore);
 				response = httpclient.execute(httpget, localContext);
 
+				
 				entity = response.getEntity();
 				if (entity != null) {
 					InputStream instream = entity.getContent();
@@ -122,6 +123,14 @@ public class DataConnector {
 				else
 					globalState.user.setImage(null);
 
+				
+				
+				
+				globalState.feed_list.clear();
+				globalState.explore_list.clear();
+				globalState.like_list.clear();
+				globalState.notification_list.clear();
+				globalState.userStories_list.clear();
 				
 				// load all data
 				this.getExploreFeed();
@@ -393,11 +402,11 @@ public class DataConnector {
 					 LikeStory story = new LikeStory();
 					 
 					 story.setLike_id(story_data.getInt("like_id"));
-					 story.setStory_id(story_data.getInt("story_id"));
-					 story.setStory_title(story_data.getString("title"));
+					 story.setStory_id(story_data.getInt("ITEMID"));
+					 story.setStory_title(story_data.getString("ITEMTITLE"));
 					 
 					 // to be repaired when get updates
-					 story.setStory_image("");
+					 story.setStory_image(story_data.getString("photourl"));
 					 
 					 story.setDate(story_data.getString("like_date"));
 					

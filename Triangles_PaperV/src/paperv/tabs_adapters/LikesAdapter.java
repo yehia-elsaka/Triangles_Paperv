@@ -60,7 +60,7 @@ public class LikesAdapter extends BaseAdapter {
 		
 		String image_url = item.getStory_image();
 		
-//		imageLoader.DisplayImage(image_url, _context, storyImage);
+		imageLoader.DisplayImage(image_url, _context, storyImage);
 		
 
 
