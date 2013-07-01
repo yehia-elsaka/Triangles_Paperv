@@ -328,6 +328,25 @@ public class MainActivity extends FragmentActivity implements
 	
 	
 	
+	
+	
+	
+	
+	@Override
+	public void onBackPressed() {
+		// TODO Auto-generated method stub
+		
+		globalState.is_logout = true;
+		
+		super.onBackPressed();
+	}
+
+
+
+
+
+
+
 	private class ReloadTask extends AsyncTask<Void, Void, Void> {
 
 		boolean result;

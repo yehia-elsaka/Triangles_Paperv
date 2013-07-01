@@ -313,7 +313,7 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 	private Bitmap decodeUri(Uri selectedImage) throws FileNotFoundException {
 		Bitmap bitmap;
         BitmapFactory.Options o = new BitmapFactory.Options();
-        o.inSampleSize = 2;
+        o.inSampleSize = 4;
         bitmap = BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(selectedImage), null, o);
         
         if(bitmap == null)

@@ -234,7 +234,6 @@ public class MenuFragment extends Fragment implements OnItemClickListener {
 			editor.putBoolean("remember_me", false);
 			editor.commit();
 			
-			globalState.is_logout = true;
         	getActivity().finish();
 		}
 		
