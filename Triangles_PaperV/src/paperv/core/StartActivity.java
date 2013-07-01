@@ -3,6 +3,7 @@ package paperv.core;
 
 
 import paperv.core.R;
+import paperv.tabs_utils.GlobalState;
 
 import android.app.Activity;
 import android.content.Context;
@@ -62,5 +63,21 @@ public class StartActivity extends Activity {
 //		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
+
+
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		
+		if (GlobalState.getInstance().is_logout)
+		{
+			finish();
+		}
+	}
+	
+	
+	
+	
 
 }

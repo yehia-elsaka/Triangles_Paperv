@@ -31,8 +31,10 @@ public class GlobalState {
 	public Uri glide_image;
 	public Uri profile_image;
 	
-	public boolean is_glide;
-	public boolean is_profile;
+	public boolean is_glide = false;
+	public boolean is_profile = false;
+	public boolean is_logout = false;
+	
 	
 	public SharedPreferences prefs;
 	

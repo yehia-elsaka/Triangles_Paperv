@@ -36,8 +36,11 @@
             android:hint="Find People ..." 
             android:background="@color/gray_35"
             android:textColor="@color/white"
-		        android:textSize="17sp"
-		        android:textStyle="bold"/>
+		    android:textSize="17sp"
+		    android:singleLine="true"
+		    android:textStyle="bold"
+		    android:inputType="text" />
+        
     </LinearLayout>
     
     <LinearLayout
@@ -50,7 +53,8 @@
     <LinearLayout
         android:id="@+id/person"
         android:layout_width="fill_parent"
-        android:layout_height="50dp" >
+        android:layout_height="50dp" 
+        android:background="@color/gray_35">
 
         <ImageView
             android:id="@+id/avatar"
@@ -64,8 +68,8 @@
         <TextView
             android:id="@+id/person_name"
             style="@style/EditText_Gray"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="Person Name" 
             android:textColor="@android:color/white"
             android:background="@color/gray_35"/>

@@ -14,16 +14,20 @@ import paperv.tabs_fragments.Terms;
 import paperv.tabs_utils.GlobalState;
 import paperv.tabs_utils.Utils;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
@@ -31,7 +35,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TabWidget;
 import android.widget.TextView;
 
 
@@ -78,6 +81,28 @@ public class MenuFragment extends Fragment implements OnItemClickListener {
 		search_field.requestFocus();
 		search_field.setOnTouchListener(foucsHandler);
 		
+		search_field.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
+		search_field.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+		    @Override
+		    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+		        if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+		            
+		        	 final InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+		        	 imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
+		        		  
+		        	GetFriendsTask task = new GetFriendsTask(search_field.getText().toString());
+	    			task.execute();
+	    			
+	    			search_field.setText("");
+	    			
+		            return true;
+		        }
+		        return false;
+		    }
+		});
+		
+		
+		
 		ImageButton search = (ImageButton) vw_layout.findViewById(R.id.btn_search);
 		search.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
@@ -94,6 +119,23 @@ public class MenuFragment extends Fragment implements OnItemClickListener {
 
 			}
 		});
+		
+		
+		person_layout = (LinearLayout) vw_layout.findViewById(R.id.person);
+		person_layout.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				// Perform action on click
+				
+				globalState.open_profile_tab = true;
+				
+				Intent i = new Intent(getActivity(), MainActivity.class);
+	        	startActivity(i); 
+	        	
+	        	getActivity().finish();
+
+			}
+		});
+		
 		
 		
 		
@@ -192,6 +234,7 @@ public class MenuFragment extends Fragment implements OnItemClickListener {
 			editor.putBoolean("remember_me", false);
 			editor.commit();
 			
+			globalState.is_logout = true;
         	getActivity().finish();
 		}
 		
@@ -315,5 +358,10 @@ public class MenuFragment extends Fragment implements OnItemClickListener {
 		}
 
 	}
+	
+	
+	
+	
+	
 
 }
