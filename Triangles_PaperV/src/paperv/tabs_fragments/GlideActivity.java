@@ -3,6 +3,7 @@ package paperv.tabs_fragments;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
 import java.util.Date;
 
 import paperv.core.AviaryActivity;
@@ -62,8 +63,12 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 	View tabs_bar;
 	View comments_bar;
 
+	ArrayList<File> imagesArray = new ArrayList<File>();
+	
 	GlobalState globalState = GlobalState.getInstance();
 	DataConnector dataConnector = DataConnector.getInstance();
+	
+	LinearLayout next_image, previous_image;
 	
 	public ImageLoader imageLoader;
 	File imageFile = null;
@@ -191,6 +196,27 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 		});
 		
 
+		
+		
+		next_image = (LinearLayout) theLayout.findViewById(R.id.next_image);
+		previous_image = (LinearLayout) theLayout.findViewById(R.id.previous_image);
+		
+		next_image.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Perform action on click
+            	getNextImage();
+            }
+        });
+		previous_image.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Perform action on click
+            	
+            	getPreviousImage();
+            	
+            }
+        });
+		
+		
 		final Button glide_photo = (Button) theLayout.findViewById(R.id.glide_photo);
 		glide_photo.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
@@ -299,6 +325,9 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 				e.printStackTrace();
 			}
 			
+			
+			imagesArray.add(imageFile);
+			
 			image.setImageBitmap(bitmap);
 			
 
@@ -313,7 +342,7 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 	private Bitmap decodeUri(Uri selectedImage) throws FileNotFoundException {
 		Bitmap bitmap;
         BitmapFactory.Options o = new BitmapFactory.Options();
-        o.inSampleSize = 4;
+        o.inSampleSize = 2;
         bitmap = BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(selectedImage), null, o);
         
         if(bitmap == null)
@@ -549,7 +578,7 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 			current_index++;
 
 			Uri image_uri = globalState.images.get(current_index);
-			Bitmap bitmap = null;
+			bitmap = null;
 			try {
 				bitmap = MediaStore.Images.Media.getBitmap(getActivity()
 						.getContentResolver(), image_uri);
@@ -558,6 +587,8 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			
+			image.startAnimation(mSlideInLeft);
 			image.setImageBitmap(bitmap);
 
 		}
@@ -570,7 +601,7 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 			current_index--;
 
 			Uri image_uri = globalState.images.get(current_index);
-			Bitmap bitmap = null;
+			bitmap = null;
 			try {
 				bitmap = MediaStore.Images.Media.getBitmap(getActivity()
 						.getContentResolver(), image_uri);
@@ -579,6 +610,8 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			
+			image.startAnimation(mSlideInRight);
 			image.setImageBitmap(bitmap);
 		}
 
@@ -664,12 +697,12 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 				
 				if ( !storyTitle.equals("") && !storyDescription.equals("") && !storyCaption.equals("") )
 				{
-					if ( !video_url.equals("") || imageFile != null )
+					if ( !video_url.equals("") || imagesArray.size() > 0 )
 					{
 						String video_url_base64 = Base64.encodeToString(video_url.getBytes(), Base64.DEFAULT);
 						video_url_base64 = video_url_base64.replaceAll("\n", "");
 						
-						result = dataConnector.glideNewStory(storyTitle, storyDescription, storyCaption, category, video_url_base64, imageFile);
+						result = dataConnector.glideNewStory(storyTitle, storyDescription, storyCaption, category, video_url_base64, imagesArray);
 						Log.d("bitmap", "FILE: " +  imageFile +" Result: " + result );
 					}
 					
@@ -700,6 +733,14 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 				
 			}
 			if (this.result) {
+				
+				Toast.makeText(getActivity(), "Glide Story Done ...", 3000).show();
+				
+				 title.setText("");
+				 desc.setText("");
+				 caption.setText("");
+				 
+				 category.setText("Category");
 				
         		
 			} else {

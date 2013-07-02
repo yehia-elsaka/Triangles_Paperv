@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.http.HttpEntity;
@@ -960,7 +961,7 @@ public class DataConnector {
 	}
 
 	public boolean glideNewStory(String title, String desc, String caption,
-			String category_id, String video_url, File photo) {
+			String category_id, String video_url, ArrayList<File>imagesArray) {
 
 		boolean glideDone = false;
 
@@ -977,13 +978,22 @@ public class DataConnector {
 					+ title + "&text=" + desc + "&categories=" + category_id
 					+ "&video_url=" + video_url + "&caption=" + caption);
 
-			if (photo != null) {
+			
+			MultipartEntity mpEntity = new MultipartEntity();
+			// Prepare images Array
+	        for (File image : imagesArray) {
+	        	mpEntity.addPart("image[]", new FileBody(image, "image/*"));
+	        }
+			
+	        httppost.setEntity(mpEntity);
+			
+			/*if (photo != null) {
 				MultipartEntity mpEntity = new MultipartEntity();
 				ContentBody cbFile = new FileBody(photo, "image/*");
 				mpEntity.addPart("image", cbFile);
 
 				httppost.setEntity(mpEntity);
-			}
+			}*/
 
 			HttpResponse response = httpclient.execute(httppost, localContext);
 			HttpEntity entity = response.getEntity();
