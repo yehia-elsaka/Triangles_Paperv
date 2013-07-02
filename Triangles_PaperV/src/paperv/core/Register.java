@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import paperv.core.R;
 import paperv.network.DataConnector;
+import paperv.tabs_utils.GlobalState;
 
 public class Register extends Activity {
 	
@@ -82,6 +83,8 @@ public class Register extends Activity {
 
 		boolean result;
 		ProgressDialog dialog = null;
+		
+		boolean user_exist = false;
 
 		@Override
 		protected void onPreExecute() {
@@ -98,7 +101,16 @@ public class Register extends Activity {
 		protected Void doInBackground(Void... params) {
 
 			try {
-				result = DataConnector.getInstance().register(fullname, username, password, email, image);
+				
+				DataConnector.getInstance().getFriends(username_field.getText().toString());
+				if (GlobalState.getInstance().friends_list.size() != 0)
+					{
+						user_exist = true;
+						result = false;
+					}
+				else
+					result = DataConnector.getInstance().register(fullname, username, password, email, image);
+				
 			} catch (Exception e) {
 
 				e.printStackTrace();
@@ -124,8 +136,12 @@ public class Register extends Activity {
         		overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
         		
 			} else {
-				Toast.makeText(myContext, "Registration Failed ...", 3000)
-						.show();
+				if (user_exist)
+					Toast.makeText(myContext, "Registration Failed ... User Name Already Exist", 3000)
+							.show();
+				else
+					Toast.makeText(myContext, "Registration Failed ...", 3000)
+					.show();
 			}
 		}
 
