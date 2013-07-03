@@ -74,10 +74,9 @@ public class LikesAdapter extends BaseAdapter {
 	}
 
 	@Override
-	public Object getItem(int arg0) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	 public Object getItem(int position) {
+        return _list.get(position);
+    }
 
 	@Override
 	public long getItemId(int arg0) {

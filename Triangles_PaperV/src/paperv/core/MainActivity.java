@@ -11,6 +11,7 @@ import paperv.tabs_fragments.ProfileActivity;
 import paperv.tabs_utils.GlobalState;
 import paperv.tabs_utils.Utils;
 import android.app.ProgressDialog;
+import android.app.TabActivity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -169,6 +170,9 @@ public class MainActivity extends FragmentActivity implements
 		if (globalState.open_profile_tab)
 		{
 			this.onTabChanged("tab" + R.string.lbl_profile);
+			mTabHost.setOnTabChangedListener(this);
+			
+			mTabHost.setCurrentTab(4);
 			
 			globalState.open_profile_tab = false;
 		}

@@ -90,7 +90,7 @@ public class MenuFragment extends Fragment implements OnItemClickListener {
 		        	 final InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 		        	 imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
 		        		  
-		        	GetFriendsTask task = new GetFriendsTask(search_field.getText().toString());
+		        	GetFriendsTask task = new GetFriendsTask(search_field.getEditableText().toString());
 	    			task.execute();
 	    			
 	    			search_field.setText("");
@@ -108,7 +108,7 @@ public class MenuFragment extends Fragment implements OnItemClickListener {
 			public void onClick(View v) {
 				// Perform action on click
 				
-				if (! search_field.getText().toString().equals(""))
+				if (! search_field.getEditableText().toString().equals(""))
 				{
 					
 					GetFriendsTask task = new GetFriendsTask(search_field.getText().toString());
@@ -229,12 +229,16 @@ public class MenuFragment extends Fragment implements OnItemClickListener {
 		else if (position == 6)
 		{
 			SharedPreferences.Editor editor = globalState.prefs.edit();
-			editor.putString("user_name", "");
-			editor.putString("password", "");
+			editor.remove("user_name");
+			editor.remove("password");
 			editor.putBoolean("remember_me", false);
 			editor.commit();
 			
         	getActivity().finish();
+        	
+        	Intent i = new Intent(getActivity(), StartActivity.class);
+        	startActivity(i); 
+        	
 		}
 		
 		else if (adp != null && adp.getAdapter() instanceof MenuAdapter) {
@@ -244,11 +248,9 @@ public class MenuFragment extends Fragment implements OnItemClickListener {
 
 			if (newContent == null) {
 
-				newContent = Fragment.instantiate(getActivity(), itm
-						.get_class().getName(), itm.get_args());
+				newContent = Fragment.instantiate(getActivity(), itm.get_class().getName(), itm.get_args());
 				itm.set_fragment(newContent);
 			}
-
 			switchFragment(newContent);
 
 		}
@@ -320,7 +322,7 @@ public class MenuFragment extends Fragment implements OnItemClickListener {
 
 			try {
 				
-				result = dataConnector.getFriends(data);
+				result = dataConnector.getFriends(data.replaceAll(" ", "%20"));
 				//result =true;
 			} catch (Exception e) {
 

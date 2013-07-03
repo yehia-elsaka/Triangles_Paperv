@@ -48,7 +48,7 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 		OnClickListener {
 
 	EditText title;
-	EditText desc;
+//	EditText desc;
 	EditText category;
 	EditText caption;
 	EditText video_link;
@@ -131,8 +131,8 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 		title.requestFocus();
 		title.setOnTouchListener(foucsHandler);
 
-		desc = (EditText) theLayout.findViewById(R.id.editText2);
-		desc.setOnTouchListener(foucsHandler);
+		/*desc = (EditText) theLayout.findViewById(R.id.editText2);
+		desc.setOnTouchListener(foucsHandler);*/
 
 		category = (EditText) theLayout.findViewById(R.id.editText6);
 		category.setOnTouchListener(foucsHandler);
@@ -167,6 +167,9 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 			public void onClick(View v) {
 				// Perform action on click
 
+				next_image.setVisibility(View.VISIBLE);
+				previous_image.setVisibility(View.VISIBLE);
+				
 				image.setVisibility(View.VISIBLE);
 				video_link.setVisibility(View.GONE);
 				
@@ -187,6 +190,9 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 			public void onClick(View v) {
 				// Perform action on click
 
+				next_image.setVisibility(View.GONE);
+				previous_image.setVisibility(View.GONE);
+				
 				image.setVisibility(View.GONE);
 				image.startAnimation(mSlideOutBottom);
 				
@@ -226,10 +232,10 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 				{
 					Toast.makeText(getActivity(), "Can't Glide Story ... Missing title", 3000).show();
 				}
-				else if (desc.getText().toString().equals(""))
+				/*else if (desc.getText().toString().equals(""))
 				{ 
 					Toast.makeText(getActivity(), "Can't Glide Story ... Missing description", 3000).show();
-				}
+				}*/
 				else if (caption.getText().toString().equals(""))
 				{ 
 					Toast.makeText(getActivity(), "Can't Glide Story ... Missing caption", 3000).show();
@@ -315,7 +321,6 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 				FileOutputStream out = new FileOutputStream(imageFile);
 				bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
 				Log.d("bitmap", "File:"+ imageFile.getName()+ " Width:"+bitmap.getWidth() + " Height:"+bitmap.getHeight());
-
 				out.flush();
 				out.close();
 				
@@ -580,8 +585,7 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 			Uri image_uri = globalState.images.get(current_index);
 			bitmap = null;
 			try {
-				bitmap = MediaStore.Images.Media.getBitmap(getActivity()
-						.getContentResolver(), image_uri);
+				bitmap = decodeUri(image_uri);
 
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -603,8 +607,7 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 			Uri image_uri = globalState.images.get(current_index);
 			bitmap = null;
 			try {
-				bitmap = MediaStore.Images.Media.getBitmap(getActivity()
-						.getContentResolver(), image_uri);
+				bitmap = decodeUri(image_uri);
 
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -677,7 +680,7 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 			dialog.setIcon(R.drawable.ico_dialog);
 			dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 			dialog.setCancelable(false);
-			dialog.setMessage("Glide The Story ...");
+			dialog.setMessage("Gliding the story ...");
 			dialog.show();
 		}
 
@@ -687,22 +690,21 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 			try {
 				
 				
-				String storyTitle = title.getText().toString();
-				String storyDescription = desc.getText().toString();
-				String storyCaption = caption.getText().toString();
+				String storyTitle = title.getEditableText().toString().replaceAll(" ", "%20");
+//				String storyDescription = desc.getEditableText().toString().replaceAll(" ", "%20");
+				String storyCaption = caption.getEditableText().toString().replaceAll(" ", "%20");
 				
 				String category = storyCategory + "";
-				String video_url = video_link.getText().toString();
+				String video_url = video_link.getEditableText().toString().replaceAll(" ", "%20");
 				
-				
-				if ( !storyTitle.equals("") && !storyDescription.equals("") && !storyCaption.equals("") )
+				if ( storyTitle.length()>0 && storyCaption.length()>0 )
 				{
-					if ( !video_url.equals("") || imagesArray.size() > 0 )
+					if ( video_url.length()>0 || imagesArray.size() > 0 )
 					{
 						String video_url_base64 = Base64.encodeToString(video_url.getBytes(), Base64.DEFAULT);
 						video_url_base64 = video_url_base64.replaceAll("\n", "");
 						
-						result = dataConnector.glideNewStory(storyTitle, storyDescription, storyCaption, category, video_url_base64, imagesArray);
+						result = dataConnector.glideNewStory(storyTitle, "", storyCaption, category, video_url_base64, imagesArray);
 						Log.d("bitmap", "FILE: " +  imageFile +" Result: " + result );
 					}
 					
@@ -734,14 +736,15 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 			}
 			if (this.result) {
 				
-				Toast.makeText(getActivity(), "Glide Story Done ...", 3000).show();
+				Toast.makeText(getActivity(), "Gliding Done ...", 5000).show();
 				
 				 title.setText("");
-				 desc.setText("");
+//				 desc.setText("");
 				 caption.setText("");
 				 
+				 video_link.setText("");
+				 
 				 category.setText("Category");
-				
         		
 			} else {
 				Toast.makeText(getActivity(), "Can't Glide Story ... Missing Media", 3000).show();

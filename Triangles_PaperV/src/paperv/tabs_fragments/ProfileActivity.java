@@ -160,7 +160,7 @@ public class ProfileActivity extends Fragment implements
             public void onClick(View v) {
                 // Perform action on click
             	
-            	if (!comment.getText().toString().equals(""))
+            	if (!comment.getEditableText().toString().equals(""))
             	{
             		CommentStoryTask task = new CommentStoryTask();
         			task.execute();
@@ -416,6 +416,11 @@ public class ProfileActivity extends Fragment implements
 		// TODO Auto-generated method stub
 		super.onResume();
 
+		if (globalState.user.getImage() != null)
+		{
+			userImage.setImageBitmap(globalState.user.getImage());
+		}
+		
 		if (globalState.profile_image != null) {
 
 			Uri image_uri = globalState.profile_image;
@@ -765,7 +770,7 @@ public class ProfileActivity extends Fragment implements
 				dialog.setIcon(R.drawable.ico_dialog);
 				dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 				dialog.setCancelable(false);
-				dialog.setMessage("Loading Story View ...");
+				dialog.setMessage("Loading Story ...");
 				dialog.show();
 			}
 
@@ -904,7 +909,7 @@ public class ProfileActivity extends Fragment implements
 					
 				} else {
 					
-					Toast.makeText(getActivity(), "You already like this story !!", 3000).show();
+					Toast.makeText(getActivity(), "You already liked this story !!", 3000).show();
 					
 				}
 			}
@@ -926,7 +931,7 @@ public class ProfileActivity extends Fragment implements
 
 				try {
 					
-					result = dataConnector.commentStory(""+current_story_id, comment.getText().toString());
+					result = dataConnector.commentStory(""+current_story_id, comment.getEditableText().toString().replaceAll(" ", "%20"));
 					//result =true;
 				} catch (Exception e) {
 
@@ -957,7 +962,7 @@ public class ProfileActivity extends Fragment implements
 					TextView comment_text = (TextView) view.findViewById(R.id.Comment_text);
 					
 					comment_user.setText(globalState.user.getName());
-					comment_text.setText(comment.getText().toString());
+					comment_text.setText(comment.getEditableText().toString());
 					
 					comment_Image.setImageBitmap(globalState.user.getImage());
 					
@@ -987,7 +992,7 @@ public class ProfileActivity extends Fragment implements
 				dialog.setIcon(R.drawable.ico_dialog);
 				dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 				dialog.setCancelable(false);
-				dialog.setMessage("Loading Reglide ...");
+				dialog.setMessage("Regliding ...");
 				dialog.show();
 			}
 
@@ -1024,7 +1029,7 @@ public class ProfileActivity extends Fragment implements
 					
 				} else {
 					
-					Toast.makeText(getActivity(), "You already reglide this story !!", 3000).show();
+					Toast.makeText(getActivity(), "You already reglided this story !!", 3000).show();
 					
 				}
 			}
@@ -1058,8 +1063,8 @@ public class ProfileActivity extends Fragment implements
 
 				try {
 					
-					userName = user_name.getText().toString();
-					userMail = user_mail.getText().toString();
+					userName = user_name.getEditableText().toString().replaceAll(" ", "%20");
+					userMail = user_mail.getEditableText().toString().replaceAll(" ", "%20");
 					
 					result = dataConnector.updateProfileData(userName, userMail);
 					

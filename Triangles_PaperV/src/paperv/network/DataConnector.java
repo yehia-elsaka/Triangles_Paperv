@@ -150,8 +150,7 @@ public class DataConnector {
 				login_done = false;
 
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			login_done = false;
 		}
 
 		return login_done;
@@ -876,7 +875,7 @@ public class DataConnector {
 
 			String result = "";
 			HttpClient httpclient = new DefaultHttpClient();
-			HttpPost httppost = new HttpPost(API_URL + "add_story.php");
+			HttpPost httppost = new HttpPost(API_URL + "profile_picture.php");
 
 			if (photo != null) {
 				MultipartEntity mpEntity = new MultipartEntity();
@@ -979,13 +978,17 @@ public class DataConnector {
 					+ "&video_url=" + video_url + "&caption=" + caption);
 
 			
-			MultipartEntity mpEntity = new MultipartEntity();
-			// Prepare images Array
-	        for (File image : imagesArray) {
-	        	mpEntity.addPart("image[]", new FileBody(image, "image/*"));
-	        }
+			if (imagesArray.size() > 0)
+			{
+				MultipartEntity mpEntity = new MultipartEntity();
+				// Prepare images Array
+		        for (File image : imagesArray) {
+		        	mpEntity.addPart("image[]", new FileBody(image, "image/*"));
+		        }
+				
+		        httppost.setEntity(mpEntity);
+			}
 			
-	        httppost.setEntity(mpEntity);
 			
 			/*if (photo != null) {
 				MultipartEntity mpEntity = new MultipartEntity();

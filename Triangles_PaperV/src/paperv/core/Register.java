@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.LoginFilter.PasswordFilterGMail;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
@@ -14,6 +15,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import paperv.async.LoginTask;
 import paperv.core.R;
 import paperv.network.DataConnector;
 import paperv.tabs_utils.GlobalState;
@@ -55,10 +57,10 @@ public class Register extends Activity {
         create.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				fullname = fullname_field.getEditableText().toString();
-				username = username_field.getEditableText().toString();
-				email = email_field.getEditableText().toString();
-				password = password_field.getEditableText().toString();
+				fullname = fullname_field.getEditableText().toString().replaceAll(" ", "%20");
+				username = username_field.getEditableText().toString().replaceAll(" ", "%20");
+				email = email_field.getEditableText().toString().replaceAll(" ", "%20");
+				password = password_field.getEditableText().toString().replaceAll(" ", "%20");
 				
 				
 				try {
@@ -75,6 +77,20 @@ public class Register extends Activity {
 		});
 		
 		
+	}
+	
+	
+	@Override
+	public void onBackPressed() {
+		// TODO Auto-generated method stub
+		super.onBackPressed();
+		
+		finish();
+		
+		Intent i = new Intent(myContext, StartActivity.class);
+		startActivityForResult(i, 700);
+		overridePendingTransition(R.anim.slide_in_left,
+				R.anim.slide_out_right);
 	}
 	
 	
@@ -129,12 +145,19 @@ public class Register extends Activity {
 				
 			}
 			if (this.result) {
-				
-				finish();
-				Intent i = new Intent(myContext, StartActivity.class);
-            	startActivityForResult(i, 700); 
-        		overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+//				finish();
+//				Intent i = new Intent(myContext, StartActivity.class);
+//            	startActivityForResult(i, 700); 
+//        		overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
         		
+				LoginTask task = new LoginTask();
+				task.dialog = new ProgressDialog(myContext);
+				task.myContext = myContext;
+				task.remember_me = true;
+				task.user_name = username_field.getEditableText().toString().replaceAll(" ", "%20");
+				task.password = password_field.getEditableText().toString().replaceAll(" ", "%20");
+				task.execute();
+				
 			} else {
 				if (user_exist)
 					Toast.makeText(myContext, "Registration Failed ... User Name Already Exist", 3000)
