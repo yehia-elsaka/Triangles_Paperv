@@ -1,5 +1,7 @@
 package paperv.core;
 
+import com.bugsense.trace.BugSenseHandler;
+
 import paperv.async.LoginTask;
 import paperv.tabs_utils.GlobalState;
 import android.app.Activity;
@@ -20,6 +22,7 @@ public class StartActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		BugSenseHandler.initAndStartSession(myContext, "0da77729");
 		setContentView(R.layout.activity_start);
 		GlobalState.getInstance().prefs = getSharedPreferences(PREFS_NAME, 0);
 

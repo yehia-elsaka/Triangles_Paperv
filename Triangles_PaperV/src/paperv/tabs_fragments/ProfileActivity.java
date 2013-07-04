@@ -804,7 +804,7 @@ public class ProfileActivity extends Fragment implements
 	            	UnFollowTask task = new UnFollowTask(""+globalState.following_list.get(view.getId()).getFriend_id());
 	    			task.execute();
 	    			
-	    			globalState.following_list.remove(view.getId());
+//	    			globalState.following_list.remove(view.getId());
 //	    			following_list.removeViewInLayout(view);
 	            }
 	        });
@@ -1233,6 +1233,8 @@ public class ProfileActivity extends Fragment implements
 					globalState.story_view.setReglide_number(globalState.story_view.getReglide_number() + 1);
 					
 					reglideNumber.setText("" + globalState.story_view.getReglide_number() ) ;
+					
+					Toast.makeText(getActivity(), "Regliding Done ..", 3000).show();
 					
 				} else {
 					

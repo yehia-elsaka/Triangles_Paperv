@@ -20,7 +20,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.util.Base64;
 import android.util.Log;
@@ -50,7 +49,7 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 	EditText title;
 //	EditText desc;
 	EditText category;
-	EditText caption;
+//	EditText caption;
 	EditText video_link;
 
 	ImageView image;
@@ -138,8 +137,8 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 		category.setOnTouchListener(foucsHandler);
 		category.setEnabled(false);
 
-		caption = (EditText) theLayout.findViewById(R.id.editText7);
-		caption.setOnTouchListener(foucsHandler);
+//		caption = (EditText) theLayout.findViewById(R.id.editText7);
+//		caption.setOnTouchListener(foucsHandler);
 		
 		video_link = (EditText) theLayout.findViewById(R.id.video_url);
 		video_link.setOnTouchListener(foucsHandler);
@@ -236,10 +235,10 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 				{ 
 					Toast.makeText(getActivity(), "Can't Glide Story ... Missing description", 3000).show();
 				}*/
-				else if (caption.getText().toString().equals(""))
-				{ 
-					Toast.makeText(getActivity(), "Can't Glide Story ... Missing caption", 3000).show();
-				}
+//				else if (caption.getText().toString().equals(""))
+//				{ 
+//					Toast.makeText(getActivity(), "Can't Glide Story ... Missing caption", 3000).show();
+//				}
 				
 				else if (storyCategory == 0)
 				{ 
@@ -692,19 +691,19 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 				
 				String storyTitle = title.getEditableText().toString().replaceAll(" ", "%20");
 //				String storyDescription = desc.getEditableText().toString().replaceAll(" ", "%20");
-				String storyCaption = caption.getEditableText().toString().replaceAll(" ", "%20");
+//				String storyCaption = caption.getEditableText().toString().replaceAll(" ", "%20");
 				
 				String category = storyCategory + "";
 				String video_url = video_link.getEditableText().toString().replaceAll(" ", "%20");
 				
-				if ( storyTitle.length()>0 && storyCaption.length()>0 )
+				if ( storyTitle.length()>0 )
 				{
 					if ( video_url.length()>0 || imagesArray.size() > 0 )
 					{
 						String video_url_base64 = Base64.encodeToString(video_url.getBytes(), Base64.DEFAULT);
 						video_url_base64 = video_url_base64.replaceAll("\n", "");
 						
-						result = dataConnector.glideNewStory(storyTitle, "", storyCaption, category, video_url_base64, imagesArray);
+						result = dataConnector.glideNewStory(storyTitle, "", "", category, video_url_base64, imagesArray);
 						Log.d("bitmap", "FILE: " +  imageFile +" Result: " + result );
 					}
 					
@@ -740,7 +739,7 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 				
 				 title.setText("");
 //				 desc.setText("");
-				 caption.setText("");
+//				 caption.setText("");
 				 
 				 video_link.setText("");
 				 

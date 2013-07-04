@@ -1,5 +1,7 @@
 package paperv.core;
 
+import com.bugsense.trace.BugSenseHandler;
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -38,6 +40,7 @@ public class Register extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		BugSenseHandler.initAndStartSession(myContext, "0da77729");
 		setContentView(R.layout.signup);
 		
 		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);

@@ -1,5 +1,7 @@
 package paperv.core;
 
+import com.bugsense.trace.BugSenseHandler;
+
 import paperv.core.R;
 
 import android.app.Activity;
@@ -15,7 +17,7 @@ public class Splash extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+		BugSenseHandler.initAndStartSession(this, "0da77729");
         //Hides the titlebar
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 

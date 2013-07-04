@@ -262,7 +262,7 @@
 			
 			</FrameLayout>
 	        
-	        <EditText
+	        <!-- <EditText
                    android:id="@+id/editText7"
                    style="@style/EditText_Blue"
                    android:layout_width="match_parent"
@@ -274,7 +274,7 @@
                    android:ems="10"
                    android:hint="caption ..."
                    android:inputType="textPersonName" >
-               </EditText>
+               </EditText> -->
 
         
             

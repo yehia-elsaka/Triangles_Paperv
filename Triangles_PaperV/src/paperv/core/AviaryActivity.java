@@ -56,6 +56,8 @@ import com.aviary.android.feather.library.providers.FeatherContentProvider.Actio
 import com.aviary.android.feather.library.utils.DecodeUtils;
 import com.aviary.android.feather.library.utils.ImageLoader.ImageSizes;
 import com.aviary.android.feather.library.utils.SystemUtils;
+import com.bugsense.trace.BugSenseHandler;
+
 import paperv.core.R;
 import paperv.tabs_utils.GlobalState;
 
@@ -106,6 +108,7 @@ public class AviaryActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		Log.i(LOG_TAG, "onCreate");
 		super.onCreate(savedInstanceState);
+		BugSenseHandler.initAndStartSession(myContext, "0da77729");
 		setContentView(R.layout.aviary_main);
 
 		GlobalState.getInstance().glide_image = null;

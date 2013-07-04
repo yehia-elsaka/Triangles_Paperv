@@ -32,6 +32,7 @@ import android.widget.TabHost.TabContentFactory;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bugsense.trace.BugSenseHandler;
 import com.slidingmenu.lib.SlidingMenu;
 
 //
@@ -128,7 +129,7 @@ public class MainActivity extends FragmentActivity implements
 	 */
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+		BugSenseHandler.initAndStartSession(myContext, "0da77729");
 //		mContent = new HomeActivity();
 
 		// set the Above View

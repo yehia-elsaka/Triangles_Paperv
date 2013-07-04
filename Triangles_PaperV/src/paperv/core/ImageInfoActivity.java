@@ -2,6 +2,8 @@ package paperv.core;
 
 import java.util.List;
 
+import com.bugsense.trace.BugSenseHandler;
+
 import paperv.core.ImageInfo.Info;
 
 import android.app.ListActivity;
@@ -35,6 +37,7 @@ public class ImageInfoActivity extends ListActivity implements OnItemClickListen
 	@Override
 	protected void onCreate( Bundle savedInstanceState ) {
 		super.onCreate( savedInstanceState );
+		BugSenseHandler.initAndStartSession(this, "0da77729");
 		setContentView( R.layout.image_info_layout );
 		onHandleIntent( getIntent() );
 
