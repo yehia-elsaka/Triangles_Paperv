@@ -848,6 +848,8 @@ public class ExploreActivity extends Fragment implements
 				
 				reglideNumber.setText("" + globalState.story_view.getReglide_number() ) ;
 				
+				Toast.makeText(getActivity(), "Regliding Done ..", 3000).show();
+				
 			} else {
 				
 				Toast.makeText(getActivity(), "You already reglided this story !!", 3000).show();

@@ -769,6 +769,9 @@ public class LikesActivity extends Fragment implements OnItemClickListener,
 
 				reglideNumber.setText(""
 						+ globalState.story_view.getReglide_number());
+				
+				Toast.makeText(getActivity(),
+						"Regliding Done ...", 3000).show();
 
 			} else {
 
