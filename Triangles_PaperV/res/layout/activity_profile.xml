@@ -8,6 +8,8 @@
         android:id="@+id/Profile_header"
         layout="@layout/layout_profile_header" />
     
+    
+    
     <include
         android:id="@+id/edit_Profile"
         layout="@layout/layout_edit_profile" /> 
@@ -15,6 +17,17 @@
     <include
         android:id="@+id/master"
         layout="@layout/layout_master" />
+    
+    <include
+        android:id="@+id/followers_section"
+        layout="@layout/layout_followers" /> 
+        
+    <include
+        android:id="@+id/following_section"
+        layout="@layout/layout_following" /> 
+        
+    
+    
 
     <include
         android:id="@+id/detail"

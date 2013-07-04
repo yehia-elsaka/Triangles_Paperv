@@ -46,6 +46,7 @@
 			            android:orientation="horizontal" >
 			            	            
 			            <LinearLayout
+			                android:id="@+id/user_stories_btn"
 				            android:layout_width="fill_parent"
 				            android:layout_height="fill_parent"
 				            android:layout_weight="1"
@@ -83,6 +84,7 @@
 			            
 			            
 			            <LinearLayout
+			                android:id="@+id/followers_btn"
 				            android:layout_width="fill_parent"
 				            android:layout_height="fill_parent"
 				            android:layout_weight="1"
@@ -119,6 +121,7 @@
 			            </LinearLayout>
 			            
 			            <LinearLayout
+			                android:id="@+id/following_btn"
 				            android:layout_width="fill_parent"
 				            android:layout_height="fill_parent"
 				            android:layout_weight="1"

@@ -89,7 +89,6 @@ public class DataConnector {
 						cookieStore);
 				response = httpclient.execute(httpget, localContext);
 
-				
 				entity = response.getEntity();
 				if (entity != null) {
 					InputStream instream = entity.getContent();
@@ -124,15 +123,14 @@ public class DataConnector {
 				else
 					globalState.user.setImage(null);
 
-				
-				
-				
 				globalState.feed_list.clear();
 				globalState.explore_list.clear();
 				globalState.like_list.clear();
 				globalState.notification_list.clear();
 				globalState.userStories_list.clear();
-				
+				globalState.followers_list.clear();
+				globalState.following_list.clear();
+
 				// load all data
 				this.getExploreFeed();
 				this.getHomeFeed();
@@ -399,19 +397,19 @@ public class DataConnector {
 				for (int i = 0; i < data.length(); i++) {
 					story_data = data.getJSONObject(i);
 
-					 LikeStory story = new LikeStory();
-					 
-					 story.setLike_id(story_data.getInt("like_id"));
-					 story.setStory_id(story_data.getInt("ITEMID"));
-					 story.setStory_title(story_data.getString("ITEMTITLE"));
-					 
-					 // to be repaired when get updates
-					 story.setStory_image(story_data.getString("photourl"));
-					 
-					 story.setDate(story_data.getString("like_date"));
-					
-					 globalState.like_list.add(story);
-					
+					LikeStory story = new LikeStory();
+
+					story.setLike_id(story_data.getInt("like_id"));
+					story.setStory_id(story_data.getInt("ITEMID"));
+					story.setStory_title(story_data.getString("ITEMTITLE"));
+
+					// to be repaired when get updates
+					story.setStory_image(story_data.getString("photourl"));
+
+					story.setDate(story_data.getString("like_date"));
+
+					globalState.like_list.add(story);
+
 				}
 
 				done = true;
@@ -428,7 +426,6 @@ public class DataConnector {
 		return done;
 	}
 
-	
 	public boolean getAllNotification() {
 
 		// Create local HTTP context
@@ -462,16 +459,19 @@ public class DataConnector {
 				for (int i = 0; i < data.length(); i++) {
 					notification_data = data.getJSONObject(i);
 
-					 NotificationItem notification = new NotificationItem();
-					 
-					 notification.setId(notification_data.getInt("notification_id"));
-					 notification.setUser_image(notification_data.getString("user_image"));
-					 notification.setUser_name(notification_data.getString("user_name"));
-					 notification.setMsg(notification_data.getString("message"));
-					 notification.setDate(notification_data.getString("notificationdate"));
-					
-					 
-					 globalState.notification_list.add(notification);
+					NotificationItem notification = new NotificationItem();
+
+					notification.setId(notification_data
+							.getInt("notification_id"));
+					notification.setUser_image(notification_data
+							.getString("user_image"));
+					notification.setUser_name(notification_data
+							.getString("user_name"));
+					notification.setMsg(notification_data.getString("message"));
+					notification.setDate(notification_data
+							.getString("notificationdate"));
+
+					globalState.notification_list.add(notification);
 				}
 
 				done = true;
@@ -488,9 +488,6 @@ public class DataConnector {
 		return done;
 	}
 
-	
-	
-	
 	public boolean getFriends(String searchData) {
 
 		// Create local HTTP context
@@ -503,7 +500,8 @@ public class DataConnector {
 		try {
 			String result = "";
 			HttpClient httpclient = new DefaultHttpClient();
-			HttpGet httpget = new HttpGet(API_URL + "search_list.php?query=" + searchData);
+			HttpGet httpget = new HttpGet(API_URL + "search_list.php?query="
+					+ searchData);
 
 			HttpResponse response = httpclient.execute(httpget, localContext);
 			HttpEntity entity = response.getEntity();
@@ -519,33 +517,34 @@ public class DataConnector {
 			if (status.equals("true")) {
 
 				globalState.friends_list.clear();
-				
+
 				JSONObject friend_data = null;
 
 				JSONArray data = object.getJSONArray("data");
 				for (int i = 0; i < data.length(); i++) {
 					friend_data = data.getJSONObject(i);
-					
-					 String type = friend_data.getString("item_name");
-					 
-					 if (type.equals("Members"))
-					 {
-						 Friend friend = new Friend();
-						 
-	 					 friend.setFriend_id(friend_data.getInt("item_id"));
-						 friend.setFriend_name(friend_data.getString("user_name"));
-						 friend.setFull_name(friend_data.getString("full_name"));
-						 
-						 String url = friend_data.getString("user_image");
-						 
-						 if ( !url.equals("null"))
-							 friend.setFriend_image(friend_data.getString("user_image"));
-						 else
-							 friend.setFriend_image("");
-						 
-						 globalState.friends_list.add(friend);
-					 }
-					
+
+					String type = friend_data.getString("item_name");
+
+					if (type.equals("Members")) {
+						Friend friend = new Friend();
+
+						friend.setFriend_id(friend_data.getInt("item_id"));
+						friend.setFriend_name(friend_data
+								.getString("user_name"));
+						friend.setFull_name(friend_data.getString("full_name"));
+
+						String url = friend_data.getString("user_image");
+
+						if (!url.equals("null"))
+							friend.setFriend_image(friend_data
+									.getString("user_image"));
+						else
+							friend.setFriend_image("");
+
+						globalState.friends_list.add(friend);
+					}
+
 				}
 
 				done = true;
@@ -561,8 +560,7 @@ public class DataConnector {
 
 		return done;
 	}
-	
-	
+
 	public boolean getUserStories() {
 
 		// Create local HTTP context
@@ -802,7 +800,7 @@ public class DataConnector {
 			if (status.equals("true")) {
 
 				likeDone = true;
-				
+
 			}
 
 			else
@@ -816,8 +814,6 @@ public class DataConnector {
 		return likeDone;
 	}
 
-	
-	
 	public boolean updateProfileData(String fullName, String email) {
 
 		boolean done = false;
@@ -831,8 +827,9 @@ public class DataConnector {
 
 			String result = "";
 			HttpClient httpclient = new DefaultHttpClient();
-			HttpGet httpget = new HttpGet(API_URL + "update_setting.php?full_name="
-					+ fullName + "&email=" + email);
+			HttpGet httpget = new HttpGet(API_URL
+					+ "update_setting.php?full_name=" + fullName + "&email="
+					+ email);
 
 			HttpResponse response = httpclient.execute(httpget, localContext);
 			HttpEntity entity = response.getEntity();
@@ -860,8 +857,7 @@ public class DataConnector {
 
 		return done;
 	}
-	
-	
+
 	public boolean updateProfilePhoto(File photo) {
 
 		boolean done = false;
@@ -912,8 +908,6 @@ public class DataConnector {
 		return done;
 	}
 
-	
-	
 	public boolean reglideStory(String story_id, String user_id) {
 
 		boolean reglideDone = false;
@@ -960,7 +954,7 @@ public class DataConnector {
 	}
 
 	public boolean glideNewStory(String title, String desc, String caption,
-			String category_id, String video_url, ArrayList<File>imagesArray) {
+			String category_id, String video_url, ArrayList<File> imagesArray) {
 
 		boolean glideDone = false;
 
@@ -977,26 +971,23 @@ public class DataConnector {
 					+ title + "&text=" + desc + "&categories=" + category_id
 					+ "&video_url=" + video_url + "&caption=" + caption);
 
-			
-			if (imagesArray.size() > 0)
-			{
+			if (imagesArray.size() > 0) {
 				MultipartEntity mpEntity = new MultipartEntity();
 				// Prepare images Array
-		        for (File image : imagesArray) {
-		        	mpEntity.addPart("image[]", new FileBody(image, "image/*"));
-		        }
-				
-		        httppost.setEntity(mpEntity);
-			}
-			
-			
-			/*if (photo != null) {
-				MultipartEntity mpEntity = new MultipartEntity();
-				ContentBody cbFile = new FileBody(photo, "image/*");
-				mpEntity.addPart("image", cbFile);
+				for (File image : imagesArray) {
+					mpEntity.addPart("image[]", new FileBody(image, "image/*"));
+				}
 
 				httppost.setEntity(mpEntity);
-			}*/
+			}
+
+			/*
+			 * if (photo != null) { MultipartEntity mpEntity = new
+			 * MultipartEntity(); ContentBody cbFile = new FileBody(photo,
+			 * "image/*"); mpEntity.addPart("image", cbFile);
+			 * 
+			 * httppost.setEntity(mpEntity); }
+			 */
 
 			HttpResponse response = httpclient.execute(httppost, localContext);
 			HttpEntity entity = response.getEntity();
@@ -1068,9 +1059,6 @@ public class DataConnector {
 		return commentDone;
 	}
 
-	
-	
-	
 	public boolean getFollowers(String user_id) {
 
 		// Create local HTTP context
@@ -1083,7 +1071,8 @@ public class DataConnector {
 		try {
 			String result = "";
 			HttpClient httpclient = new DefaultHttpClient();
-			HttpGet httpget = new HttpGet(API_URL + "followers.php?user_id=" + user_id);
+			HttpGet httpget = new HttpGet(API_URL + "followers.php?user_id="
+					+ user_id);
 
 			HttpResponse response = httpclient.execute(httpget, localContext);
 			HttpEntity entity = response.getEntity();
@@ -1098,10 +1087,31 @@ public class DataConnector {
 			String status = object.optString("status");
 			if (status.equals("true")) {
 
-				JSONArray data = object.getJSONArray("data");
-				
-				globalState.user_followers = data.length();
+				globalState.followers_list.clear();
 
+				JSONObject friend_data = null;
+
+				JSONArray data = object.getJSONArray("data");
+				for (int i = 0; i < data.length(); i++) {
+					friend_data = data.getJSONObject(i);
+
+					Friend friend = new Friend();
+
+					friend.setFriend_id(friend_data.getInt("user_id"));
+					friend.setFriend_name(friend_data.getString("user_name"));
+					friend.setFull_name(friend_data.getString("full_name"));
+
+					String url = friend_data.getString("user_image");
+
+					if (!url.equals("null"))
+						friend.setFriend_image(friend_data
+								.getString("user_image"));
+					else
+						friend.setFriend_image("");
+
+					globalState.followers_list.add(friend);
+					
+				}
 				follow_done = true;
 			}
 
@@ -1115,10 +1125,7 @@ public class DataConnector {
 
 		return follow_done;
 	}
-	
-	
-	
-	
+
 	public boolean getFollowing(String user_id) {
 
 		// Create local HTTP context
@@ -1131,7 +1138,8 @@ public class DataConnector {
 		try {
 			String result = "";
 			HttpClient httpclient = new DefaultHttpClient();
-			HttpGet httpget = new HttpGet(API_URL + "following.php?user_id=" + user_id);
+			HttpGet httpget = new HttpGet(API_URL + "following.php?user_id="
+					+ user_id);
 
 			HttpResponse response = httpclient.execute(httpget, localContext);
 			HttpEntity entity = response.getEntity();
@@ -1146,10 +1154,31 @@ public class DataConnector {
 			String status = object.optString("status");
 			if (status.equals("true")) {
 
-				JSONArray data = object.getJSONArray("data");
-				
-				globalState.user_following = data.length();
+				globalState.following_list.clear();
 
+				JSONObject friend_data = null;
+
+				JSONArray data = object.getJSONArray("data");
+				for (int i = 0; i < data.length(); i++) {
+					friend_data = data.getJSONObject(i);
+
+					Friend friend = new Friend();
+
+					friend.setFriend_id(friend_data.getInt("user_id"));
+					friend.setFriend_name(friend_data.getString("user_name"));
+					friend.setFull_name(friend_data.getString("full_name"));
+
+					String url = friend_data.getString("user_image");
+
+					if (!url.equals("null"))
+						friend.setFriend_image(friend_data
+								.getString("user_image"));
+					else
+						friend.setFriend_image("");
+
+					globalState.following_list.add(friend);
+					
+				}
 				follow_done = true;
 			}
 
@@ -1163,9 +1192,7 @@ public class DataConnector {
 
 		return follow_done;
 	}
-	
-	
-	
+
 	public boolean follow(String user_id) {
 
 		// Create local HTTP context
@@ -1178,7 +1205,8 @@ public class DataConnector {
 		try {
 			String result = "";
 			HttpClient httpclient = new DefaultHttpClient();
-			HttpGet httpget = new HttpGet(API_URL + "follow.php?user_id=" + user_id);
+			HttpGet httpget = new HttpGet(API_URL + "follow.php?user_id="
+					+ user_id);
 
 			HttpResponse response = httpclient.execute(httpget, localContext);
 			HttpEntity entity = response.getEntity();
@@ -1214,6 +1242,55 @@ public class DataConnector {
 	
 	
 	
+	public boolean unfollow(String user_id) {
+
+		// Create local HTTP context
+		HttpContext localContext = new BasicHttpContext();
+		// Bind custom cookie store to the local context
+		localContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
+
+		boolean unfollow_done = false;
+
+		try {
+			String result = "";
+			HttpClient httpclient = new DefaultHttpClient();
+			HttpGet httpget = new HttpGet(API_URL + "unfollow.php?user_id="
+					+ user_id);
+
+			HttpResponse response = httpclient.execute(httpget, localContext);
+			HttpEntity entity = response.getEntity();
+			if (entity != null) {
+				InputStream instream = entity.getContent();
+				result = convertStreamToString(instream);
+				instream.close();
+			}
+
+			JSONArray array = new JSONArray(result);
+			JSONObject object = array.getJSONObject(0);
+			String status = object.optString("status");
+			if (status.equals("true")) {
+
+				String data = object.optString("data");
+				if (data.equals("You already followed this user"))
+					unfollow_done = false;
+
+				else
+					unfollow_done = true;
+			}
+
+			else
+				unfollow_done = false;
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return unfollow_done;
+	}
+	
+	
+
 	public String convertStreamToString(InputStream is) {
 
 		BufferedReader reader = new BufferedReader(new InputStreamReader(is));

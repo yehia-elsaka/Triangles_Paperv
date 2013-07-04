@@ -116,6 +116,15 @@ public class ProfileActivity extends Fragment implements
 	
 	Bitmap bitmap = null;
 	
+	
+	View userFollowers;
+	View userFollowing;
+	
+	LinearLayout followers_list;
+	LinearLayout following_list;
+	
+	ImageLoader imageLoader;
+	
 
 	/*
 	 * (non-Javadoc)
@@ -132,6 +141,8 @@ public class ProfileActivity extends Fragment implements
 		
 		userImageLoader=new ImageLoader(getActivity().getApplicationContext());
 		storyImageLoader=new ImageLoader(getActivity().getApplicationContext());
+		
+		imageLoader=new ImageLoader(getActivity().getApplicationContext());
 		
 		currentStories = new ArrayList<Story>();
 		
@@ -170,6 +181,12 @@ public class ProfileActivity extends Fragment implements
         });
 
 		this.vw_master = (View) theLayout.findViewById(R.id.master);
+		
+		this.userFollowers = (View) theLayout.findViewById(R.id.followers_section);
+		followers_list = (LinearLayout) this.userFollowers.findViewById(R.id.followers_list);
+		
+		this.userFollowing = (View) theLayout.findViewById(R.id.following_section);
+		following_list = (LinearLayout) this.userFollowing.findViewById(R.id.following_list);
 		
 		// get list view
 		listView = (ListView) this.vw_master.findViewById(R.id.lst_stories);
@@ -269,8 +286,42 @@ public class ProfileActivity extends Fragment implements
 		TextView numberOfFollowing = (TextView) vw_header.findViewById(R.id.number_of_following);
 		
 		
-		numberOfFollowers.setText(""+globalState.user_followers);
-		numberOfFollowing.setText(""+globalState.user_following);
+		LinearLayout showUserStories = (LinearLayout) vw_header.findViewById(R.id.user_stories_btn);
+		showUserStories.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Perform action on click
+            	showMasterView("userStories");
+            	
+            }
+        });
+		
+		
+		LinearLayout showUserFollowers = (LinearLayout) vw_header.findViewById(R.id.followers_btn);
+		showUserFollowers.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Perform action on click
+            	
+            	
+            	showFollowersSection();
+            	
+            	showMasterView("followers");
+            }
+        });
+		
+		LinearLayout showUserFollowing = (LinearLayout) vw_header.findViewById(R.id.following_btn);
+		showUserFollowing.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Perform action on click
+            	
+            	showFollowingSection();
+            	
+            	showMasterView("following");
+            	
+            }
+        });
+		
+		numberOfFollowers.setText(""+globalState.followers_list.size());
+		numberOfFollowing.setText(""+globalState.following_list.size());
 		
 		if (globalState.user.getImage() != null)
 		{
@@ -357,12 +408,13 @@ public class ProfileActivity extends Fragment implements
 		this.vw_master.setVisibility(View.VISIBLE);
 		this.vw_edit.setVisibility(View.GONE);
 		this.vw_detail.setVisibility(View.GONE);
+		this.userFollowers.setVisibility(View.GONE);
+		this.userFollowing.setVisibility(View.GONE);
 		
 		this.tabs_bar.setVisibility(View.VISIBLE);
 		this.comments_bar.setVisibility(View.GONE);
 
 		
-		// ### to be repaired
 		lstStories = globalState.userStories_list;
 //		getCurrentStories();
 		
@@ -544,6 +596,9 @@ public class ProfileActivity extends Fragment implements
 
 			if (isBack) {
 				
+				this.userFollowers.setVisibility(View.GONE);
+				this.userFollowing.setVisibility(View.GONE);
+				
 				this.comments_bar.startAnimation(mSlideOutTop);
 				this.comments_bar.setVisibility(View.GONE);
 				
@@ -559,6 +614,10 @@ public class ProfileActivity extends Fragment implements
 				this.vw_header.startAnimation(mSlideInTop);
 				
 			} else {
+				
+				this.userFollowers.setVisibility(View.GONE);
+				this.userFollowing.setVisibility(View.GONE);
+				
 				this.vw_master.setVisibility(View.GONE);
 				this.vw_header.setVisibility(View.GONE);
 				
@@ -586,6 +645,10 @@ public class ProfileActivity extends Fragment implements
 		try {
 
 			if (!isEdit) {
+				
+				this.userFollowers.setVisibility(View.GONE);
+				this.userFollowing.setVisibility(View.GONE);
+				
 				this.vw_master.setVisibility(View.VISIBLE);
 				this.vw_header.setVisibility(View.VISIBLE);
 				this.vw_edit.setVisibility(View.GONE);
@@ -594,6 +657,10 @@ public class ProfileActivity extends Fragment implements
 				this.vw_master.startAnimation(mSlideInLeft);
 				this.vw_header.startAnimation(mSlideInTop);
 			} else {
+				
+				this.userFollowers.setVisibility(View.GONE);
+				this.userFollowing.setVisibility(View.GONE);
+				
 				this.vw_master.setVisibility(View.GONE);
 				this.vw_header.setVisibility(View.GONE);
 				this.vw_edit.setVisibility(View.VISIBLE);
@@ -609,6 +676,146 @@ public class ProfileActivity extends Fragment implements
 
 		}
 	}
+	
+	
+	
+	private void showMasterView(String view) {
+		
+		if (view.equals("userStories"))
+		{
+			this.vw_header.setVisibility(View.VISIBLE);
+			this.vw_master.setVisibility(View.VISIBLE);
+			this.vw_edit.setVisibility(View.GONE);
+			this.vw_detail.setVisibility(View.GONE);
+			this.userFollowers.setVisibility(View.GONE);
+			this.userFollowing.setVisibility(View.GONE);
+			
+			this.tabs_bar.setVisibility(View.VISIBLE);
+			this.comments_bar.setVisibility(View.GONE);
+			
+		}
+		else if (view.equals("followers"))
+		{
+			this.vw_header.setVisibility(View.VISIBLE);
+			this.vw_master.setVisibility(View.GONE);
+			this.vw_edit.setVisibility(View.GONE);
+			this.vw_detail.setVisibility(View.GONE);
+			this.userFollowers.setVisibility(View.VISIBLE);
+			this.userFollowing.setVisibility(View.GONE);
+			
+			this.tabs_bar.setVisibility(View.VISIBLE);
+			this.comments_bar.setVisibility(View.GONE);
+			
+		}
+		else if (view.endsWith("following"))
+		{
+			this.vw_header.setVisibility(View.VISIBLE);
+			this.vw_master.setVisibility(View.GONE);
+			this.vw_edit.setVisibility(View.GONE);
+			this.vw_detail.setVisibility(View.GONE);
+			this.userFollowers.setVisibility(View.GONE);
+			this.userFollowing.setVisibility(View.VISIBLE);
+			
+			this.tabs_bar.setVisibility(View.VISIBLE);
+			this.comments_bar.setVisibility(View.GONE);
+		}
+		
+	}
+	
+	
+	private void showFollowersSection()
+	{
+		if (followers_list.getChildCount() > 0)
+			followers_list.removeAllViews();
+		
+		for(int i = 0; i < globalState.followers_list.size(); i++)
+		{
+			LayoutInflater _inflater = null;
+			_inflater = getActivity().getLayoutInflater();
+			final View view = _inflater.inflate(R.layout.row_friend, null);
+			
+			ImageView friendImage = (ImageView) view.findViewById(R.id.friend_image);
+			TextView friendName = (TextView) view.findViewById(R.id.friend_name);
+			TextView friendFullName = (TextView) view.findViewById(R.id.friend_full_name);
+			
+			friendName.setText(globalState.followers_list.get(i).getFriend_name());
+			friendFullName.setText(globalState.followers_list.get(i).getFull_name());
+			
+			
+			String userImage_url = globalState.followers_list.get(i).getFriend_image();
+			
+			if(!userImage_url.equals(""))
+				imageLoader.DisplayImage(userImage_url, getActivity(), friendImage);
+			
+			view.setId(i);
+			
+			Button follow_user = (Button) view.findViewById(R.id.follow_user);
+			follow_user.setOnClickListener(new View.OnClickListener() {
+	            public void onClick(View v) {
+	                // Perform action on click
+	            	
+	            	
+	            	FollowTask task = new FollowTask(""+globalState.followers_list.get(view.getId()).getFriend_id());
+	    			task.execute();
+	    			
+	            }
+	        });
+			
+			followers_list.addView(view);
+		}
+		
+		this.userFollowers.setAnimation(mFade);
+	}
+	
+	
+	
+	private void showFollowingSection()
+	{
+		if (following_list.getChildCount() > 0)
+			following_list.removeAllViews();
+		
+		for(int i = 0; i < globalState.following_list.size(); i++)
+		{
+			LayoutInflater _inflater = null;
+			_inflater = getActivity().getLayoutInflater();
+			final View view = _inflater.inflate(R.layout.row_unfriend, null);
+			
+			ImageView friendImage = (ImageView) view.findViewById(R.id.unfriend_image);
+			TextView friendName = (TextView) view.findViewById(R.id.unfriend_name);
+			TextView friendFullName = (TextView) view.findViewById(R.id.unfriend_full_name);
+			
+			friendName.setText(globalState.following_list.get(i).getFriend_name());
+			friendFullName.setText(globalState.following_list.get(i).getFull_name());
+			
+			
+			String userImage_url = globalState.following_list.get(i).getFriend_image();
+			
+			if(!userImage_url.equals(""))
+				imageLoader.DisplayImage(userImage_url, getActivity(), friendImage);
+			
+			view.setId(i);
+			
+			Button follow_user = (Button) view.findViewById(R.id.unfollow_user);
+			follow_user.setOnClickListener(new View.OnClickListener() {
+	            public void onClick(View v) {
+	                // Perform action on click
+	            	
+	            	
+	            	UnFollowTask task = new UnFollowTask(""+globalState.following_list.get(view.getId()).getFriend_id());
+	    			task.execute();
+	    			
+	    			globalState.following_list.remove(view.getId());
+//	    			following_list.removeViewInLayout(view);
+	            }
+	        });
+			
+			following_list.addView(view);
+		}
+		
+		this.following_list.setAnimation(mFade);
+	}
+	
+	
 
 	public void onBackPressed() {
 		if (!this._isBack) {
@@ -1128,6 +1335,13 @@ public class ProfileActivity extends Fragment implements
 
 			boolean result;
 			ProgressDialog dialog = null;
+			
+			String friend_id;
+			
+			public FollowTask(String id)
+			{
+				this.friend_id = id;
+			}
 
 			@Override
 			protected void onPreExecute() {
@@ -1138,7 +1352,7 @@ public class ProfileActivity extends Fragment implements
 
 				try {
 					
-					result = dataConnector.follow(globalState.story_view.getOwner_id());
+					result = dataConnector.follow(friend_id);
 					//result =true;
 				} catch (Exception e) {
 
@@ -1160,6 +1374,57 @@ public class ProfileActivity extends Fragment implements
 				} else {
 					
 					Toast.makeText(getActivity(), "You already followed this user !!", 3000).show();
+					
+				}
+			}
+
+		}
+		
+		
+		
+		private class UnFollowTask extends AsyncTask<Void, Void, Void> {
+
+			boolean result;
+			ProgressDialog dialog = null;
+			
+			String friend_id;
+			
+			public UnFollowTask(String id)
+			{
+				this.friend_id = id;
+			}
+
+			@Override
+			protected void onPreExecute() {
+			}
+
+			@Override
+			protected Void doInBackground(Void... params) {
+
+				try {
+					
+					result = dataConnector.unfollow(friend_id);
+					//result =true;
+				} catch (Exception e) {
+
+					e.printStackTrace();
+				}
+
+				return null;
+
+			}
+
+			@Override
+			protected void onPostExecute(Void result) {
+
+				if (this.result) {
+					
+					Toast.makeText(getActivity(), "unFollow Done Successfully ... ", 3000).show();
+					
+					
+				} else {
+					
+					Toast.makeText(getActivity(), "You already unfollowed this user !!", 3000).show();
 					
 				}
 			}

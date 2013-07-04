@@ -61,9 +61,9 @@ public class GlobalState {
 	public Story story_view = new Story();
 	
 	
-	public int user_followers = 0;
-	public int user_following = 0;
+	public ArrayList<Friend> followers_list = new ArrayList<Friend>();
 	
+	public ArrayList<Friend> following_list = new ArrayList<Friend>();
 	
 	
 	
