@@ -41,6 +41,9 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.Toast;
 
 public class GlideActivity extends Fragment implements OnItemClickListener,
@@ -68,6 +71,7 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 	DataConnector dataConnector = DataConnector.getInstance();
 	
 	LinearLayout next_image, previous_image;
+	ImageButton add_photo_btn;
 	
 	public ImageLoader imageLoader;
 	File imageFile = null;
@@ -142,7 +146,7 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 		
 		video_link = (EditText) theLayout.findViewById(R.id.video_url);
 		video_link.setOnTouchListener(foucsHandler);
-		video_link.setVisibility(View.GONE);
+		
 
 		final ImageButton add_category = (ImageButton) theLayout
 				.findViewById(R.id.add_category);
@@ -157,50 +161,21 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 			}
 		});
 
-		// Register for the Button.OnClick event
-		// Button b = (Button) theLayout.findViewById(R.id.frag1_button);
-		// b.setOnClickListener(new View.OnClickListener() {
 
-		final Button add_photo = (Button) theLayout.findViewById(R.id.add_story_photo);
-		add_photo.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
-				// Perform action on click
-
-				next_image.setVisibility(View.VISIBLE);
-				previous_image.setVisibility(View.VISIBLE);
-				
-				image.setVisibility(View.VISIBLE);
-				video_link.setVisibility(View.GONE);
-				
-				globalState.is_glide = true;
+		add_photo_btn = (ImageButton) theLayout.findViewById(R.id.add_media);
+		add_photo_btn.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Perform action on click
+            	
+            	globalState.is_glide = true;
 				globalState.is_profile = false;
 				
 				globalState.glide_image = null;
 				
 				Intent i = new Intent(getActivity(), AviaryActivity.class);
 				startActivity(i);
-
-			}
-		});
-		
-		
-		final Button add_video = (Button) theLayout.findViewById(R.id.add_video);
-		add_video.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
-				// Perform action on click
-
-				next_image.setVisibility(View.GONE);
-				previous_image.setVisibility(View.GONE);
-				
-				image.setVisibility(View.GONE);
-				image.startAnimation(mSlideOutBottom);
-				
-				video_link.setVisibility(View.VISIBLE);
-				video_link.startAnimation(mSlideInTop);
-			}
-		});
-		
-
+            }
+        });
 		
 		
 		next_image = (LinearLayout) theLayout.findViewById(R.id.next_image);
@@ -255,11 +230,64 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 		});
 
 		
+		RadioGroup radioGroup = (RadioGroup) theLayout.findViewById(R.id.radio_group);        
+	    radioGroup.setOnCheckedChangeListener(new OnCheckedChangeListener() 
+	    {
+	        public void onCheckedChanged(RadioGroup group, int checkedId) {
+	            // checkedId is the RadioButton selected
+	        	
+	        	switch(checkedId) {
+	        	
+		        case R.id.radio_add_photo:
+		        	
+	            	next_image.setVisibility(View.VISIBLE);
+					previous_image.setVisibility(View.VISIBLE);
+					image.setVisibility(View.VISIBLE);
+					add_photo_btn.setVisibility(View.VISIBLE);
+					
+					image.startAnimation(mSlideInTop);
+					add_photo_btn.startAnimation(mFade);
+					next_image.startAnimation(mSlideInTop);
+					previous_image.startAnimation(mSlideInTop);
+					
+					video_link.setVisibility(View.GONE);
+					
+		            break;
+		            
+		        case R.id.radio_add_vedio:
+		        	
+	            	next_image.setVisibility(View.GONE);
+					previous_image.setVisibility(View.GONE);
+					image.setVisibility(View.GONE);
+					add_photo_btn.setVisibility(View.GONE);
+					
+					video_link.setVisibility(View.VISIBLE);
+					video_link.startAnimation(mSlideInTop);
+						
+		            break;
+		    }
+	        	
+	        }
+	    });
+		
+		
+		video_link.setVisibility(View.VISIBLE);
+		
+		next_image.setVisibility(View.GONE);
+		previous_image.setVisibility(View.GONE);
+		
+		image.setVisibility(View.GONE);
+		
+		add_photo_btn.setVisibility(View.GONE);
+		
+		
 
 		this.initAnimation();
 		return theLayout;
 	}
 
+	
+	
 	@Override
 	public void onClick(View arg0) {
 		// TODO Auto-generated method stub

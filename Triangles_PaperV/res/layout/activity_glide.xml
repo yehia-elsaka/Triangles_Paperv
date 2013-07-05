@@ -5,8 +5,6 @@
     android:background="@color/white"
     android:orientation="vertical" >
 
-    
-    
     <ScrollView
         android:layout_width="fill_parent"
         android:layout_height="0dip"
@@ -18,51 +16,47 @@
             android:gravity="center_horizontal"
             android:orientation="vertical" >
 
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/dim_10"
+                android:layout_marginLeft="@dimen/dim_10"
+                android:layout_marginRight="@dimen/dim_10"
+                android:layout_marginTop="@dimen/dim_10"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="horizontal" >
+
+                <ImageView
+                    android:id="@+id/user_image"
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="@dimen/dim_10"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/avatar_2" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/dim_5"
+                    android:tag="bold"
+                    android:text="Glide Your Story .."
+                    android:textColor="@color/dark_blue"
+                    android:textSize="@dimen/tex_size_xxlarge"
+                    android:textStyle="bold" />
+            </LinearLayout>
 
             <LinearLayout
-	            android:layout_width="fill_parent"
-	            android:layout_height="wrap_content"
-	            android:layout_marginTop="@dimen/dim_10"
-	            android:layout_marginBottom="@dimen/dim_10"
-	            android:layout_marginLeft="@dimen/dim_10"
-	            android:layout_marginRight="@dimen/dim_10"
-	            android:layout_weight="1"
-	            android:gravity="center"
-	            android:orientation="horizontal" >
-
-            
-	            <ImageView
-	                android:id="@+id/user_image"
-	                android:layout_width="80dp"
-		            android:layout_height="wrap_content"
-		            android:layout_marginRight="@dimen/dim_10"
-		            android:adjustViewBounds="true"
-		            android:scaleType="fitCenter"
-	                android:src="@drawable/avatar_2" />
-		            	            
-	            <TextView
-	                android:layout_width="wrap_content"
-	                android:layout_height="wrap_content"
-	                android:layout_margin="@dimen/dim_5"
-	                android:tag="bold"
-	                android:text="Glide Your Story .."
-	                android:textColor="@color/dark_blue"
-	                android:textSize="@dimen/tex_size_xxlarge"
-	                android:textStyle="bold" />
-
-			</LinearLayout>
-
-         
-            <LinearLayout
-	            android:layout_width="fill_parent"
-	            android:layout_height="wrap_content"
-	            android:layout_marginTop="@dimen/dim_10"
-	            android:layout_marginBottom="@dimen/dim_10"
-	            android:layout_marginLeft="@dimen/dim_20"
-	            android:layout_marginRight="@dimen/dim_20"
-	            android:layout_weight="1"
-	            android:gravity="center"
-	            android:orientation="vertical" >
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/dim_10"
+                android:layout_marginLeft="@dimen/dim_20"
+                android:layout_marginRight="@dimen/dim_20"
+                android:layout_marginTop="@dimen/dim_10"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical" >
 
                 <EditText
                     android:id="@+id/editText1"
@@ -72,12 +66,12 @@
                     android:ems="10"
                     android:hint="Title"
                     android:inputType="textPersonName" >
+
                     <requestFocus />
                 </EditText>
-                
-                
-                
-               <!--  <EditText
+
+                <!--
+                <EditText
                     android:id="@+id/editText2"
                     style="@style/EditText_Blue"
                     android:layout_width="match_parent"
@@ -87,182 +81,213 @@
                     android:layout_marginTop="3dp"
                     android:hint="What's yout story ?"
                     android:inputType="textMultiLine" >
-                </EditText> -->
-                
-                
+                </EditText>
+                -->
+
                 <LinearLayout
-	            android:layout_width="fill_parent"
-	            android:layout_height="wrap_content"
-	            android:layout_weight="1"
-	            android:gravity="center"
-	            android:layout_marginTop="3dp"
-	            android:orientation="horizontal" >
-                    
-	                <EditText
-	                    android:id="@+id/editText6"
-	                    style="@style/EditText_Blue"
-	                    android:layout_width="match_parent"
-	                    android:layout_height="fill_parent"
-	                    android:ems="10"
-	                    android:layout_weight="0.90"
-	                    android:hint="Category ?"
-	                    android:inputType="textPersonName" >
-	                </EditText>
-                
-	                <ImageButton
-			            android:id="@+id/add_category"
-			            android:layout_width="@dimen/width"
-			            android:layout_height="fill_parent"
-			            android:background="@drawable/ui_button_blue"
-			            android:contentDescription="@string/desc"
-			            android:src="@drawable/ico_plus" />
-	                
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="horizontal" >
+
+                    <EditText
+                        android:id="@+id/editText6"
+                        style="@style/EditText_Blue"
+                        android:layout_width="match_parent"
+                        android:layout_height="fill_parent"
+                        android:layout_weight="0.90"
+                        android:ems="10"
+                        android:hint="Category ?"
+                        android:inputType="textPersonName" >
+                    </EditText>
+
+                    <ImageButton
+                        android:id="@+id/add_category"
+                        android:layout_width="@dimen/width"
+                        android:layout_height="fill_parent"
+                        android:background="@drawable/ui_button_blue"
+                        android:contentDescription="@string/desc"
+                        android:src="@drawable/ico_plus" />
                 </LinearLayout>
-	            
             </LinearLayout>
 
             <LinearLayout
-	            android:layout_width="fill_parent"
-	            android:layout_height="wrap_content"
-	            android:layout_marginTop="@dimen/dim_5"
-	            android:layout_marginLeft="@dimen/dim_10"
-	            android:layout_marginRight="@dimen/dim_10"
-	            android:layout_marginBottom="@dimen/dim_5"
-	            android:layout_weight="1"
-	            android:gravity="center"
-	            android:orientation="horizontal" >
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/dim_5"
+                android:layout_marginLeft="@dimen/dim_20"
+                android:layout_marginRight="@dimen/dim_20"
+                android:layout_marginTop="@dimen/dim_5"
+                android:layout_weight="1"
+                android:orientation="horizontal" >
 
-            
-	            <Button
-			        android:id="@+id/add_story_photo"
-			        style="@style/Button_Blue"
-			        android:layout_width="100dp"
-			        android:layout_height="35dp"
-			        android:text="Add Photo"
-			        android:textColor="#ffffff"
-			        android:textSize="17sp"
-			        android:layout_margin="5dp"
-			        android:textStyle="bold" />
-		            	            
-	            <Button
-			        android:id="@+id/add_video"
-			        style="@style/Button_Blue"
-			        android:layout_width="100dp"
-			        android:layout_height="35dp"
-			        android:text="Add Video"
-			        android:textColor="#ffffff"
-			        android:textSize="17sp"
-			        android:layout_margin="5dp"
-			        android:textStyle="bold" />
+                <RadioGroup
+                    android:id="@+id/radio_group"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" 
+                    android:layout_weight="0.90">
 
-			</LinearLayout>
-			
-            
-		
-	        <FrameLayout
-			        android:id="@+id/content_frame"
-			        android:layout_width="match_parent"
-			        android:layout_height="match_parent" >
-	        
-	       
-	            
-	            <LinearLayout
-	            android:layout_width="fill_parent"
-	            android:layout_height="fill_parent"
-	            android:gravity="center"
-	            android:orientation="vertical" >
-			             
-	            <ImageView
-	            android:id="@+id/glide_image"
-	            android:layout_width="fill_parent"
-	            android:layout_height="180dp"
-	            android:layout_marginLeft="@dimen/dim_10"
+                    <RadioButton
+                        android:id="@+id/radio_add_vedio"
+                        style="@style/RadioButton_Blue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5dp"
+                        android:text="Add Video"
+                        android:textSize="17sp"
+                        android:textStyle="bold"
+                         android:checked="true" />
+                    
+                    <RadioButton
+                        android:id="@+id/radio_add_photo"
+                        style="@style/RadioButton_Blue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5dp"
+                        android:text="Add Photo"
+                        android:textSize="17sp"
+                        android:textStyle="bold" />
+
+                    </RadioGroup>
+                    
+                
+                    <ImageButton
+                        android:id="@+id/add_media"
+                        android:layout_width="@dimen/width"
+                        android:layout_height="40dp"
+                        android:background="@drawable/ui_button_blue"
+                        android:contentDescription="@string/desc"
+                        android:layout_marginBottom="5dp"
+                        android:layout_gravity="bottom"
+                        android:src="@drawable/ico_plus" />
+                    
+                
+            </LinearLayout>
+
+            <!-- <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/dim_5"
+                android:layout_marginLeft="@dimen/dim_10"
                 android:layout_marginRight="@dimen/dim_10"
-	            android:adjustViewBounds="true"
-	            android:contentDescription="@string/desc"
-	            android:scaleType="fitCenter"
-	            android:src="@drawable/avatar_3" />
-	        
-	            <EditText
-                   android:id="@+id/video_url"
-                   style="@style/EditText_Blue"
-                   android:layout_width="match_parent"
-                   android:layout_height="wrap_content"
-                   android:layout_marginLeft="@dimen/dim_20"
-	               android:layout_marginRight="@dimen/dim_20"
-                   android:ems="10"
-                   android:hint="Enter Your Video Link ... "
-                   android:inputType="textPersonName" >
-               </EditText>
-	           
-	            </LinearLayout>
-	            
+                android:layout_marginTop="@dimen/dim_5"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="horizontal" >
 
-             <LinearLayout
-		        android:id="@+id/sub_tab"
-		        android:layout_width="fill_parent"
-		        android:layout_height="fill_parent"
-		        android:layout_marginBottom="15dp"
-		        android:layout_marginTop="10dp"
-		        android:background="@color/transparent"
-		        android:gravity="center"
-		        android:orientation="horizontal" >
-		
-			        <LinearLayout
-			            android:id="@+id/previous_image"
-			          android:layout_width="fill_parent"
-			          android:layout_height="fill_parent"
-			          android:layout_weight="1"
-			          android:layout_marginLeft="10dp"
-			          android:gravity="left|center_vertical"
-			          android:orientation="horizontal" 
-			          android:background="@color/transparent">
-			          
-			             
-			             
-			             <ImageView
-				           android:layout_width="wrap_content"
-				           android:layout_height="wrap_content"
-				           android:adjustViewBounds="true"
-				           android:contentDescription="@string/desc"
-				           android:background="@color/gray_215"
-				           android:src="@drawable/ico_left" />
-			             
-			          
-			         </LinearLayout>
-			         
-			
-		
-		        <LinearLayout
-		            android:id="@+id/next_image"
-		          android:layout_width="fill_parent"
-		          android:layout_height="fill_parent"
-		          android:layout_marginRight="10dp"
-		          android:layout_weight="1"
-		          android:gravity="right|center_vertical"
-		          android:orientation="horizontal" 
-		          android:background="@color/transparent">
-		          
-		          
-		             <ImageView
-		           
-		           android:layout_width="wrap_content"
-		           android:layout_height="wrap_content"
-		           android:adjustViewBounds="true"
-		           android:contentDescription="@string/desc"
-		           android:background="@color/gray_215"
-		           android:src="@drawable/ico_right" />
-		          
-		         </LinearLayout>
-		         
-		        
-		    </LinearLayout>
-	            
+                <Button
+                    android:id="@+id/add_story_photo"
+                    style="@style/Button_Blue"
+                    android:layout_width="100dp"
+                    android:layout_height="35dp"
+                    android:layout_margin="5dp"
+                    android:text="Add Photo"
+                    android:textColor="#ffffff"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
 
-			
-			</FrameLayout>
-	        
-	        <!-- <EditText
+                <Button
+                    android:id="@+id/add_video"
+                    style="@style/Button_Blue"
+                    android:layout_width="100dp"
+                    android:layout_height="35dp"
+                    android:layout_margin="5dp"
+                    android:text="Add Video"
+                    android:textColor="#ffffff"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+            </LinearLayout> -->
+
+            <FrameLayout
+                android:id="@+id/content_frame"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:gravity="center"
+                    android:orientation="vertical" >
+
+                    <ImageView
+                        android:id="@+id/glide_image"
+                        android:layout_width="fill_parent"
+                        android:layout_height="180dp"
+                        android:layout_marginLeft="@dimen/dim_10"
+                        android:layout_marginRight="@dimen/dim_10"
+                        android:adjustViewBounds="true"
+                        android:contentDescription="@string/desc"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/avatar_3" />
+
+                    <EditText
+                        android:id="@+id/video_url"
+                        style="@style/EditText_Blue"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/dim_20"
+                        android:layout_marginRight="@dimen/dim_20"
+                        android:ems="10"
+                        android:hint="Enter Your Video Link ... "
+                        android:inputType="textPersonName" >
+                    </EditText>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/sub_tab"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_marginBottom="15dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@color/transparent"
+                    android:gravity="center"
+                    android:orientation="horizontal" >
+
+                    <LinearLayout
+                        android:id="@+id/previous_image"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:layout_marginLeft="10dp"
+                        android:layout_weight="1"
+                        android:background="@color/transparent"
+                        android:gravity="left|center_vertical"
+                        android:orientation="horizontal" >
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:adjustViewBounds="true"
+                            android:background="@color/gray_215"
+                            android:contentDescription="@string/desc"
+                            android:src="@drawable/ico_left" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/next_image"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:layout_marginRight="10dp"
+                        android:layout_weight="1"
+                        android:background="@color/transparent"
+                        android:gravity="right|center_vertical"
+                        android:orientation="horizontal" >
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:adjustViewBounds="true"
+                            android:background="@color/gray_215"
+                            android:contentDescription="@string/desc"
+                            android:src="@drawable/ico_right" />
+                    </LinearLayout>
+                </LinearLayout>
+            </FrameLayout>
+
+            <!--
+               <EditText
                    android:id="@+id/editText7"
                    style="@style/EditText_Blue"
                    android:layout_width="match_parent"
@@ -274,25 +299,20 @@
                    android:ems="10"
                    android:hint="caption ..."
                    android:inputType="textPersonName" >
-               </EditText> -->
+               </EditText>
+            -->
 
-        
-            
             <Button
-			        android:id="@+id/glide_photo"
-			        style="@style/Button_Blue"
-			        android:layout_width="100dp"
-			        android:layout_height="35dp"
-			        android:text="Glide it!"
-			        android:textColor="#ffffff"
-			        android:textSize="17sp"
-			        android:layout_margin="10dp"
-			        android:textStyle="bold" />
-	            
+                android:id="@+id/glide_photo"
+                style="@style/Button_Blue"
+                android:layout_width="100dp"
+                android:layout_height="35dp"
+                android:layout_margin="10dp"
+                android:text="Glide it!"
+                android:textColor="#ffffff"
+                android:textSize="17sp"
+                android:textStyle="bold" />
         </LinearLayout>
-        
-        
     </ScrollView>
 
-    
 </LinearLayout>
