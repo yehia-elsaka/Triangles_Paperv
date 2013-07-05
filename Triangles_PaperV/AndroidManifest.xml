@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="paperv.core"
+    package="com.paperv.androidapp"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -23,7 +23,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="paperv.core.StartActivity"
+            android:name="com.paperv.androidapp.StartActivity"
             android:label="@string/app_name" 
             android:screenOrientation="portrait">
             <intent-filter>
@@ -64,7 +64,7 @@
         
         
         <activity
-            android:name="paperv.core.AviaryActivity"
+            android:name="com.paperv.androidapp.AviaryActivity"
             android:label="@string/app_name"
             android:screenOrientation="unspecified"
             android:theme="@android:style/Theme.Black.NoTitleBar" >
@@ -114,7 +114,7 @@
         
         <!-- image info activity -->
         <activity 
-            android:name="paperv.core.ImageInfoActivity"
+            android:name="com.paperv.androidapp.ImageInfoActivity"
             android:label="@string/image_details"
             android:noHistory="true"
             android:launchMode="singleTop"
@@ -140,7 +140,7 @@
         <provider 
             android:name="com.aviary.android.feather.library.providers.FeatherContentProvider"
             android:exported="false"
-            android:authorities="paperv.core.HiResProvider"
+            android:authorities="com.paperv.androidapp.HiResProvider"
             android:process=":standalone">
         </provider>
         
