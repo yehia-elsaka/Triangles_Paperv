@@ -11,7 +11,7 @@ import android.widget.Button;
 
 import com.bugsense.trace.BugSenseHandler;
 import com.paperv.async.LoginTask;
-import come.paperv.tabs_utils.GlobalState;
+import com.paperv.tabs_utils.GlobalState;
 
 public class StartActivity extends Activity {
 

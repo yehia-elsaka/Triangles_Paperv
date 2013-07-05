@@ -17,7 +17,7 @@ import android.widget.Toast;
 import com.bugsense.trace.BugSenseHandler;
 import com.paperv.async.LoginTask;
 import com.paperv.network.DataConnector;
-import come.paperv.tabs_utils.GlobalState;
+import com.paperv.tabs_utils.GlobalState;
 
 public class Register extends Activity {
 	

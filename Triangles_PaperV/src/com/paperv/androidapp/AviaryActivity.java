@@ -59,7 +59,7 @@ import com.aviary.android.feather.library.utils.SystemUtils;
 import com.bugsense.trace.BugSenseHandler;
 
 import com.paperv.androidapp.R;
-import come.paperv.tabs_utils.GlobalState;
+import com.paperv.tabs_utils.GlobalState;
 
 public class AviaryActivity extends Activity {
 

@@ -4,15 +4,16 @@ import java.util.ArrayList;
 
 import com.paperv.models.MenuItem;
 import com.paperv.network.DataConnector;
-import come.paperv.tabs_adapters.MenuAdapter;
-import come.paperv.tabs_fragments.About;
-import come.paperv.tabs_fragments.Contact;
-import come.paperv.tabs_fragments.Notification;
-import come.paperv.tabs_fragments.Privacy;
-import come.paperv.tabs_fragments.SearchList;
-import come.paperv.tabs_fragments.Terms;
-import come.paperv.tabs_utils.GlobalState;
-import come.paperv.tabs_utils.Utils;
+import com.paperv.tabs_adapters.MenuAdapter;
+import com.paperv.tabs_fragments.About;
+import com.paperv.tabs_fragments.Contact;
+import com.paperv.tabs_fragments.Notification;
+import com.paperv.tabs_fragments.Privacy;
+import com.paperv.tabs_fragments.SearchList;
+import com.paperv.tabs_fragments.Terms;
+import com.paperv.tabs_utils.GlobalState;
+import com.paperv.tabs_utils.Utils;
+
 
 import android.app.ProgressDialog;
 import android.content.Context;

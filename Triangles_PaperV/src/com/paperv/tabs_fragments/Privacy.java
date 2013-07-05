@@ -1,0 +1,104 @@
+package com.paperv.tabs_fragments;
+
+import com.paperv.androidapp.MainActivity;
+
+import com.paperv.androidapp.R;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.webkit.WebView;
+import android.widget.LinearLayout;
+
+public class Privacy extends Fragment{
+	
+	
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+
+		MainActivity.page_title.setText("Privacy");
+		
+		if (container == null) {
+			// We have different layouts, and in one of them this
+			// fragment's containing frame doesn't exist. The fragment
+			// may still be created from its saved state, but there is
+			// no reason to try to create its view hierarchy because it
+			// won't be displayed. Note this is not needed -- we could
+			// just run the code below, where we would create and return
+			// the view hierarchy; it would just never be used.
+			return null;
+		}
+		LinearLayout theLayout = (LinearLayout) inflater.inflate(
+				R.layout.about, container, false);
+		
+//		TextView about = (TextView) theLayout.findViewById(R.id.about_text);
+		
+		
+		String data = "<b>Privacy Policy</b>"
+				+"<br class=\"pf_break\">"
+				+"<br class=\"pf_break\">This Privacy Policy governs the manner in which PaperV collects, uses, maintains and discloses information collected from users (each, a \"User\") of the http://www.paperv.com website (\"Site\"). This privacy policy applies to the Site and all products and services offered by PaperV."
+				+"<br class=\"pf_break\">"
+				+"<br class=\"pf_break\">Personal identification information"
+				+"<br class=\"pf_break\">"
+				+"<br class=\"pf_break\">We may collect personal identification information from Users in a variety of ways, including, but not limited to, when Users visit our site, register on the site, and in connection with other activities, services, features or resources we make available on our Site. Users may be asked for, as appropriate, name, email address. Users may, however, visit our Site anonymously. We will collect personal identification information from Users only if they voluntarily submit such information to us. Users can always refuse to supply personally identification information, except that it may prevent them from engaging in certain Site related activities."
+				+"<br class=\"pf_break\">"
+				+"<br class=\"pf_break\">Non-personal identification information"
+				+"<br class=\"pf_break\">"
+				+"<br class=\"pf_break\">We may collect non-personal identification information about Users whenever they interact with our Site. Non-personal identification information may include the browser name, the type of computer and technical information about Users means of connection to our Site, such as the operating system and the Internet service providers utilized and other similar information."
+				+"<br class=\"pf_break\">"
+				+"<br class=\"pf_break\">Web browser cookies"
+				+"<br class=\"pf_break\">"
+				+"<br class=\"pf_break\">Our Site may use \"cookies\" to enhance User experience. User's web browser places cookies on their hard drive for record-keeping purposes and sometimes to track information about them. User may choose to set their web browser to refuse cookies, or to alert you when cookies are being sent. If they do so, note that some parts of the Site may not function properly."
+				+"<br class=\"pf_break\">"
+				+"<br class=\"pf_break\">How we use collected information"
+				+"<br class=\"pf_break\">"
+				+"<br class=\"pf_break\">PaperV may collect and use Users personal information for the following purposes:"
+				+"<br class=\"pf_break\">"
+				+"<br class=\"pf_break\">- To personalize user experience"
+				+"<br class=\"pf_break\">	We may use information in the aggregate to understand how our Users as a group use the services and resources provided on our Site."
+				+"<br class=\"pf_break\">- To send periodic emails"
+				+"<br class=\"pf_break\">If User decides to opt-in to our mailing list, they will receive emails that may include company news, updates, related product or service information, etc. If at any time the User would like to unsubscribe from receiving future emails, they may do so by contacting us via our Site."
+				+"<br class=\"pf_break\">"
+				+"<br class=\"pf_break\">How we protect your information"
+				+"<br class=\"pf_break\">"
+				+"<br class=\"pf_break\">We adopt appropriate data collection, storage and processing practices and security measures to protect against unauthorized access, alteration, disclosure or destruction of your personal information, username, password, transaction information and data stored on our Site."
+				+"<br class=\"pf_break\">"
+				+"<br class=\"pf_break\">Sharing your personal information"
+				+"<br class=\"pf_break\">"
+				+"<br class=\"pf_break\">We do not sell, trade, or rent Users personal identification information to others. We may share generic aggregated demographic information not linked to any personal identification information regarding visitors and users with our business partners, trusted affiliates and advertisers for the purposes outlined above."
+				+"<br class=\"pf_break\">"
+				+"<br class=\"pf_break\">Advertising"
+				+"<br class=\"pf_break\">"
+				+"<br class=\"pf_break\">Ads appearing on our site may be delivered to Users by advertising partners, who may set cookies. These cookies allow the ad server to recognize your computer each time they send you an online advertisement to compile non personal identification information about you or others who use your computer. This information allows ad networks to, among other things, deliver targeted advertisements that they believe will be of most interest to you. This privacy policy does not cover the use of cookies by any advertisers."
+				+"<br class=\"pf_break\">"
+				+"<br class=\"pf_break\">Changes to this privacy policy"
+				+"<br class=\"pf_break\">"
+				+"<br class=\"pf_break\">PaperV has the discretion to update this privacy policy at any time. When we do, we will revise the updated date at the bottom of this page and send you an email. We encourage Users to frequently check this page for any changes to stay informed about how we are helping to protect the personal information we collect. You acknowledge and agree that it is your responsibility to review this privacy policy periodically and become aware of modifications."
+				+"<br class=\"pf_break\">"
+				+"<br class=\"pf_break\">Your acceptance of these terms"
+				+"<br class=\"pf_break\">"
+				+"<br class=\"pf_break\">By using this Site, you signify your acceptance of this policy and terms of service. If you do not agree to this policy, please do not use our Site. Your continued use of the Site following the posting of changes to this policy will be deemed your acceptance of those changes."
+				+"<br class=\"pf_break\">"
+				+"<br class=\"pf_break\">Contacting us"
+				+"<br class=\"pf_break\">"
+				+"<br class=\"pf_break\">If you have any questions about this Privacy Policy, the practices of this site, or your dealings with this site, please contact us at:"
+				+"<br class=\"pf_break\">PaperV"
+				+"<br class=\"pf_break\">http://www.paperv.com"
+				+"<br class=\"pf_break\">privacy@paperv.com"
+				+"<br class=\"pf_break\">"
+				+"<br class=\"pf_break\">This document was last updated on April 02, 2013"
+				+"<br class=\"pf_break\">"
+				+"<br class=\"pf_break\">";
+
+
+		WebView webview = (WebView) theLayout.findViewById(R.id.webview);
+		webview.loadDataWithBaseURL("", data, "text/html", "UTF-8", "");
+		
+		
+		return theLayout;
+		
+	}
+		
+
+}

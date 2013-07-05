@@ -25,14 +25,14 @@ import android.widget.Toast;
 
 import com.bugsense.trace.BugSenseHandler;
 import com.paperv.network.DataConnector;
+import com.paperv.tabs_fragments.ExploreActivity;
+import com.paperv.tabs_fragments.GlideActivity;
+import com.paperv.tabs_fragments.HomeActivity;
+import com.paperv.tabs_fragments.LikesActivity;
+import com.paperv.tabs_fragments.ProfileActivity;
+import com.paperv.tabs_utils.GlobalState;
+import com.paperv.tabs_utils.Utils;
 import com.slidingmenu.lib.SlidingMenu;
-import come.paperv.tabs_fragments.ExploreActivity;
-import come.paperv.tabs_fragments.GlideActivity;
-import come.paperv.tabs_fragments.HomeActivity;
-import come.paperv.tabs_fragments.LikesActivity;
-import come.paperv.tabs_fragments.ProfileActivity;
-import come.paperv.tabs_utils.GlobalState;
-import come.paperv.tabs_utils.Utils;
 
 //
 

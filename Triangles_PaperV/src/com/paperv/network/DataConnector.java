@@ -32,7 +32,7 @@ import com.paperv.models.LikeStory;
 import com.paperv.models.NotificationItem;
 import com.paperv.models.PhotoItem;
 import com.paperv.models.Story;
-import come.paperv.tabs_utils.GlobalState;
+import com.paperv.tabs_utils.GlobalState;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
