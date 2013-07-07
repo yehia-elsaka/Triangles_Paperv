@@ -2,13 +2,13 @@ package com.paperv.tabs_fragments;
 
 import java.util.ArrayList;
 
-import com.paperv.androidapp.MainActivity;
 
-import com.paperv.androidapp.R;
+import com.paperv.www.R;
 import com.paperv.lazy_adapter_utils.ImageLoader;
 import com.paperv.models.Friend;
 import com.paperv.network.DataConnector;
 import com.paperv.tabs_utils.GlobalState;
+import com.paperv.www.MainActivity;
 
 import android.app.ProgressDialog;
 import android.os.AsyncTask;

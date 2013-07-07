@@ -8,10 +8,10 @@ import android.content.SharedPreferences.Editor;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
-import com.paperv.androidapp.MainActivity;
-import com.paperv.androidapp.R;
+import com.paperv.www.R;
 import com.paperv.network.DataConnector;
 import com.paperv.tabs_utils.GlobalState;
+import com.paperv.www.MainActivity;
 
 
 	public class LoginTask extends AsyncTask<Void, Void, Boolean> {

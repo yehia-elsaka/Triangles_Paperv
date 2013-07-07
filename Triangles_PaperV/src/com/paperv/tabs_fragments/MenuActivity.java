@@ -1,6 +1,5 @@
 package com.paperv.tabs_fragments;
 
-import com.paperv.androidapp.MainActivity;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -9,7 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-import com.paperv.androidapp.R;
+import com.paperv.www.R;
+import com.paperv.www.MainActivity;
 
 public class MenuActivity extends Fragment{
 	

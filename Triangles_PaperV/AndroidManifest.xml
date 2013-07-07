@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.paperv.androidapp"
-    android:versionCode="4"
-    android:versionName="1.2" >
+    package="com.paperv.www"
+    android:versionCode="1"
+    android:versionName="1.0" >
 
     <uses-sdk
         android:minSdkVersion="8"
@@ -23,7 +23,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.paperv.androidapp.StartActivity"
+            android:name="com.paperv.www.StartActivity"
             android:label="@string/app_name" 
             android:screenOrientation="portrait">
             <intent-filter>
@@ -59,12 +59,20 @@
             android:screenOrientation="portrait">
         </activity>
         
+        <activity
+            android:name="AppTermsActivity" 
+            android:screenOrientation="portrait">
+        </activity>
         
+        <activity
+            android:name="AppPrivacyActivity" 
+            android:screenOrientation="portrait">
+        </activity>
         
         
         
         <activity
-            android:name="com.paperv.androidapp.AviaryActivity"
+            android:name="com.paperv.www.AviaryActivity"
             android:label="@string/app_name"
             android:screenOrientation="unspecified"
             android:theme="@android:style/Theme.Black.NoTitleBar" >
@@ -114,7 +122,7 @@
         
         <!-- image info activity -->
         <activity 
-            android:name="com.paperv.androidapp.ImageInfoActivity"
+            android:name="com.paperv.www.ImageInfoActivity"
             android:label="@string/image_details"
             android:noHistory="true"
             android:launchMode="singleTop"
@@ -140,7 +148,7 @@
         <provider 
             android:name="com.aviary.android.feather.library.providers.FeatherContentProvider"
             android:exported="false"
-            android:authorities="com.paperv.androidapp.HiResProvider"
+            android:authorities="com.paperv.www.HiResProvider"
             android:process=":standalone">
         </provider>
         

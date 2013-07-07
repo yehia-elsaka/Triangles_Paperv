@@ -2,7 +2,7 @@ package com.paperv.tabs_adapters;
 
 import java.util.List;
 
-import com.paperv.androidapp.R;
+import com.paperv.www.R;
 import com.paperv.lazy_adapter_utils.ImageLoader;
 import com.paperv.models.LikeStory;
 import com.paperv.tabs_utils.Utils;

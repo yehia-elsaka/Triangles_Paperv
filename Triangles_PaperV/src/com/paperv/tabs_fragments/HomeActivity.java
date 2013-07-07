@@ -27,8 +27,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.paperv.androidapp.MainActivity;
-import com.paperv.androidapp.R;
+import com.paperv.www.R;
 import com.paperv.lazy_adapter_utils.ImageLoader;
 import com.paperv.models.Story;
 import com.paperv.network.DataConnector;
@@ -38,6 +37,7 @@ import com.paperv.tabs_utils.DepthPageTransformer;
 import com.paperv.tabs_utils.FixedSpeedScroller;
 import com.paperv.tabs_utils.GlobalState;
 import com.paperv.tabs_utils.Utils;
+import com.paperv.www.MainActivity;
 
 
 public class HomeActivity extends Fragment implements

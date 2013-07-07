@@ -32,7 +32,7 @@ public class ImageLoader {
         fileCache=new FileCache(context);
     }
     
-    final int stub_id = com.paperv.androidapp.R.drawable.ajax_loader;
+    final int stub_id = com.paperv.www.R.drawable.ajax_loader;
     public void DisplayImage(String url, Activity activity, ImageView imageView)
     {
     	

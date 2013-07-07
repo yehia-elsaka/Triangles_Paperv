@@ -35,7 +35,7 @@
             
 	        <TextView
 		        android:id="@+id/textView1"
-		        android:layout_width="180dp"
+		        android:layout_width="160dp"
 		        android:layout_height="30dp"
 		        android:layout_marginTop="15dp"
 		        android:textColor="@color/dark_blue"
@@ -102,7 +102,7 @@
 		        style="@style/Button_Blue"
 		        android:layout_width="100dp"
 		        android:layout_height="35dp"
-		        android:layout_marginTop="10dp"
+		        android:layout_marginTop="25dp"
 		        android:layout_marginBottom="15dp"
 		        android:text="Sign Up"
 		        android:textColor="#ffffff"
@@ -111,19 +111,56 @@
 	        
 	        
 	        
+		    <LinearLayout
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:orientation="horizontal" 
+	            android:layout_marginTop="@dimen/dim_20"
+		        android:layout_marginBottom="@dimen/dim_20">
 	        
 		    
-		    <TextView
-		        android:id="@+id/text_footer"
-		        android:layout_width="wrap_content"
-		        android:layout_height="wrap_content"
-		        android:layout_marginTop="10dp"
-		        android:layout_marginBottom="10dp"
-		        android:text="I agree to the terms and privacy policy which link to these pages"
-		        android:textColor="@color/blue"
-		        android:textSize="12sp"
-		        android:layout_gravity="bottom"
-		        android:textStyle="bold" />
+			    <TextView
+			        android:id="@+id/text1_footer"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:layout_marginTop="10dp"
+			        android:layout_marginBottom="10dp"
+			        android:text="I agree to the "
+			        android:textColor="@color/blue"
+			        android:textSize="13sp"
+			        android:textStyle="bold" />
+			    <TextView
+			        android:id="@+id/terms"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:layout_marginTop="10dp"
+			        android:layout_marginBottom="10dp"
+			        android:text="Terms "
+			        android:textColor="@color/red"
+			        android:textSize="14sp"
+			        android:textStyle="bold" />
+			    <TextView
+			        android:id="@+id/text2_footer"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:layout_marginTop="10dp"
+			        android:layout_marginBottom="10dp"
+			        android:text="and "
+			        android:textColor="@color/blue"
+			        android:textSize="13sp"
+			        android:textStyle="bold" />
+			    <TextView
+			        android:id="@+id/privacy"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:layout_marginTop="10dp"
+			        android:layout_marginBottom="10dp"
+			        android:text="Privacy Policy"
+			        android:textColor="@color/red"
+			        android:textSize="14sp"
+			        android:textStyle="bold" />
+			    
+		    </LinearLayout>
 	            
         </LinearLayout>
         

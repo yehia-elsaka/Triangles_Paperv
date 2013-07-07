@@ -10,7 +10,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.paperv.androidapp.R;
+import com.paperv.www.R;
 import com.paperv.lazy_adapter_utils.ImageLoader;
 import com.paperv.models.NotificationItem;
 import com.paperv.tabs_utils.Utils;

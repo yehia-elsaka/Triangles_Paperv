@@ -1,8 +1,9 @@
 package com.paperv.tabs_fragments;
 
-import com.paperv.androidapp.MainActivity;
 
-import com.paperv.androidapp.R;
+import com.paperv.www.R;
+import com.paperv.www.MainActivity;
+
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;

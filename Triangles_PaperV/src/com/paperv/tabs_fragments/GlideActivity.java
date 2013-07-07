@@ -15,7 +15,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewPager;
 import android.util.Base64;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -40,13 +39,12 @@ import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.Toast;
 
-import com.paperv.androidapp.AviaryActivity;
-import com.paperv.androidapp.MainActivity;
-import com.paperv.androidapp.R;
 import com.paperv.lazy_adapter_utils.ImageLoader;
 import com.paperv.network.DataConnector;
-import com.paperv.tabs_adapters.ImageAdapter;
 import com.paperv.tabs_utils.GlobalState;
+import com.paperv.www.AviaryActivity;
+import com.paperv.www.MainActivity;
+import com.paperv.www.R;
 
 public class GlideActivity extends Fragment implements OnItemClickListener,
 		OnClickListener {

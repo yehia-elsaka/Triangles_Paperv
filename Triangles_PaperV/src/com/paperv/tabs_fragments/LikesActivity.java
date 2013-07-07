@@ -3,24 +3,7 @@ package com.paperv.tabs_fragments;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
-import com.paperv.androidapp.MainActivity;
-
-import com.paperv.androidapp.R;
-import com.paperv.lazy_adapter_utils.ImageLoader;
-import com.paperv.models.LikeStory;
-import com.paperv.models.Story;
-import com.paperv.network.DataConnector;
-import com.paperv.tabs_adapters.ImageAdapter;
-import com.paperv.tabs_adapters.LikesAdapter;
-import com.paperv.tabs_utils.DepthPageTransformer;
-import com.paperv.tabs_utils.FixedSpeedScroller;
-import com.paperv.tabs_utils.GlobalState;
-import com.paperv.tabs_utils.Utils;
-
-
 import android.app.ProgressDialog;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -31,10 +14,10 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.AdapterView;
-import android.widget.AbsListView.OnScrollListener;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -43,6 +26,18 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.paperv.lazy_adapter_utils.ImageLoader;
+import com.paperv.models.LikeStory;
+import com.paperv.network.DataConnector;
+import com.paperv.tabs_adapters.ImageAdapter;
+import com.paperv.tabs_adapters.LikesAdapter;
+import com.paperv.tabs_utils.DepthPageTransformer;
+import com.paperv.tabs_utils.FixedSpeedScroller;
+import com.paperv.tabs_utils.GlobalState;
+import com.paperv.tabs_utils.Utils;
+import com.paperv.www.MainActivity;
+import com.paperv.www.R;
 
 public class LikesActivity extends Fragment implements OnItemClickListener,
 		OnClickListener {

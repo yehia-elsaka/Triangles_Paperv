@@ -10,7 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.paperv.androidapp.R;
+import com.paperv.www.R;
 import com.paperv.models.MenuItem;
 import com.paperv.tabs_utils.Utils;
 
