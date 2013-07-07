@@ -42,7 +42,7 @@
     </LinearLayout>
     
     
-    <ScrollView
+    <com.paperv.tabs_utils.CustomScrollView
         android:layout_width="fill_parent"
         android:layout_height="0dip"
         android:layout_weight="1" >
@@ -55,117 +55,14 @@
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:orientation="vertical" >
-
-            
-       <FrameLayout
-        android:id="@+id/content_frame"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" >
             
             
-            <ImageView
-                android:id="@+id/image"
-                android:layout_width="fill_parent"
-                android:layout_height="180dp"
-                android:layout_marginLeft="@dimen/dim_10"
-            	android:layout_marginRight="@dimen/dim_10"
-            	android:layout_marginBottom="@dimen/dim_5"
-            	android:layout_marginTop="@dimen/dim_10"
-                android:adjustViewBounds="true"
-                android:scaleType="fitCenter"
-                android:src="@drawable/brave"
-                android:contentDescription="@string/desc" />
-            
-            
-             <ImageView
-			    android:id="@+id/myvideoview"
-			    android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:layout_marginLeft="@dimen/dim_10"
-            	android:layout_marginRight="@dimen/dim_10"
-            	android:layout_marginBottom="@dimen/dim_5"
-            	android:layout_marginTop="@dimen/dim_10" 
-            	 android:layout_weight="1"
-            	 android:layout_gravity="center"
-            	android:src="@drawable/play_button"
-                android:contentDescription="@string/desc"/>
-            
-          
-		      <LinearLayout
-		        android:id="@+id/sub_tab"
-		        android:layout_width="fill_parent"
-		        android:layout_height="fill_parent"
-		        android:layout_marginBottom="15dp"
-		        android:layout_marginTop="10dp"
-		        android:background="@color/transparent"
-		        android:gravity="center"
-		        android:orientation="horizontal" >
-		
-			        <LinearLayout
-			            android:id="@+id/previous_image"
-			          android:layout_width="fill_parent"
-			          android:layout_height="fill_parent"
-			          android:layout_weight="1"
-			          android:gravity="left|center_vertical"
-			          android:orientation="horizontal" 
-			          android:background="@color/transparent">
-			          
-			             
-			             
-			             <ImageView
-				           android:layout_width="wrap_content"
-				           android:layout_height="wrap_content"
-				           android:adjustViewBounds="true"
-				           android:contentDescription="@string/desc"
-				           android:src="@drawable/ico_left" />
-			             
-			          
-			         </LinearLayout>
-			         
-			        
-			        
-			        <LinearLayout
-			            android:id="@+id/dummy"
-			          android:layout_width="fill_parent"
-			          android:layout_height="fill_parent"
-			          android:layout_weight="1"
-			          android:gravity="left|center_vertical"
-			          android:orientation="horizontal" 
-			          android:background="@color/transparent">
-			        </LinearLayout>
-		
-		        <LinearLayout
-		            android:id="@+id/next_image"
-		          android:layout_width="fill_parent"
-		          android:layout_height="fill_parent"
-		          android:layout_marginLeft="5dp"
-		          android:layout_weight="1"
-		          android:gravity="right|center_vertical"
-		          android:orientation="horizontal" 
-		          android:background="@color/transparent">
-		          
-		          
-		             <ImageView
-		           
-		           android:layout_width="wrap_content"
-		           android:layout_height="wrap_content"
-		           android:adjustViewBounds="true"
-		           android:contentDescription="@string/desc"
-		           android:src="@drawable/ico_right" />
-		          
-		         </LinearLayout>
-		         
-		        
-		    </LinearLayout>
-		    
-		      
-		     
-		    
-		      
-		       
-		      
-		    
-		    </FrameLayout>
+  			<android.support.v4.view.ViewPager
+			  android:id="@+id/view_pager"
+			  android:layout_width="fill_parent"
+			  android:layout_height="275dp" />
+              
+	      
             
             
             <LinearLayout
@@ -333,7 +230,7 @@
         </LinearLayout>
         
         
-    </ScrollView>
+    </com.paperv.tabs_utils.CustomScrollView>
     
     
 

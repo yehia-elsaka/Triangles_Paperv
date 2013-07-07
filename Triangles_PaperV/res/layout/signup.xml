@@ -113,7 +113,17 @@
 	        
 	        
 		    
-		    
+		    <TextView
+		        android:id="@+id/text_footer"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:layout_marginTop="10dp"
+		        android:layout_marginBottom="10dp"
+		        android:text="I agree to the terms and privacy policy which link to these pages"
+		        android:textColor="@color/blue"
+		        android:textSize="12sp"
+		        android:layout_gravity="bottom"
+		        android:textStyle="bold" />
 	            
         </LinearLayout>
         

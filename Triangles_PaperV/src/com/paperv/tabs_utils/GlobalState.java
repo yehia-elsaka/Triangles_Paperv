@@ -36,6 +36,8 @@ public class GlobalState {
 	public boolean is_profile = false;
 	public boolean is_logout = false;
 	
+	public boolean in_show_mode = false;
+	
 	
 	public SharedPreferences prefs;
 	

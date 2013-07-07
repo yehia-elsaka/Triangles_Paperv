@@ -131,27 +131,27 @@
                     android:layout_weight="0.90">
 
                     <RadioButton
-                        android:id="@+id/radio_add_vedio"
-                        style="@style/RadioButton_Blue"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="5dp"
-                        android:text="Add Video"
-                        android:textSize="17sp"
-                        android:textStyle="bold"
-                         android:checked="true" />
-                    
-                    <RadioButton
-                        android:id="@+id/radio_add_photo"
+                        android:id="@+id/radio_photo"
                         style="@style/RadioButton_Blue"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="5dp"
                         android:text="Add Photo"
                         android:textSize="17sp"
-                        android:textStyle="bold" />
+                        android:textStyle="bold" 
+                        android:checked="true"/>
+                    
+                    <RadioButton
+                        android:id="@+id/radio_vedio"
+                        style="@style/RadioButton_Blue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5dp"
+                        android:text="Add Video"
+                        android:textSize="17sp"
+                        android:textStyle="bold"/>
 
-                    </RadioGroup>
+                   </RadioGroup>
                     
                 
                     <ImageButton
@@ -161,7 +161,7 @@
                         android:background="@drawable/ui_button_blue"
                         android:contentDescription="@string/desc"
                         android:layout_marginBottom="5dp"
-                        android:layout_gravity="bottom"
+                        android:layout_gravity="top"
                         android:src="@drawable/ico_plus" />
                     
                 

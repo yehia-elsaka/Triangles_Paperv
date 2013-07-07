@@ -41,7 +41,9 @@ public class MainActivity extends FragmentActivity implements
 
 	Context myContext = this;
 	
-	private SlidingMenu menu;
+	public static SlidingMenu menu;
+	public static ImageButton btnList;
+	
 	private Fragment mContent;
 	
 	public static TextView page_title;
@@ -157,7 +159,8 @@ public class MainActivity extends FragmentActivity implements
 		getSupportFragmentManager().beginTransaction()
 				.replace(R.id.menu_frame, new MenuFragment()).commit();
 
-		ImageButton btnList = (ImageButton) findViewById(R.id.btnImg_list);
+		
+		btnList = (ImageButton) findViewById(R.id.btnImg_list);
 		btnList.setOnClickListener(this);
 		
 		
@@ -298,6 +301,8 @@ public class MainActivity extends FragmentActivity implements
 		mContent = fragment;
 		getSupportFragmentManager().beginTransaction()
 				.replace(R.id.content_frame, fragment).commit();
+		
+		
 		menu.showContent();
 	}
 
@@ -305,11 +310,17 @@ public class MainActivity extends FragmentActivity implements
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
 		if (v.getId() == R.id.btnImg_list) {
-			if (menu.isMenuShowing()) {
+			
+			
+			if (menu.isMenuShowing())
+			{
 				menu.showContent();
-			} else {
+				
+			} else 
+			{
 				menu.showMenu();
 			}
+				
 		}
 		
 		

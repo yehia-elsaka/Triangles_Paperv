@@ -1,5 +1,6 @@
 package com.paperv.tabs_fragments;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 import com.paperv.androidapp.MainActivity;
@@ -9,6 +10,9 @@ import com.paperv.lazy_adapter_utils.ImageLoader;
 import com.paperv.models.Story;
 import com.paperv.network.DataConnector;
 import com.paperv.tabs_adapters.ExploreAdapter;
+import com.paperv.tabs_adapters.ImageAdapter;
+import com.paperv.tabs_utils.DepthPageTransformer;
+import com.paperv.tabs_utils.FixedSpeedScroller;
 import com.paperv.tabs_utils.GlobalState;
 import com.paperv.tabs_utils.Utils;
 
@@ -19,6 +23,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -63,10 +68,10 @@ public class ExploreActivity extends Fragment implements
 	TextView commentsNumber;
 	TextView reglideNumber;
 	TextView  userName, stroyName;
-	ImageView storyImage, userImage;
+	ImageView userImage;
 	ImageButton btnBack, btnLike, btnReglide;
-	ImageView storyVideo;
 	Button follow_user;
+	ViewPager viewPager;
 
 	// animation
 	private Animation mSlideInLeft;
@@ -90,8 +95,6 @@ public class ExploreActivity extends Fragment implements
 	public ImageLoader userImageLoader; 
     public ImageLoader storyImageLoader;
     
-    LinearLayout next_image, previous_image;
-    int current_image_index;
 
 	boolean _isBack = true;
 	
@@ -166,7 +169,6 @@ public class ExploreActivity extends Fragment implements
 		
 		this.vw_detail = (View) theLayout.findViewById(R.id.detail);
 		// get detail controls
-		storyImage = (ImageView) this.vw_detail.findViewById(R.id.image);
 		userImage = (ImageView) this.vw_detail.findViewById(R.id.user_image_2);
 		userName = (TextView) this.vw_detail.findViewById(R.id.author_name);
 		stroyName = (TextView) this.vw_detail.findViewById(R.id.story_name_2);
@@ -186,17 +188,6 @@ public class ExploreActivity extends Fragment implements
         });
 		
 		
-		storyVideo = (ImageView) this.vw_detail.findViewById(R.id.myvideoview);
-		storyVideo.setVisibility(View.GONE);
-		
-		storyVideo.setOnClickListener(new OnClickListener() {
-
-		public void onClick(View v) {
-		
-		    startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse(current_video_url)));
-		
-		    }
-		}); 
 		
 		
 		comments_list = (LinearLayout) vw_detail.findViewById(R.id.comments_list);
@@ -230,26 +221,29 @@ public class ExploreActivity extends Fragment implements
 		
 		
 		
-		
-		next_image = (LinearLayout) this.vw_detail.findViewById(R.id.next_image);
-		previous_image = (LinearLayout) this.vw_detail.findViewById(R.id.previous_image);
-		
-		next_image.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                // Perform action on click
-            	getNextImage();
-            }
-        });
-		previous_image.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                // Perform action on click
-            	
-            	getPreviousImage();
-            	
-            }
-        });
-		
 
+		viewPager = (ViewPager) this.vw_detail.findViewById(R.id.view_pager);
+		viewPager.setPageTransformer(true, new DepthPageTransformer());
+		
+		
+        try {
+        	
+			Field mScroller;
+			mScroller = ViewPager.class.getDeclaredField("mScroller");
+
+			mScroller.setAccessible(true);
+			FixedSpeedScroller scroller = new FixedSpeedScroller(
+					viewPager.getContext());
+			// scroller.setFixedDuration(5000);
+			mScroller.set(viewPager, scroller);
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		
 		this.vw_master.setVisibility(View.VISIBLE);
 		this.vw_detail.setVisibility(View.GONE);
 		
@@ -348,12 +342,16 @@ public class ExploreActivity extends Fragment implements
 			ExploreAdapter newsAdp = (ExploreAdapter) adp.getAdapter();
 			Story itm = (Story) newsAdp.getItem(position);
 
-			current_image_index = 0;
 			current_story_id = itm.getStory_id();
 			
 			globalState.story_view = itm;
 			
 			comments_list.removeAllViews();
+			
+			globalState.in_show_mode = true;
+			MainActivity.menu.setSlidingEnabled(false);
+			MainActivity.btnList.setClickable(false);
+			MainActivity.btnList.setImageResource(R.drawable.ico_view3);
 			
 			getStoryViewTask task = new getStoryViewTask();
 			task.execute();
@@ -406,6 +404,13 @@ public class ExploreActivity extends Fragment implements
 		if (!this._isBack) {
 			this._isBack = !this._isBack;
 			showView(this._isBack);
+			
+			
+			MainActivity.btnList.setImageResource(R.drawable.ico_list);
+			globalState.in_show_mode = false;
+			MainActivity.btnList.setClickable(true);
+			MainActivity.menu.setSlidingEnabled(true);
+			
 			return;
 		}
 	}
@@ -419,94 +424,6 @@ public class ExploreActivity extends Fragment implements
 	
 	
 	//====================================================================================
-	
-	
-	
-	private void getNextImage() {
-		
-		if (current_image_index+1 < globalState.story_view.getPhotos().size())
-		{
-			
-			current_image_index++;
-			
-			
-			
-			String storyItemUrlrl = globalState.story_view.getPhotos().get(current_image_index).getItem_url();
-			String type = globalState.story_view.getPhotos().get(current_image_index).getType();
-			
-			
-			
-			if (type.equals("photo"))
-			{
-				storyVideo.setVisibility(View.GONE);
-				
-				storyImage.startAnimation(mSlideInLeft);
-				storyImage.setVisibility(View.VISIBLE);
-				
-				storyImageLoader.DisplayImage(storyItemUrlrl, getActivity(), storyImage);
-			}
-			else if (type.equals("video"))
-			{
-				
-				storyImage.setVisibility(View.VISIBLE);
-				storyImageLoader.DisplayImage(globalState.story_view.getPhoto_url(), getActivity(), storyImage);
-				
-				
-				storyVideo.startAnimation(mSlideInLeft);
-				storyVideo.setVisibility(View.VISIBLE);
-			
-				current_video_url = storyItemUrlrl;
-				
-				
-			}
-			
-			
-			
-			
-		}
-		
-	}
-	
-	private void getPreviousImage() {
-		
-		if (current_image_index-1 >= 0)
-		{
-			current_image_index--;
-			
-			
-			String storyItemUrlrl = globalState.story_view.getPhotos().get(current_image_index).getItem_url();
-			String type = globalState.story_view.getPhotos().get(current_image_index).getType();
-
-			
-			if (type.equals("photo"))
-			{
-				storyVideo.setVisibility(View.GONE);
-				
-				storyImage.startAnimation(mSlideInRight);
-				storyImage.setVisibility(View.VISIBLE);
-				
-				storyImageLoader.DisplayImage(storyItemUrlrl, getActivity(), storyImage);
-			}
-			else if (type.equals("video"))
-			{
-				
-				storyImage.setVisibility(View.VISIBLE);
-				storyImageLoader.DisplayImage(globalState.story_view.getPhoto_url(), getActivity(), storyImage);
-				
-				
-				storyVideo.startAnimation(mSlideInRight);
-				storyVideo.setVisibility(View.VISIBLE);
-				
-				current_video_url = storyItemUrlrl;
-			}
-			
-			
-			
-			
-		}
-		
-	}
-
 	
 	
 	
@@ -584,6 +501,9 @@ public class ExploreActivity extends Fragment implements
 			
 			if (this.result) {
 				
+				
+				ImageAdapter adapter = new ImageAdapter(getActivity(), globalState.story_view);
+			    viewPager.setAdapter(adapter);
 
 				userName.setText(globalState.story_view.getUser_name());
 				stroyName.setText(globalState.story_view.getStory_name());
@@ -594,31 +514,10 @@ public class ExploreActivity extends Fragment implements
 				
 				
 				String userImage_url = globalState.story_view.getUser_image();
-				String storyItemUrlrl = globalState.story_view.getPhotos().get(current_image_index).getItem_url();
-				String type = globalState.story_view.getPhotos().get(current_image_index).getType();
 				
 				
 				
 				userImageLoader.DisplayImage(userImage_url, getActivity(), userImage);
-				
-				if (type.equals("photo"))
-				{
-					storyVideo.setVisibility(View.GONE);
-					
-					storyImage.setVisibility(View.VISIBLE);
-					storyImageLoader.DisplayImage(storyItemUrlrl, getActivity(), storyImage);
-				}
-				else if (type.equals("video"))
-				{
-					storyImage.setVisibility(View.VISIBLE);
-					storyImageLoader.DisplayImage(globalState.story_view.getPhoto_url(), getActivity(), storyImage);
-					
-					storyVideo.setVisibility(View.VISIBLE);
-					
-					current_video_url = storyItemUrlrl;
-					
-				}
-				
 				
 				
 				for(int i = 0; i < globalState.story_view.getComments().size(); i++)
