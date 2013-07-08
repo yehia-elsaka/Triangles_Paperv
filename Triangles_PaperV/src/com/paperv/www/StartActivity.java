@@ -10,7 +10,6 @@ import android.view.View;
 import android.widget.Button;
 
 import com.bugsense.trace.BugSenseHandler;
-import com.paperv.www.R;
 import com.paperv.async.LoginTask;
 import com.paperv.tabs_utils.GlobalState;
 

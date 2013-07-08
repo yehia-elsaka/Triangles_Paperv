@@ -982,13 +982,7 @@ public class DataConnector {
 				httppost.setEntity(mpEntity);
 			}
 
-			/*
-			 * if (photo != null) { MultipartEntity mpEntity = new
-			 * MultipartEntity(); ContentBody cbFile = new FileBody(photo,
-			 * "image/*"); mpEntity.addPart("image", cbFile);
-			 * 
-			 * httppost.setEntity(mpEntity); }
-			 */
+			
 
 			HttpResponse response = httpclient.execute(httppost, localContext);
 			HttpEntity entity = response.getEntity();

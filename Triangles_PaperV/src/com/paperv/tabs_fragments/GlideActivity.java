@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -327,16 +328,39 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 			// imageFile = new File(getRealPathFromURI(image_uri));
 			// String path = imageFile.getAbsolutePath();
 
+			String ext = "";
+			String fileName = "";
+			
 			try {
 
+				
+				ContentResolver cR = getActivity().getContentResolver();
+				ext = cR.getType(image_uri);
+				
 				bitmap = decodeUri(image_uri);
 				File dir = new File(Environment.getExternalStorageDirectory(),
 						"paperv_uploads");
 				dir.mkdir();
-				String fileName = "image" + (new Date()).getTime() + ".png";
+				Log.d("yehia", dir.getAbsolutePath());
+				Log.d("yehia", ext);
+				
+				if(ext.contains("png")) 
+					fileName = "image" + (new Date()).getTime() + ".png";
+				
+				else
+					fileName = "image" + (new Date()).getTime() + ".jpg";
+					
 				imageFile = new File(dir, fileName);
 				FileOutputStream out = new FileOutputStream(imageFile);
-				bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+				
+				
+				if(ext.contains("png"))
+					bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+				else
+					bitmap.compress(Bitmap.CompressFormat.JPEG, 80, out);
+				
+				Log.d("ext", ext);
+				
 				Log.d("bitmap", "File:" + imageFile.getName() + " Width:"
 						+ bitmap.getWidth() + " Height:" + bitmap.getHeight());
 				out.flush();
@@ -625,9 +649,9 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 
 	// =============================================================================================
 
-	private class GlideStoryTask extends AsyncTask<Void, Void, Void> {
+	private class GlideStoryTask extends AsyncTask<Void, Void, Boolean> {
 
-		boolean result;
+		//boolean result;
 		ProgressDialog dialog = null;
 
 		@Override
@@ -643,7 +667,7 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 		}
 
 		@Override
-		protected Void doInBackground(Void... params) {
+		protected Boolean doInBackground(Void... params) {
 
 			try {
 
@@ -660,43 +684,48 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 
 				if (storyTitle.length() > 0) {
 					if (video_url.length() > 0 || imagesArray.size() > 0) {
-						String video_url_base64 = Base64.encodeToString(
-								video_url.getBytes(), Base64.DEFAULT);
-						video_url_base64 = video_url_base64
-								.replaceAll("\n", "");
-
-						result = dataConnector.glideNewStory(storyTitle, "",
+						
+						String video_url_base64 = "";
+						
+						if (video_url.length() > 0)
+						{
+							video_url_base64 = Base64.encodeToString(
+									video_url.getBytes(), Base64.DEFAULT);
+							video_url_base64 = video_url_base64
+									.replaceAll("\n", "");
+						}
+						
+						return dataConnector.glideNewStory(storyTitle, "",
 								"", category, video_url_base64, imagesArray);
-						Log.d("bitmap", "FILE: " + imageFile + " Result: "
-								+ result);
+						
 					}
 
 					else
-						result = false;
+						return false;
 				} else
-					result = false;
+					return false;
 
 				// result =true;
 			} catch (Exception e) {
-
+				
 				e.printStackTrace();
+				return false;
 			}
 
-			return null;
 
 		}
 
 		@Override
-		protected void onPostExecute(Void result) {
+		protected void onPostExecute(Boolean result) {
 
 			try {
 				dialog.dismiss();
 			} catch (Exception e) {
 
 			}
-			if (this.result) {
+			if (result) {
 
-				Toast.makeText(getActivity(), "Gliding Done ...", 5000).show();
+				Toast.makeText(getActivity(), "Gliding Done ...", Toast.LENGTH_LONG).show();
 
 				title.setText("");
 				// desc.setText("");
@@ -708,7 +737,7 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 
 			} else {
 				Toast.makeText(getActivity(),
-						"Can't Glide Story ... Missing Media", 3000).show();
+						"Can't Glide Story ... Missing Media", Toast.LENGTH_LONG).show();
 			}
 		}
 
