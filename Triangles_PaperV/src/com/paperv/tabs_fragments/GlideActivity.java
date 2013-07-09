@@ -337,7 +337,7 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 				ContentResolver cR = getActivity().getContentResolver();
 				ext = cR.getType(image_uri);
 				
-				bitmap = decodeUri(image_uri);
+				bitmap = decodeUri2(image_uri);
 				File dir = new File(Environment.getExternalStorageDirectory(),
 						"paperv_uploads");
 				dir.mkdir();
@@ -379,6 +379,27 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 
 	}
 
+	private Bitmap decodeUri2(Uri selectedImage) throws Exception{
+		Bitmap bitmap = null;
+		BitmapFactory.Options o = new BitmapFactory.Options();
+		int factor = 2;
+		boolean satisfied = false;
+		while(!satisfied){
+			satisfied = true;
+			o.inSampleSize = factor;
+			bitmap = BitmapFactory.decodeStream(getActivity().getContentResolver()
+					.openInputStream(selectedImage), null, o);
+			if (bitmap == null)
+				satisfied = false;
+			
+			else if(bitmap.getWidth() > 1800 || bitmap.getHeight() > 1800)
+			{
+				factor = factor * 2;
+				satisfied = false;
+			}			
+		}
+		return bitmap;
+	}
 	private Bitmap decodeUri(Uri selectedImage) throws FileNotFoundException {
 		Bitmap bitmap;
 		BitmapFactory.Options o = new BitmapFactory.Options();
@@ -577,7 +598,7 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 			Uri image_uri = globalState.images.get(current_index);
 			bitmap = null;
 			try {
-				bitmap = decodeUri(image_uri);
+				bitmap = decodeUri2(image_uri);
 
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -599,7 +620,7 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 			Uri image_uri = globalState.images.get(current_index);
 			bitmap = null;
 			try {
-				bitmap = decodeUri(image_uri);
+				bitmap = decodeUri2(image_uri);
 
 			} catch (Exception e) {
 				// TODO Auto-generated catch block

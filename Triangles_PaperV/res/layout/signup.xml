@@ -20,7 +20,7 @@
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
+            android:gravity="center"
             android:orientation="vertical" 
             android:layout_marginLeft="@dimen/dim_40"
 	        android:layout_marginRight="@dimen/dim_40"
@@ -31,7 +31,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:src="@drawable/logo_2" />
+                android:src="@drawable/logo_2"
+		        android:layout_gravity="center_horizontal" />
             
 	        <TextView
 		        android:id="@+id/textView1"
@@ -41,7 +42,9 @@
 		        android:textColor="@color/dark_blue"
 		        android:textSize="35sp"
 		        android:textStyle="bold" 
-		        android:background="@drawable/logotxt"/>
+		        android:background="@drawable/logotxt"
+		        
+		        android:layout_gravity="center_horizontal"/>
 
 
 		    <TextView
@@ -52,7 +55,9 @@
 		        android:text="Sign up"
 		        android:textColor="@color/blue"
 		        android:textSize="20sp"
-		        android:textStyle="bold" />
+		        android:textStyle="bold"
+		        
+		        android:layout_gravity="center_horizontal" />
 
 
             
@@ -64,7 +69,8 @@
 		        android:layout_marginTop="5dp"
 		        android:ems="10"
 		        android:hint="Display Name"
-		        android:inputType="textPersonName" >
+		        android:inputType="textPersonName"
+		        android:layout_gravity="center_horizontal" >
 		    </EditText>
 		
 		    <EditText
@@ -75,7 +81,8 @@
 		        android:layout_marginTop="5dp"
 		        android:ems="10"
 		        android:hint="UserName"
-		        android:inputType="textPersonName" />
+		        android:inputType="textPersonName" 
+		        android:layout_gravity="center_horizontal"/>
 		
 		    <EditText
 		        android:id="@+id/password_field"
@@ -85,7 +92,8 @@
 		        android:layout_marginTop="5dp"
 		        android:ems="10"
 		        android:hint="Password"
-		        android:inputType="textPassword" />
+		        android:inputType="textPassword"
+		        android:layout_gravity="center_horizontal" />
 		
 		    <EditText
 		        android:id="@+id/email_field"
@@ -95,7 +103,8 @@
 		        android:layout_marginTop="5dp"
 		        android:ems="10"
 		        android:hint="Email"
-		        android:inputType="textEmailAddress" />
+		        android:inputType="textEmailAddress"
+		        android:layout_gravity="center_horizontal" />
 		
 		    <Button
 		        android:id="@+id/register"
@@ -107,7 +116,8 @@
 		        android:text="Sign Up"
 		        android:textColor="#ffffff"
 		        android:textSize="17sp"
-		        android:textStyle="bold" />
+		        android:textStyle="bold"
+		        android:layout_gravity="center_horizontal" />
 	        
 	        
 	        
@@ -116,7 +126,8 @@
 	            android:layout_height="wrap_content"
 	            android:orientation="horizontal" 
 	            android:layout_marginTop="@dimen/dim_20"
-		        android:layout_marginBottom="@dimen/dim_20">
+		        android:layout_marginBottom="@dimen/dim_20"
+		        android:layout_gravity="center_horizontal">
 	        
 		    
 			    <TextView
