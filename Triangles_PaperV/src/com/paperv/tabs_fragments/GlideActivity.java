@@ -314,55 +314,45 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 
 		if (globalState.glide_image != null) {
 
-			// image.setImageBitmap(GlobalState.getInstance().image);
 
 			globalState.images.add(globalState.glide_image);
-
 			int image_size = globalState.images.size();
-
 			current_index = image_size - 1;
-
 			Uri image_uri = globalState.images.get(current_index);
 			bitmap = null;
 
-			// imageFile = new File(getRealPathFromURI(image_uri));
-			// String path = imageFile.getAbsolutePath();
-
+			Log.d("helal", image_uri.toString());
 			String ext = "";
 			String fileName = "";
 			
 			try {
 
 				
-				ContentResolver cR = getActivity().getContentResolver();
-				ext = cR.getType(image_uri);
+				/*ContentResolver cR = getActivity().getContentResolver();
+				ext = cR.getType(image_uri);*/
 				
 				bitmap = decodeUri2(image_uri);
 				File dir = new File(Environment.getExternalStorageDirectory(),
 						"paperv_uploads");
 				dir.mkdir();
-				Log.d("yehia", dir.getAbsolutePath());
-				Log.d("yehia", ext);
 				
-				if(ext.contains("png")) 
+//				if(ext.contains("png")) 
 					fileName = "image" + (new Date()).getTime() + ".png";
-				
+				/*
 				else
-					fileName = "image" + (new Date()).getTime() + ".jpg";
+					fileName = "image" + (new Date()).getTime() + ".jpg";*/
 					
 				imageFile = new File(dir, fileName);
 				FileOutputStream out = new FileOutputStream(imageFile);
 				
 				
-				if(ext.contains("png"))
+//				if(ext.contains("png"))
 					bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
-				else
-					bitmap.compress(Bitmap.CompressFormat.JPEG, 80, out);
+				/*else
+					bitmap.compress(Bitmap.CompressFormat.JPEG, 80, out);*/
 				
-				Log.d("ext", ext);
 				
-				Log.d("bitmap", "File:" + imageFile.getName() + " Width:"
-						+ bitmap.getWidth() + " Height:" + bitmap.getHeight());
+			
 				out.flush();
 				out.close();
 
@@ -379,6 +369,33 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 
 	}
 
+	private Bitmap decodeUri(Uri uri, int factor)
+	{
+		bitmap = null;
+		BitmapFactory.Options o = new BitmapFactory.Options();
+		o.inSampleSize = factor;
+		try{
+			bitmap = BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(uri), null, o);
+			if (bitmap == null)
+				return decodeUri(uri, factor*2);
+			
+			else 
+			{
+				Log.d("helal", "Factor:"+factor + " Dim:"+bitmap.getWidth()+ " "+bitmap.getHeight());
+				if(bitmap.getWidth() > 900 || bitmap.getHeight() > 900)				
+					return decodeUri(uri, factor*2);
+			}
+		}
+		catch(Exception e)
+		{
+			return decodeUri(uri, factor * 2);
+		}
+		
+		
+		Log.d("helal", "Finally -- Factor:"+factor + " Dim:"+bitmap.getWidth()+ " "+bitmap.getHeight());
+		return bitmap;
+	}
+	
 	private Bitmap decodeUri2(Uri selectedImage) throws Exception{
 		Bitmap bitmap = null;
 		BitmapFactory.Options o = new BitmapFactory.Options();
@@ -392,44 +409,21 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 			if (bitmap == null)
 				satisfied = false;
 			
-			else if(bitmap.getWidth() > 1800 || bitmap.getHeight() > 1800)
+			else 
 			{
-				factor = factor * 2;
-				satisfied = false;
-			}			
+				Log.d("helal", "Factor:"+factor + " Dim:"+bitmap.getWidth()+ " "+bitmap.getHeight());
+				if(bitmap.getWidth() > 900 || bitmap.getHeight() > 900)
+				{
+					factor = factor * 2;
+					satisfied = false;
+				}
+			}
 		}
 		return bitmap;
 	}
-	private Bitmap decodeUri(Uri selectedImage) throws FileNotFoundException {
-		Bitmap bitmap;
-		BitmapFactory.Options o = new BitmapFactory.Options();
-		o.inSampleSize = 2;
-		bitmap = BitmapFactory.decodeStream(getActivity().getContentResolver()
-				.openInputStream(selectedImage), null, o);
-
-		if (bitmap == null) {
-			o.inSampleSize = 4;
-			bitmap = BitmapFactory.decodeStream(getActivity()
-					.getContentResolver().openInputStream(selectedImage), null,
-					o);
-		}
-		if (bitmap == null) {
-			o.inSampleSize = 8;
-			bitmap = BitmapFactory.decodeStream(getActivity()
-					.getContentResolver().openInputStream(selectedImage), null,
-					o);
-		}
-
-		// try again with more downsampling
-		if (bitmap == null) {
-			o.inSampleSize = 16;
-			bitmap = BitmapFactory.decodeStream(getActivity()
-					.getContentResolver().openInputStream(selectedImage), null,
-					o);
-		}
-		return bitmap;
-
-	}
+	
+	
+	
 
 	public Bitmap bitmapFromPath(String path) {
 		BitmapFactory.Options options = new BitmapFactory.Options();
@@ -755,6 +749,10 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 				video_link.setText("");
 
 				category.setText("Category");
+				
+				
+				globalState.images.clear();
+				imagesArray.clear();
 
 			} else {
 				Toast.makeText(getActivity(),
