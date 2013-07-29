@@ -17,6 +17,7 @@ import com.paperv.www.MainActivity;
 	public class LoginTask extends AsyncTask<Void, Void, Boolean> {
 		
 		public ProgressDialog dialog = null;
+		public boolean showDialog = true;
 		public Context myContext;
 		public String user_name;
 		public String password;
@@ -27,13 +28,17 @@ import com.paperv.www.MainActivity;
 		@Override
 		protected void onPreExecute() {
 			//dialog = new ProgressDialog(myContext);
-			dialog.setTitle(" PaperV ");
-
-			dialog.setIcon(R.drawable.ico_dialog);
-			dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-			dialog.setCancelable(false);
-			dialog.setMessage("Logging In ...");
-			dialog.show();
+			
+			if(showDialog)
+			{
+				dialog.setTitle(" PaperV ");
+				dialog.setIcon(R.drawable.ico_dialog);
+				dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+				dialog.setCancelable(false);
+				dialog.setMessage("Logging In ...");
+				dialog.show();
+			}
+			
 		}
 
 		@Override
@@ -53,7 +58,11 @@ import com.paperv.www.MainActivity;
 		protected void onPostExecute(Boolean result) {
 
 			try {
-				dialog.dismiss();
+				
+			if(showDialog)	
+					dialog.dismiss();
+				
+				
 			} catch (Exception e) {
 
 			}

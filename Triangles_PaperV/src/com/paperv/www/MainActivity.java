@@ -354,7 +354,18 @@ public class MainActivity extends FragmentActivity implements
 		
 		globalState.is_logout = true;
 		
-		super.onBackPressed();
+		
+		
+		if (mTabHost.getCurrentTab() != 0)
+		{
+			this.onTabChanged("tab" + R.string.lbl_home);
+			mTabHost.setOnTabChangedListener(this);
+			
+			mTabHost.setCurrentTab(0);
+		}
+		
+		else
+			super.onBackPressed();
 	}
 
 
