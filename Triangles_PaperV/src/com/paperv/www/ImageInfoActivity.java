@@ -2,9 +2,6 @@ package com.paperv.www;
 
 import java.util.List;
 
-import com.bugsense.trace.BugSenseHandler;
-
-
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
@@ -24,7 +21,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.paperv.www.R;
+import com.bugsense.trace.BugSenseHandler;
 import com.paperv.www.ImageInfo.Info;
 
 public class ImageInfoActivity extends ListActivity implements OnItemClickListener {

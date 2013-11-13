@@ -271,11 +271,13 @@ package com.aviary.android.feather;
 import it.sephiroth.android.library.imagezoom.ImageViewTouch;
 import it.sephiroth.android.library.imagezoom.ImageViewTouchBase.DisplayType;
 import it.sephiroth.android.library.imagezoom.graphics.IBitmapDrawable;
+import it.sephiroth.android.library.widget.BaseAdapterExtended;
+import it.sephiroth.android.library.widget.HorizontalVariableListView;
+import it.sephiroth.android.library.widget.HorizontalVariableListView.OnItemClickedListener;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -283,10 +285,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
 
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -296,56 +296,48 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
-import android.graphics.ColorFilter;
 import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore.Images.Media;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.view.Window;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
-import android.widget.ArrayAdapter;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ToggleButton;
-import android.widget.ViewAnimator;
-import android.widget.ViewFlipper;
 
-import com.aviary.android.feather.FilterManager.FeatherContext;
-import com.aviary.android.feather.FilterManager.OnBitmapChangeListener;
-import com.aviary.android.feather.FilterManager.OnToolListener;
+import com.aviary.android.feather.AviaryMainController.FeatherContext;
+import com.aviary.android.feather.AviaryMainController.OnBitmapChangeListener;
+import com.aviary.android.feather.AviaryMainController.OnToolListener;
 import com.aviary.android.feather.async_tasks.DownloadImageAsyncTask;
 import com.aviary.android.feather.async_tasks.DownloadImageAsyncTask.OnImageDownloadListener;
 import com.aviary.android.feather.async_tasks.ExifTask;
-import com.aviary.android.feather.effects.AbstractEffectPanel.ContentPanel;
-import com.aviary.android.feather.effects.EffectLoaderService;
-import com.aviary.android.feather.graphics.AnimatedRotateDrawable;
-import com.aviary.android.feather.graphics.RepeatableHorizontalDrawable;
-import com.aviary.android.feather.graphics.ToolIconsDrawable;
+import com.aviary.android.feather.effects.AbstractPanel.ContentPanel;
+import com.aviary.android.feather.effects.AbstractPanelLoaderService;
 import com.aviary.android.feather.headless.AviaryInitializationException;
 import com.aviary.android.feather.headless.filters.NativeFilterProxy;
 import com.aviary.android.feather.headless.media.ExifInterfaceWrapper;
 import com.aviary.android.feather.headless.moa.Moa;
 import com.aviary.android.feather.headless.utils.IOUtils;
+import com.aviary.android.feather.library.Constants;
 import com.aviary.android.feather.library.MonitoredActivity;
-import com.aviary.android.feather.library.content.EffectEntry;
 import com.aviary.android.feather.library.content.FeatherIntent;
+import com.aviary.android.feather.library.content.ToolEntry;
 import com.aviary.android.feather.library.filters.FilterLoaderFactory;
-import com.aviary.android.feather.library.graphics.animation.Flip3dAnimation;
 import com.aviary.android.feather.library.log.LoggerFactory;
 import com.aviary.android.feather.library.log.LoggerFactory.Logger;
 import com.aviary.android.feather.library.log.LoggerFactory.LoggerType;
@@ -357,21 +349,17 @@ import com.aviary.android.feather.library.services.drag.DragLayer;
 import com.aviary.android.feather.library.tracking.Tracker;
 import com.aviary.android.feather.library.utils.BitmapUtils;
 import com.aviary.android.feather.library.utils.ImageLoader.ImageSizes;
+import com.aviary.android.feather.library.utils.PackageManagerUtils;
 import com.aviary.android.feather.library.utils.ReflectionUtils;
 import com.aviary.android.feather.library.utils.ScreenUtils;
 import com.aviary.android.feather.library.utils.SystemUtils;
 import com.aviary.android.feather.library.utils.UIConfiguration;
 import com.aviary.android.feather.utils.ThreadUtils;
-import com.aviary.android.feather.utils.UIUtils;
-import com.aviary.android.feather.widget.BottombarViewFlipper;
-import com.aviary.android.feather.widget.IToast;
-import com.aviary.android.feather.widget.ToolbarView;
-import com.aviary.android.feather.widget.ToolbarView.OnToolbarClickListener;
-import com.aviary.android.feather.widget.wp.CellLayout;
-import com.aviary.android.feather.widget.wp.CellLayout.CellInfo;
-import com.aviary.android.feather.widget.wp.Workspace;
-import com.aviary.android.feather.widget.wp.Workspace.OnPageChangeListener;
-import com.aviary.android.feather.widget.wp.WorkspaceIndicator;
+import com.aviary.android.feather.widget.AviaryBottomBarViewFlipper;
+import com.aviary.android.feather.widget.AviaryBottomBarViewFlipper.OnBottomBarItemClickListener;
+import com.aviary.android.feather.widget.AviaryNavBarViewFlipper;
+import com.aviary.android.feather.widget.AviaryNavBarViewFlipper.OnToolbarClickListener;
+import com.aviary.android.feather.widget.AviaryToast;
 
 /**
  * FeatherActivity is the main activity controller.
@@ -379,68 +367,51 @@ import com.aviary.android.feather.widget.wp.WorkspaceIndicator;
  * @author alessandro
  */
 public class FeatherActivity extends MonitoredActivity implements OnToolbarClickListener, OnImageDownloadListener, OnToolListener,
-		FeatherContext, OnPageChangeListener, OnBitmapChangeListener {
+		FeatherContext, OnBitmapChangeListener, OnItemClickedListener, OnBottomBarItemClickListener {
 
-	/** The Constant ALERT_CONFIRM_EXIT. */
 	private static final int ALERT_CONFIRM_EXIT = 0;
-
-	/** The Constant ALERT_DOWNLOAD_ERROR. */
 	private static final int ALERT_DOWNLOAD_ERROR = 1;
-
-	/** The Constant ALERT_REVERT_IMAGE. */
 	private static final int ALERT_REVERT_IMAGE = 2;
+	private static final int ALERT_FEEDBACK = 3;
+	private static final int ALERT_ABOUT = 4;
 
 	static {
 		logger = LoggerFactory.getLogger( FeatherActivity.class.getSimpleName(), LoggerType.ConsoleLoggerType );
 	}
 
 	/** SHA-1 version id. */
-	public static final String ID = "$Id: 5ce0c1e47341c449a5ffec720d916bfb96df653e $";
+	public static final String ID = "$Id: 8bd4b8dd473d44733e940998f524134a1ae21bcd $";
 
 	/** delay between click and panel opening */
 	private static final int TOOLS_OPEN_DELAY_TIME = 50;
 
-	/** The default result code. */
 	private int pResultCode = RESULT_CANCELED;
 
-	/** The main top toolbar view. */
-	private ToolbarView mToolbar;
+	/** The main toolbar view. */
+	private AviaryNavBarViewFlipper mToolbar;
 
-	/** The maim tools workspace. */
-	private Workspace mWorkspace;
-
-	/** The main view flipper. */
-	private ViewAnimator mViewFlipper;
+	/** the main tools list view */
+	private HorizontalVariableListView mToolsList;
 
 	/** The maim image view. */
 	private ImageViewTouch mImageView;
 
+	/** The custom Toast used for modal loaders */
+	private AviaryToast mToastLoader;
+
 	/**
-	 * The main drawing view container for tools implementing
-	 * {@link ContentPanel}.
+	 * The main drawing view container for tools implementing {@link ContentPanel}.
 	 */
 	private ViewGroup mDrawingViewContainer;
 
 	/** inline progress loader. */
 	private View mInlineProgressLoader;
 
-	/** The main filter controller. */
-	protected FilterManager mFilterManager;
+	/** The main controller. */
+	protected AviaryMainController mMainController;
 
 	/** tool list to show. */
 	protected List<String> mToolList;
-
-	/** The items per page for the main workspace. */
-	private int mItemsPerPage;
-
-	/** The total screen cols. */
-	private int mScreenCols;
-
-	/** The total screen rows. */
-	private int mScreenRows;
-
-	/** The workspace indicator. */
-	private WorkspaceIndicator mWorkspaceIndicator;
 
 	/** saving variable. */
 	protected boolean mSaving;
@@ -448,8 +419,8 @@ public class FeatherActivity extends MonitoredActivity implements OnToolbarClick
 	/** The current screen orientation. */
 	private int mOrientation;
 
-	/** The bottom bar flipper. */
-	private BottombarViewFlipper mBottomBarFlipper;
+	/** The bottom bar view. */
+	private AviaryBottomBarViewFlipper mBottomBarFlipper;
 
 	/** default logger. */
 	protected static Logger logger;
@@ -461,13 +432,7 @@ public class FeatherActivity extends MonitoredActivity implements OnToolbarClick
 	protected boolean mHideExitAlertConfirmation = false;
 
 	/** The list of tools entries. */
-	private List<EffectEntry> mListEntries;
-
-	/** The toolbar content animator. */
-	private ViewFlipper mToolbarContentAnimator;
-
-	/** The toolbar main animator. */
-	private ViewFlipper mToolbarMainAnimator;
+	private List<ToolEntry> mListEntries;
 
 	/** the popup container */
 	private ViewGroup mPopupContainer;
@@ -477,70 +442,72 @@ public class FeatherActivity extends MonitoredActivity implements OnToolbarClick
 	/** Main image downloader task **/
 	private DownloadImageAsyncTask mDownloadTask;
 
-	private static class MyUIHandler extends Handler {
+	/** The current Activity is visible and active */
+	private boolean mIsRunning;
 
-		private WeakReference<FeatherActivity> mParent;
-
-		MyUIHandler ( FeatherActivity parent ) {
-			mParent = new WeakReference<FeatherActivity>( parent );
-		}
+	private Handler mUIHandler = new Handler( new Handler.Callback() {
 
 		@Override
-		public void handleMessage( Message msg ) {
-			super.handleMessage( msg );
-
+		public boolean handleMessage( Message msg ) {
 			logger.info( "handleMessage: " + msg.what );
 
-			FeatherActivity parent = mParent.get();
-			if ( null != parent ) {
+			switch ( msg.what ) {
+				case AviaryMainController.STATE_OPENING:
+					mToolbar.setClickable( false );
+					break;
 
-				switch ( msg.what ) {
-					case FilterManager.STATE_OPENING:
-						parent.mToolbar.setClickable( false );
-						parent.resetToolIndicator();
-						break;
+				case AviaryMainController.STATE_OPENED:
+					mToolbar.setClickable( true );
+					break;
 
-					case FilterManager.STATE_OPENED:
-						parent.mToolbar.setClickable( true );
-						break;
+				case AviaryMainController.STATE_CLOSING:
+					mToolbar.setClickable( false );
+					mImageView.setVisibility( View.VISIBLE );
+					break;
 
-					case FilterManager.STATE_CLOSING:
-						parent.mToolbar.setClickable( false );
-						parent.mImageView.setVisibility( View.VISIBLE );
-						break;
+				case AviaryMainController.STATE_CLOSED:
+					mToolsList.setEnabled( true );
+					mToolbar.setClickable( true );
+					mToolbar.close();
+					mToolbar.setSaveEnabled( true );
+					mToolsList.requestFocus();
+					break;
 
-					case FilterManager.STATE_CLOSED:
-						parent.mWorkspace.setEnabled( true );
-						parent.mToolbar.setClickable( true );
-						parent.mToolbar.setState( ToolbarView.STATE.STATE_SAVE, true );
-						parent.mToolbar.setSaveEnabled( true );
-						parent.mWorkspace.requestFocus();
-						break;
+				case AviaryMainController.STATE_DISABLED:
+					mToolsList.setEnabled( false );
+					mToolbar.setClickable( false );
+					mToolbar.setSaveEnabled( false );
+					break;
 
-					case FilterManager.STATE_DISABLED:
-						parent.mWorkspace.setEnabled( false );
-						parent.mToolbar.setClickable( false );
-						parent.mToolbar.setSaveEnabled( false );
-						break;
+				case AviaryMainController.STATE_CONTENT_READY:
+					mImageView.setVisibility( View.GONE );
+					break;
 
-					case FilterManager.STATE_CONTENT_READY:
-						parent.mImageView.setVisibility( View.GONE );
-						break;
+				case AviaryMainController.STATE_READY:
+					mToolbar.setTitle( mMainController.getActiveTool().labelResourceId, false );
+					mToolbar.open();
+					// once a tool panel has been opened, reset the main image view
+					// display
+					// mImageView.resetDisplay();
+					mImageView.resetMatrix();
+					break;
 
-					case FilterManager.STATE_READY:
-						parent.mToolbar.setTitle( parent.mFilterManager.getCurrentEffect().labelResourceId, false );
-						parent.mToolbar.setState( ToolbarView.STATE.STATE_APPLY, false );
-						
-						// once a tool panel has been opened, reset the main
-						// image view display
-						parent.mImageView.resetDisplay();
-						break;
-				}
+				case AviaryMainController.TOOLBAR_TITLE:
+					mToolbar.setTitle( (CharSequence) msg.obj );
+					break;
+
+				case AviaryMainController.TOOLBAR_TITLE_INT:
+					mToolbar.setTitle( msg.arg1 );
+					break;
+
+				case AviaryMainController.TOOLBAR_APPLY_VISIBILITY:
+					mToolbar.setApplyVisible( msg.arg1 == 0 ? false : true );
+					break;
 			}
-		}
-	}
+			return true;
 
-	private MyUIHandler mUIHandler;
+		}
+	} );
 
 	/**
 	 * The default broadcast receiver. It receives messages from the
@@ -551,14 +518,14 @@ public class FeatherActivity extends MonitoredActivity implements OnToolbarClick
 		@Override
 		public void onReceive( Context context, Intent intent ) {
 
-			if ( mFilterManager != null ) {
+			if ( mMainController != null ) {
 
 				Bundle extras = intent.getExtras();
 				if ( null != extras ) {
 					if ( extras.containsKey( FeatherIntent.APPLICATION_CONTEXT ) ) {
 						String app_context = extras.getString( FeatherIntent.APPLICATION_CONTEXT );
 						if ( app_context.equals( context.getApplicationContext().getPackageName() ) ) {
-							mFilterManager.onPluginChanged( intent );
+							mMainController.onPluginChanged( intent );
 						}
 					}
 				}
@@ -578,11 +545,15 @@ public class FeatherActivity extends MonitoredActivity implements OnToolbarClick
 	protected final void onSetResult( int resultCode, Intent data ) {
 		pResultCode = resultCode;
 
-		if ( null != data ) {
+		if ( null != data && null != mMainController ) {
+			
+			LocalDataService service = mMainController.getService( LocalDataService.class );
+			
 			// copy the relevant extras from the original intent
-			if ( Constants.containsValue( Constants.EXTRA_OUTPUT_HIRES_SESSION_ID ) ) data.putExtra(
-					Constants.EXTRA_OUTPUT_HIRES_SESSION_ID,
-					Constants.getValueFromIntent( Constants.EXTRA_OUTPUT_HIRES_SESSION_ID, "" ) );
+			if ( service.getIntentContainsKey( Constants.EXTRA_OUTPUT_HIRES_SESSION_ID ) ) {
+				data.putExtra( Constants.EXTRA_OUTPUT_HIRES_SESSION_ID,
+						service.getIntentValue( Constants.EXTRA_OUTPUT_HIRES_SESSION_ID, "" ) );
+			}
 		}
 
 		setResult( resultCode, data );
@@ -594,27 +565,30 @@ public class FeatherActivity extends MonitoredActivity implements OnToolbarClick
 		onPreCreate();
 
 		super.onCreate( savedInstanceState );
-		
+
 		// if the device is not considered a tablet
 		// let's disable the landascape orientation
-		if( !ScreenUtils.isTablet( this ) ) {
+		if ( !ScreenUtils.isTablet( this ) ) {
 			setRequestedOrientation( ActivityInfo.SCREEN_ORIENTATION_PORTRAIT );
 		}
 
-		setContentView( R.layout.feather_main );
+		setContentView( R.layout.aviary_main_view );
 
-		onInitializeUtils();
-		initializeUI();
-
-		onRegisterReceiver();
+		// Create the main Controller
+		mMainController = new AviaryMainController( this, mUIHandler, getApiKey( this ) );
 		
-		// initiate the filter manager
-		mUIHandler = new MyUIHandler( this );
-		mFilterManager = new FilterManager( this, mUIHandler, getApiKey( this ) );
-		mFilterManager.setOnToolListener( this );
-		mFilterManager.setOnBitmapChangeListener( this );
-		mFilterManager.setDragLayer( mDragLayer );
+		LocalDataService dataService = mMainController.getService( LocalDataService.class );
+		dataService.setOriginalIntent( getIntent() );
+		
+		onInitializeUtils();
+		onInitializeUI();
+		onRegisterReceiver();
 
+		// initiate the filter manager
+		mMainController.setOnToolListener( this );
+		mMainController.setOnBitmapChangeListener( this );
+		mMainController.setDragLayer( mDragLayer );
+		
 		// first check the validity of the incoming intent
 		Uri srcUri = handleIntent( getIntent() );
 
@@ -624,8 +598,7 @@ public class FeatherActivity extends MonitoredActivity implements OnToolbarClick
 			return;
 		}
 
-		LocalDataService data = mFilterManager.getService( LocalDataService.class );
-		data.setSourceImageUri( srcUri );
+		dataService.setSourceImageUri( srcUri );
 
 		// download the requested image
 		loadImage( srcUri );
@@ -656,8 +629,6 @@ public class FeatherActivity extends MonitoredActivity implements OnToolbarClick
 	 * Initialize utility classes
 	 */
 	protected void onInitializeUtils() {
-		UIUtils.init( this );
-		Constants.init( this );
 
 		final String api_key = getApiKey( this );
 
@@ -665,27 +636,22 @@ public class FeatherActivity extends MonitoredActivity implements OnToolbarClick
 			NativeFilterProxy.init( this, api_key );
 		} catch ( AviaryInitializationException e ) {
 			e.printStackTrace();
-			
+
 			Toast.makeText( getApplicationContext(), "Sorry an error occurred: " + e.getMessage(), Toast.LENGTH_LONG ).show();
 			finish();
 		}
-
 
 		if ( api_key == null || !( api_key.length() > 0 ) ) {
 			logger.error( "Attention. API-KEY cannot be found or is invalid" );
 			finish();
 		}
-		
-		if( !Moa.getEnterpriseVersion() ) {
-			Constants.getOriginalBundle().remove( Constants.EXTRA_WHITELABEL );
+
+		if ( !Moa.getEnterpriseVersion() ) {
+			LocalDataService dataService = mMainController.getService( LocalDataService.class );
+			dataService.remove( Constants.EXTRA_WHITELABEL );
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see android.app.Activity#onSaveInstanceState(android.os.Bundle)
-	 */
 	@Override
 	protected void onSaveInstanceState( Bundle outState ) {
 		logger.info( "onSaveInstanceState" );
@@ -698,76 +664,59 @@ public class FeatherActivity extends MonitoredActivity implements OnToolbarClick
 		super.onRestoreInstanceState( savedInstanceState );
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.aviary.android.feather.MonitoredActivity#onDestroy()
-	 */
 	@Override
 	protected void onDestroy() {
 		logger.info( "onDestroy" );
+
 		if ( pResultCode != RESULT_OK ) Tracker.recordTag( "feather: cancelled" );
+
 		super.onDestroy();
+
 		unregisterReceiver( mDefaultReceiver );
+
 		mToolbar.setOnToolbarClickListener( null );
-
-		mFilterManager.setOnBitmapChangeListener( null );
-		mFilterManager.setOnToolListener( null );
-
-		mWorkspace.setOnPageChangeListener( null );
+		mBottomBarFlipper.setOnBottomBarItemClickListener( null );
+		mMainController.setOnBitmapChangeListener( null );
+		mMainController.setOnToolListener( null );
 
 		if ( null != mDownloadTask ) {
 			mDownloadTask.setOnLoadListener( null );
 			mDownloadTask = null;
 		}
 
-		if ( mFilterManager != null ) {
-			mFilterManager.dispose();
+		if ( mMainController != null ) {
+			mMainController.dispose();
 		}
 
 		mUIHandler = null;
-		mFilterManager = null;
-	}
-
-	@Override
-	protected void onPause() {
-		super.onPause();
-		// here we tweak the default android animation between activities
-		// just comment the next line if you don't want to have custom
-		// animations
-		overridePendingTransition( R.anim.feather_app_zoom_enter_large, R.anim.feather_app_zoom_exit_large );
+		mMainController = null;
 	}
 
 	/**
-	 * Initialize ui.
+	 * Initialize varius UI elements.
 	 */
-	@SuppressWarnings ( "deprecation" )
-	private void initializeUI() {
-		// forcing a horizontal repeatable background
-		findViewById( R.id.workspace_container ).setBackgroundDrawable(
-				new RepeatableHorizontalDrawable( getResources(), R.drawable.feather_toolbar_background ) );
-
-		findViewById( R.id.toolbar ).setBackgroundDrawable(
-				new RepeatableHorizontalDrawable( getResources(), R.drawable.feather_toolbar_background ) );
-
+	private void onInitializeUI() {
 		// register the toolbar listeners
 		mToolbar.setOnToolbarClickListener( this );
+
+		// image view
 		mImageView.setDoubleTapEnabled( false );
 		mImageView.setDisplayType( DisplayType.FIT_IF_BIGGER );
 
-		// initialize the workspace
-		initWorkspace();
+		// initialize tools UI
+		mToolsList.setGravity( Gravity.CENTER );
+		mToolsList.setOverScrollMode( HorizontalVariableListView.OVER_SCROLL_ALWAYS );
+		mToolsList.setAdapter( null );
 
-		if ( Constants.containsValue( Constants.EXTRA_WHITELABEL ) ) {
-			findViewById( R.id.aviary_logo_small ).setVisibility( View.GONE );
+		mBottomBarFlipper.setOnBottomBarItemClickListener( this );
+
+		LocalDataService dataService = mMainController.getService( LocalDataService.class );
+		
+		if ( dataService.getIntentContainsKey( Constants.EXTRA_WHITELABEL ) ) {
+			mBottomBarFlipper.hideLogo();
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see android.app.Activity#onCreateDialog(int)
-	 */
 	@Override
 	protected Dialog onCreateDialog( int id ) {
 
@@ -775,15 +724,16 @@ public class FeatherActivity extends MonitoredActivity implements OnToolbarClick
 
 		switch ( id ) {
 			case ALERT_CONFIRM_EXIT:
-				dialog = new AlertDialog.Builder( this ).setTitle( R.string.confirm ).setMessage( R.string.confirm_quit_message )
-						.setPositiveButton( R.string.yes_leave, new DialogInterface.OnClickListener() {
+				dialog = new AlertDialog.Builder( this ).setTitle( R.string.feather_confirm )
+						.setMessage( R.string.confirm_quit_message )
+						.setPositiveButton( R.string.feather_yes_leave, new DialogInterface.OnClickListener() {
 
 							@Override
 							public void onClick( DialogInterface dialog, int which ) {
 								dialog.dismiss();
 								onBackPressed( true );
 							}
-						} ).setNegativeButton( R.string.keep_editing, new DialogInterface.OnClickListener() {
+						} ).setNegativeButton( R.string.feather_keep_editing, new DialogInterface.OnClickListener() {
 
 							@Override
 							public void onClick( DialogInterface dialog, int which ) {
@@ -793,13 +743,13 @@ public class FeatherActivity extends MonitoredActivity implements OnToolbarClick
 				break;
 
 			case ALERT_DOWNLOAD_ERROR:
-				dialog = new AlertDialog.Builder( this ).setTitle( R.string.attention )
-						.setMessage( R.string.error_download_image_message ).create();
+				dialog = new AlertDialog.Builder( this ).setTitle( R.string.feather_attention )
+						.setMessage( R.string.feather_error_download_image_message ).create();
 				break;
 
 			case ALERT_REVERT_IMAGE:
-				dialog = new AlertDialog.Builder( this ).setTitle( R.string.revert_dialog_title )
-						.setMessage( R.string.revert_dialog_message )
+				dialog = new AlertDialog.Builder( this ).setTitle( R.string.feather_revert_dialog_title )
+						.setMessage( R.string.feather_revert_dialog_message )
 						.setPositiveButton( android.R.string.yes, new DialogInterface.OnClickListener() {
 
 							@Override
@@ -815,7 +765,98 @@ public class FeatherActivity extends MonitoredActivity implements OnToolbarClick
 							}
 						} ).create();
 				break;
+
+			case ALERT_FEEDBACK:
+				dialog = createFeedbackDialog();
+				break;
+
+			case ALERT_ABOUT:
+				dialog = createAboutDialog();
+				break;
 		}
+
+		return dialog;
+	}
+
+	/**
+	 * Creates the About dialog
+	 * @return
+	 */
+	protected Dialog createAboutDialog() {
+		final Dialog dialog = new Dialog( FeatherActivity.this, R.style.AviaryTheme_Dialog_Custom );
+		dialog.requestWindowFeature( Window.FEATURE_NO_TITLE );
+		dialog.setContentView( R.layout.aviary_feedback_dialog_view );
+		dialog.setCanceledOnTouchOutside( true );
+
+		Window dialogWindow = dialog.getWindow();
+		TextView textVersion = (TextView) dialogWindow.findViewById( R.id.aviary_version );
+		TextView textMessahe = (TextView) dialogWindow.findViewById( R.id.aviary_text );
+		Button button1 = (Button) dialogWindow.findViewById( R.id.aviary_button1 );
+		
+		textVersion.setText( getString( R.string.feather_version ) + " " + SDK_VERSION );
+		textMessahe.setText( R.string.feather_about_dialog_message );
+		button1.setText( "aviary.com/android" );
+
+		dialogWindow.findViewById( R.id.aviary_button2 ).setOnClickListener( new OnClickListener() {
+
+			@Override
+			public void onClick( View view ) {
+				dialog.dismiss();
+			}
+		} );
+
+		dialogWindow.findViewById( R.id.aviary_button1 ).setOnClickListener( new OnClickListener() {
+
+			@Override
+			public void onClick( View v ) {
+				final Intent intent = new Intent( android.content.Intent.ACTION_VIEW );
+				intent.setData( Uri.parse( "http://www.aviary.com/android" ) );
+				FeatherActivity.this.startActivity( intent );
+				dialog.dismiss();
+			}
+		} );
+		return dialog;
+	}
+
+	/**
+	 * Creates the Feedback dialog
+	 * @return
+	 */
+	protected Dialog createFeedbackDialog() {
+		final Dialog dialog = new Dialog( FeatherActivity.this, R.style.AviaryTheme_Dialog_Custom );
+		dialog.requestWindowFeature( Window.FEATURE_NO_TITLE );
+		dialog.setContentView( R.layout.aviary_feedback_dialog_view );
+		dialog.setCanceledOnTouchOutside( true );
+
+		Window dialogWindow = dialog.getWindow();
+		TextView textVersion = (TextView) dialogWindow.findViewById( R.id.aviary_version );
+		TextView textMessahe = (TextView) dialogWindow.findViewById( R.id.aviary_text );
+		Button button1 = (Button) dialogWindow.findViewById( R.id.aviary_button1 );
+		
+		textVersion.setText( getString( R.string.feather_version ) + " " + SDK_VERSION );
+		textMessahe.setText( R.string.feather_feedback_dialog_message );
+		button1.setText( R.string.feather_send_feedback );
+
+		dialogWindow.findViewById( R.id.aviary_button2 ).setOnClickListener( new OnClickListener() {
+
+			@Override
+			public void onClick( View view ) {
+				dialog.dismiss();
+			}
+		} );
+
+		dialogWindow.findViewById( R.id.aviary_button1 ).setOnClickListener( new OnClickListener() {
+
+			@Override
+			public void onClick( View v ) {
+				final Intent intent = new Intent( android.content.Intent.ACTION_SEND );
+				intent.setType( "plain/text" );
+				intent.putExtra( android.content.Intent.EXTRA_EMAIL, new String[] { "support@aviary.com" } );
+				intent.putExtra( android.content.Intent.EXTRA_SUBJECT, "Aviary Android Feedback" );
+				FeatherActivity.this.startActivity( intent );
+				dialog.dismiss();
+			}
+		} );
 
 		return dialog;
 	}
@@ -826,7 +867,7 @@ public class FeatherActivity extends MonitoredActivity implements OnToolbarClick
 	private void onRevert() {
 		Tracker.recordTag( "feather: reset image" );
 
-		LocalDataService service = mFilterManager.getService( LocalDataService.class );
+		LocalDataService service = mMainController.getService( LocalDataService.class );
 		loadImage( service.getSourceImageUri() );
 	}
 
@@ -846,114 +887,30 @@ public class FeatherActivity extends MonitoredActivity implements OnToolbarClick
 		if ( mOrientation != newConfig.orientation ) {
 			mOrientation = newConfig.orientation;
 
-			Constants.update( this );
+			if ( null != mMainController ) {
+				mMainController.onConfigurationChanged( newConfig );
+			}
 
-			mHandler.post( new Runnable() {
-
-				@Override
-				public void run() {
-
-					boolean handled = false;
-					if ( mFilterManager != null ) handled = mFilterManager.onConfigurationChanged( newConfig );
-
-					if ( !handled ) {
-						initWorkspace();
-						delayedInitializeTools();
-					} else {
-						mHandler.post( new Runnable() {
-
-							@Override
-							public void run() {
-								initWorkspace();
-								delayedInitializeTools();
-							}
-						} );
-					}
-				}
-			} );
 		}
 		mOrientation = newConfig.orientation;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see android.app.Activity#onCreateOptionsMenu(android.view.Menu)
-	 */
-	@Override
-	public boolean onCreateOptionsMenu( Menu menu ) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate( R.menu.feather_menu, menu );
-		return true;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see android.app.Activity#onPrepareOptionsMenu(android.view.Menu)
-	 */
 	@Override
 	public boolean onPrepareOptionsMenu( Menu menu ) {
 		if ( mSaving ) return false;
-		if ( mFilterManager.getEnabled() && mFilterManager.isClosed() ) {
+		if ( mMainController.getEnabled() && mMainController.isClosed() ) {
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see android.app.Activity#onOptionsItemSelected(android.view.MenuItem)
-	 */
 	@SuppressWarnings ( "deprecation" )
 	@Override
-	public boolean onOptionsItemSelected( MenuItem item ) {
-
-		int id = item.getItemId();
-
-		if ( id == R.id.edit_reset ) {
-			showDialog( ALERT_REVERT_IMAGE );
-			return true;
-		} else if ( id == R.id.edit_cancel ) {
-			onMenuCancel();
-			return true;
-		} else if ( id == R.id.edit_save ) {
-			onSaveClick();
-			return true;
-		} else if ( id == R.id.edit_premium ) {
-			onMenuFindMorePlugins();
-			return true;
-		} else {
-			return super.onOptionsItemSelected( item );
+	public void onBottomBarItemClick( int id ) {
+		if ( id == R.id.aviary_white_logo ) {
+			showDialog( ALERT_ABOUT );
 		}
-	}
-
-	/**
-	 * User clicked on cancel from the main menu
-	 */
-	@SuppressWarnings ( "deprecation" )
-	private void onMenuCancel() {
-		if ( mFilterManager.getBitmapIsChanged() ) {
-			if ( mHideExitAlertConfirmation ) {
-				onSetResult( RESULT_CANCELED, null );
-				finish();
-			} else {
-				showDialog( ALERT_CONFIRM_EXIT );
-			}
-		} else {
-			onSetResult( RESULT_CANCELED, null );
-			finish();
-		}
-	}
-
-	/**
-	 * User clicked on the store main menu item
-	 */
-	private void onMenuFindMorePlugins() {
-		mFilterManager.searchPlugin( -1 );
-		Tracker.recordTag( "menu: get_more" );
 	}
 
 	/**
@@ -968,24 +925,13 @@ public class FeatherActivity extends MonitoredActivity implements OnToolbarClick
 			mDownloadTask.setOnLoadListener( null );
 			mDownloadTask = null;
 		}
+		
+		LocalDataService dataService = mMainController.getService( LocalDataService.class );
+		int maxSize = dataService.getIntentValue( Constants.EXTRA_MAX_IMAGE_SIZE, 0 );
 
-		mDownloadTask = new DownloadImageAsyncTask( data );
+		mDownloadTask = new DownloadImageAsyncTask( data, maxSize );
 		mDownloadTask.setOnLoadListener( this );
 		mDownloadTask.execute( getBaseContext() );
-	}
-
-	/**
-	 * Inits the workspace.
-	 */
-	private void initWorkspace() {
-		mScreenRows = getResources().getInteger( R.integer.feather_config_portraitRows );
-		mScreenCols = getResources().getInteger( R.integer.toolCount );
-		mItemsPerPage = mScreenRows * mScreenCols;
-
-		mWorkspace.setHapticFeedbackEnabled( false );
-		mWorkspace.setIndicator( mWorkspaceIndicator );
-		mWorkspace.setOnPageChangeListener( this );
-		mWorkspace.setAdapter( null );
 	}
 
 	@Override
@@ -994,61 +940,28 @@ public class FeatherActivity extends MonitoredActivity implements OnToolbarClick
 
 		mDragLayer = (DragLayer) findViewById( R.id.dragLayer );
 
-		mToolbar = (ToolbarView) findViewById( R.id.toolbar );
-		mBottomBarFlipper = (BottombarViewFlipper) findViewById( R.id.bottombar_view_flipper );
+		mToolbar = (AviaryNavBarViewFlipper) findViewById( R.id.aviary_navbar );
+		mBottomBarFlipper = (AviaryBottomBarViewFlipper) findViewById( R.id.aviary_bottombar );
 
-		mWorkspace = (Workspace) mBottomBarFlipper.findViewById( R.id.workspace );
+		mToolsList = mBottomBarFlipper.getToolsListView();
+
 		mImageView = (ImageViewTouch) findViewById( R.id.image );
 		mDrawingViewContainer = (ViewGroup) findViewById( R.id.drawing_view_container );
 		mInlineProgressLoader = findViewById( R.id.image_loading_view );
-		mWorkspaceIndicator = (WorkspaceIndicator) findViewById( R.id.workspace_indicator );
-		mViewFlipper = ( (ViewAnimator) findViewById( R.id.main_flipper ) );
-
-		mToolbarMainAnimator = ( (ViewFlipper) mToolbar.findViewById( R.id.top_indicator_main ) );
-		mToolbarContentAnimator = ( (ViewFlipper) mToolbar.findViewById( R.id.top_indicator_panel ) );
 
 		mPopupContainer = (ViewGroup) findViewById( R.id.feather_dialogs_container );
 
-		// update the progressbar animation drawable
-		AnimatedRotateDrawable d = new AnimatedRotateDrawable( getResources(), R.drawable.feather_spinner_white_16 );
-		ProgressBar view = (ProgressBar) mToolbarContentAnimator.getChildAt( 1 );
-		view.setIndeterminateDrawable( d );
-
-		// adding the bottombar content view at runtime, otherwise fail to get
-		// the corrent child
-		// LayoutInflater inflater = (LayoutInflater) getSystemService(
-		// Context.LAYOUT_INFLATER_SERVICE );
-		// View contentView = inflater.inflate(
-		// R.layout.feather_option_panel_content, mBottomBarFlipper, false );
-
-		// FrameLayout.LayoutParams p = new FrameLayout.LayoutParams(
-		// FrameLayout.LayoutParams.MATCH_PARENT,
-		// FrameLayout.LayoutParams.WRAP_CONTENT );
-		// p.gravity = Gravity.BOTTOM;
-
-		// mBottomBarFlipper.addView( contentView, 0, p );
 		mBottomBarFlipper.setDisplayedChild( 1 );
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see android.app.Activity#onBackPressed()
-	 */
 	@SuppressWarnings ( "deprecation" )
 	@Override
 	public void onBackPressed() {
-		if ( !mFilterManager.onBackPressed() ) {
+		if ( !mMainController.onBackPressed() ) {
 
 			if ( mToastLoader != null ) mToastLoader.hide();
 
-			// hide info screen if opened
-			if ( isInfoScreenVisible() ) {
-				hideInfoScreen();
-				return;
-			}
-
-			if ( mFilterManager.getBitmapIsChanged() ) {
+			if ( mMainController.getBitmapIsChanged() ) {
 
 				if ( mHideExitAlertConfirmation ) {
 					super.onBackPressed();
@@ -1062,7 +975,7 @@ public class FeatherActivity extends MonitoredActivity implements OnToolbarClick
 	}
 
 	/**
-	 * On back pressed.
+	 * Override the default behavior of back pressed
 	 * 
 	 * @param force
 	 *            the super backpressed behavior
@@ -1073,17 +986,16 @@ public class FeatherActivity extends MonitoredActivity implements OnToolbarClick
 	}
 
 	/**
-	 * Handle the original received intent.
+	 * Handles the original input Intent.
 	 * 
 	 * @param intent
-	 *            the intent
-	 * @return the uri
+	 * @return the uri of the image to be loaded
 	 */
 	protected Uri handleIntent( Intent intent ) {
-		
+
 		logger.info( "handleIntent" );
 
-		LocalDataService service = mFilterManager.getService( LocalDataService.class );
+		LocalDataService service = mMainController.getService( LocalDataService.class );
 
 		if ( intent != null && intent.getData() != null ) {
 			Uri data = intent.getData();
@@ -1095,7 +1007,7 @@ public class FeatherActivity extends MonitoredActivity implements OnToolbarClick
 					data = Uri.parse( data.toString().replace( "com.android.gallery3d", "com.google.android.gallery3d" ) );
 				}
 			}
-			
+
 			logger.log( "src: " + data );
 
 			Bundle extras = intent.getExtras();
@@ -1103,7 +1015,7 @@ public class FeatherActivity extends MonitoredActivity implements OnToolbarClick
 				Uri destUri = (Uri) extras.getParcelable( Constants.EXTRA_OUTPUT );
 
 				if ( destUri != null ) {
-					
+
 					logger.log( "dest: " + destUri );
 
 					service.setDestImageUri( destUri );
@@ -1137,7 +1049,7 @@ public class FeatherActivity extends MonitoredActivity implements OnToolbarClick
 
 			@Override
 			public void run() {
-				final List<EffectEntry> listEntries = loadTools();
+				final List<ToolEntry> listEntries = loadTools();
 				mHandler.post( new Runnable() {
 
 					@Override
@@ -1149,87 +1061,72 @@ public class FeatherActivity extends MonitoredActivity implements OnToolbarClick
 		} );
 		t.start();
 	}
-
+	
 	private List<String> loadStandaloneTools() {
-		// let's use a global try..catch
-		try {
-			// This is the preference class used in the standalone app
-			// if the tool list is empty, let's try to use
-			// the user defined toolset
-			Object instance = ReflectionUtils.invokeStaticMethod( "com.aviary.android.feather.utils.SettingsUtils", "getInstance",
-					new Class[] { Context.class }, this );
-			if ( null != instance ) {
-				Object toolList = ReflectionUtils.invokeMethod( instance, "getToolList" );
-				if ( null != toolList && toolList instanceof String[] ) {
-					return Arrays.asList( (String[]) toolList );
+		if( PackageManagerUtils.isStandalone( this ) ) {
+			logger.info( "isStandalone, loadStandaloneTools" );
+			// let's use a global try..catch
+			try {
+				// This is the preference class used in the standalone app
+				// if the tool list is empty, let's try to use
+				// the user defined toolset
+				Object instance = ReflectionUtils.invokeStaticMethod( "com.aviary.android.feather.utils.SettingsUtils", "getInstance",
+						new Class[] { Context.class }, this );
+				if ( null != instance ) {
+					Object toolList = ReflectionUtils.invokeMethod( instance, "getToolList" );
+					if ( null != toolList && toolList instanceof String[] ) {
+						return Arrays.asList( (String[]) toolList );
+					}
 				}
+			} catch ( Exception t ) {
+	
 			}
-		} catch ( Exception t ) {
-
 		}
 		return null;
 	}
 
-	private List<EffectEntry> loadTools() {
-		if ( null == mListEntries ) {
-			EffectLoaderService service = mFilterManager.getService( EffectLoaderService.class );
-			if ( service == null ) return null;
-			if ( mToolList == null ) {
+	private List<ToolEntry> loadTools() {
+		logger.info( "loadTools" );
 
-				mToolList = loadStandaloneTools();
+		AbstractPanelLoaderService service = mMainController.getService( AbstractPanelLoaderService.class );
+		if ( service == null ) return null;
+		if ( mToolList == null ) {
 
-				if ( null == mToolList ) {
-					mToolList = Arrays.asList( FilterLoaderFactory.getDefaultFilters() );
-				}
+			mToolList = loadStandaloneTools();
+
+			if ( null == mToolList ) {
+				mToolList = Arrays.asList( FilterLoaderFactory.getDefaultFilters() );
 			}
-
-			List<EffectEntry> listEntries = new ArrayList<EffectEntry>();
-			Map<String, EffectEntry> entryMap = new HashMap<String, EffectEntry>();
-			EffectEntry[] all_entries = service.getEffects();
-
-			for ( int i = 0; i < all_entries.length; i++ ) {
-				FilterLoaderFactory.Filters entry_name = all_entries[i].name;
-				if ( !mToolList.contains( entry_name.name() ) ) continue;
-				entryMap.put( entry_name.name(), all_entries[i] );
-			}
-
-			if ( !Constants.getValueFromIntent( Constants.EXTRA_FRAMES_ENABLE_EXTERNAL_PACKS, true ) ) {
-				entryMap.remove( FilterLoaderFactory.Filters.BORDERS.name() );
-			}
-
-			for ( String toolName : mToolList ) {
-				if ( !entryMap.containsKey( toolName ) ) continue;
-				listEntries.add( entryMap.get( toolName ) );
-			}
-
-			return listEntries;
 		}
-		return mListEntries;
-	}
 
-	protected void onToolsLoaded( List<EffectEntry> listEntries ) {
-		mListEntries = listEntries;
-		WorkspaceAdapter adapter = new WorkspaceAdapter( getBaseContext(), R.layout.feather_workspace_screen, -1, mListEntries,
-				!Constants.containsValue( Constants.EXTRA_WHITELABEL ) );
-		mWorkspace.setAdapter( adapter );
+		List<ToolEntry> listEntries = new ArrayList<ToolEntry>();
+		Map<String, ToolEntry> entryMap = new HashMap<String, ToolEntry>();
+		ToolEntry[] all_entries = service.getToolsEntries();
 
-		if ( mListEntries.size() <= mItemsPerPage ) {
-			mWorkspaceIndicator.setVisibility( View.INVISIBLE );
-		} else {
-			mWorkspaceIndicator.setVisibility( View.VISIBLE );
+		for ( int i = 0; i < all_entries.length; i++ ) {
+			FilterLoaderFactory.Filters entry_name = all_entries[i].name;
+			if ( !mToolList.contains( entry_name.name() ) ) continue;
+			entryMap.put( entry_name.name(), all_entries[i] );
 		}
+
+		for ( String toolName : mToolList ) {
+			if ( !entryMap.containsKey( toolName ) ) continue;
+			listEntries.add( entryMap.get( toolName ) );
+		}
+
+		return listEntries;
 	}
 
 	/**
-	 * Returns the application main toolbar which contains the save/undo/redo
-	 * buttons.
-	 * 
-	 * @return the toolbar
-	 * @see ToolbarView
+	 * List of tools loaded, we're ready to display them
+	 * @param listEntries
 	 */
-	@Override
-	public ToolbarView getToolbar() {
-		return mToolbar;
+	protected void onToolsLoaded( List<ToolEntry> listEntries ) {
+		mListEntries = listEntries;
+		LocalDataService dataService = mMainController.getService( LocalDataService.class );
+		
+		mToolsList.setAdapter( new ListAdapter( this, mListEntries, dataService.getIntentContainsKey( Constants.EXTRA_WHITELABEL ) ) );
+		mToolsList.setOnItemClickedListener( this );
 	}
 
 	/**
@@ -1239,29 +1136,12 @@ public class FeatherActivity extends MonitoredActivity implements OnToolbarClick
 	 */
 	@Override
 	public ViewGroup getOptionsPanelContainer() {
-		return mBottomBarFlipper.getContent();
+		return mBottomBarFlipper.getContentPanel();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.aviary.android.feather.FilterManager.FeatherContext#getBottomBar()
-	 */
 	@Override
-	public BottombarViewFlipper getBottomBar() {
+	public AviaryBottomBarViewFlipper getBottomBar() {
 		return mBottomBarFlipper;
-	}
-
-	/**
-	 * Returns the application workspace view which contains the scrolling tools
-	 * icons.
-	 * 
-	 * @return the workspace
-	 * @see WorkspaceView
-	 */
-	public Workspace getWorkspace() {
-		return mWorkspace;
 	}
 
 	/**
@@ -1302,49 +1182,62 @@ public class FeatherActivity extends MonitoredActivity implements OnToolbarClick
 	// ---------------------
 
 	/**
-	 * User clicked on the save button.<br />
+	 * User clicked on the Done button
 	 * Start the save process
 	 */
-
 	@Override
-	public void onSaveClick() {
+	public void onDoneClick() {
 
-		if ( mFilterManager.getEnabled() ) {
+		if ( null != mMainController ) {
+			if ( mMainController.getEnabled() ) {
+				
+				LocalDataService dataService = mMainController.getService( LocalDataService.class );
 
-			if ( mFilterManager.getBitmapIsChanged() ) {
+				final boolean changed = mMainController.getBitmapIsChanged();
+				final boolean saveWithNoChanges = dataService.getIntentValue( Constants.EXTRA_IN_SAVE_ON_NO_CHANGES, true );
 
-				mFilterManager.onSave();
-
-				if ( mFilterManager != null ) {
-					Bitmap bitmap = mFilterManager.getBitmap();
-					if ( bitmap != null ) {
-						performSave( bitmap );
-					}
+				if ( LoggerFactory.LOG_ENABLED ) {
+					logger.log( "bitmap changed: " + changed );
+					logger.log( "save with no changes: " + saveWithNoChanges );
 				}
-			} else {
-				onSetResult( RESULT_CANCELED, null );
-				finish();
+
+				// If the Image is not modified and the calling Intent
+				// does not allow to save unmodified images, then return
+				// a RESULT_CANCELED value
+				if ( !changed && !saveWithNoChanges ) {
+					exitWithNoModifications();
+					return;
+				}
+
+				mMainController.onSave();
+
+				Bitmap bitmap = mMainController.getBitmap();
+				if ( bitmap != null ) {
+					performSave( bitmap, changed );
+				}
 			}
 		}
 	}
 
 	/**
-	 * User clicked on the apply button.<br />
-	 * Apply the current tool modifications and update the main image
+	 * Exit the Activity with a RESULT_CANCELED value and an extra
+	 * value to indicate that no modifications were made to the image.
 	 */
-
-	@Override
-	public void onApplyClick() {
-		mFilterManager.onApply();
+	protected void exitWithNoModifications() {
+		logger.info( "exitWithNoModifications" );
+		Intent result = new Intent();
+		result.putExtra( Constants.EXTRA_OUT_BITMAP_CHANGED, false );
+		onSetResult( RESULT_CANCELED, result );
+		finish();
 	}
 
 	/**
-	 * User cancelled the active tool. Discard all the tool changes.
+	 * User clicked on the Apply button of a tool
+	 * Apply the current tool modifications and update the main image
 	 */
-
 	@Override
-	public void onCancelClick() {
-		mFilterManager.onCancel();
+	public void onApplyClick() {
+		mMainController.onApply();
 	}
 
 	/**
@@ -1353,8 +1246,8 @@ public class FeatherActivity extends MonitoredActivity implements OnToolbarClick
 	 */
 	protected void loadExif() {
 		logger.log( "loadExif" );
-		final LocalDataService data = mFilterManager.getService( LocalDataService.class );
-		ThreadPoolService thread = mFilterManager.getService( ThreadPoolService.class );
+		final LocalDataService data = mMainController.getService( LocalDataService.class );
+		ThreadPoolService thread = mMainController.getService( ThreadPoolService.class );
 		if ( null != data && thread != null ) {
 			final String path = data.getSourceImagePath();
 
@@ -1385,7 +1278,7 @@ public class FeatherActivity extends MonitoredActivity implements OnToolbarClick
 	 * Try to compute the original file absolute path
 	 */
 	protected void computeOriginalFilePath() {
-		final LocalDataService data = mFilterManager.getService( LocalDataService.class );
+		final LocalDataService data = mMainController.getService( LocalDataService.class );
 		if ( null != data ) {
 			data.setSourceImagePath( null );
 			Uri uri = data.getSourceImageUri();
@@ -1414,7 +1307,7 @@ public class FeatherActivity extends MonitoredActivity implements OnToolbarClick
 
 	@Override
 	public void onDownloadComplete( Bitmap result, ImageSizes sizes ) {
-		logger.log( "onDownloadComplete" );
+		logger.info( "onDownloadComplete" );
 
 		mDownloadTask = null;
 
@@ -1434,11 +1327,11 @@ public class FeatherActivity extends MonitoredActivity implements OnToolbarClick
 			onImageSize( sizes.getOriginalSize(), sizes.getNewSize(), sizes.getBucketSize() );
 		}
 
-		if ( mFilterManager != null ) {
-			if ( mFilterManager.getEnabled() ) {
-				mFilterManager.onReplaceImage( result, originalSize );
+		if ( mMainController != null ) {
+			if ( mMainController.getEnabled() ) {
+				mMainController.onReplaceImage( result, originalSize );
 			} else {
-				mFilterManager.onActivate( result, originalSize );
+				mMainController.onActivate( result, originalSize );
 			}
 		}
 
@@ -1451,12 +1344,6 @@ public class FeatherActivity extends MonitoredActivity implements OnToolbarClick
 		loadExif();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.aviary.android.feather.async_tasks.DownloadImageAsyncTask.
-	 * OnImageDownloadListener#onDownloadError(java.lang.String)
-	 */
 	@SuppressWarnings ( "deprecation" )
 	@Override
 	public void onDownloadError( String error ) {
@@ -1471,7 +1358,7 @@ public class FeatherActivity extends MonitoredActivity implements OnToolbarClick
 	 */
 	private void hideProgressLoader() {
 		Animation fadeout = new AlphaAnimation( 1, 0 );
-		fadeout.setDuration( getResources().getInteger( R.integer.feather_config_mediumAnimTime ) );
+		fadeout.setDuration( getResources().getInteger( android.R.integer.config_mediumAnimTime ) );
 		fadeout.setAnimationListener( new AnimationListener() {
 
 			@Override
@@ -1489,12 +1376,6 @@ public class FeatherActivity extends MonitoredActivity implements OnToolbarClick
 		mInlineProgressLoader.startAnimation( fadeout );
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.aviary.android.feather.async_tasks.DownloadImageAsyncTask.
-	 * OnImageDownloadListener#onDownloadStart()
-	 */
 	@Override
 	public void onDownloadStart() {
 		mImageView.setVisibility( View.INVISIBLE );
@@ -1505,35 +1386,48 @@ public class FeatherActivity extends MonitoredActivity implements OnToolbarClick
 	// Bitmap change listener
 	// -------------------------------
 
+	/**
+	 * We have a new preview bitmap to display
+	 * in the main ImageView
+	 */
 	@Override
-	public void onPreviewChange( Bitmap bitmap ) {
-		final boolean changed = BitmapUtils.compareBySize( ( (IBitmapDrawable) mImageView.getDrawable() ).getBitmap(), bitmap );
+	public void onPreviewChange( Bitmap bitmap, boolean reset ) {
 		
-		Matrix matrix = null;
-		if( !changed ) {
-			matrix = mImageView.getDisplayMatrix();
+		boolean changed = true;
+		
+		if( !reset ) {
+			changed = BitmapUtils.compareBySize( ( (IBitmapDrawable) mImageView.getDrawable() ).getBitmap(), bitmap );
 		}
 		
+		logger.info( "onPreviewChange: " + bitmap + ", changed: " + changed );
+
+		Matrix matrix = null;
+		if ( !changed ) {
+			matrix = mImageView.getDisplayMatrix();
+		}
+
 		mImageView.setImageBitmap( bitmap, matrix, -1, UIConfiguration.IMAGE_VIEW_MAX_ZOOM );
 	}
 
+	/**
+	 * Invalidate the main ImageView
+	 */
 	@Override
-	public void onPreviewChange( ColorFilter filter ) {
-		mImageView.setColorFilter( filter );
+	public void onInvalidateBitmap() {
+		mImageView.invalidate();
 	}
 
+	/**
+	 * Replace the current Bitmap with a new one
+	 */
 	@Override
 	public void onBitmapChange( Bitmap bitmap, boolean update, Matrix matrix ) {
-		if( !update && matrix == null ) {
+		if ( !update && matrix == null ) {
 			matrix = mImageView.getDisplayMatrix();
 		}
 		mImageView.setImageBitmap( bitmap, matrix, -1, UIConfiguration.IMAGE_VIEW_MAX_ZOOM );
 	};
 
-	@Override
-	public void onClearColorFilter() {
-		mImageView.clearColorFilter();
-	}
 
 	/**
 	 * Perform save.
@@ -1541,18 +1435,17 @@ public class FeatherActivity extends MonitoredActivity implements OnToolbarClick
 	 * @param bitmap
 	 *            the bitmap
 	 */
-	protected void performSave( final Bitmap bitmap ) {
+	protected void performSave( final Bitmap bitmap, final boolean changed ) {
 		if ( mSaving ) return;
-		mSaving = true;
 
+		mSaving = true;
 		Tracker.recordTag( "feather: saved" );
 
 		// disable the filter manager...
-		mFilterManager.setEnabled( false );
+		mMainController.setEnabled( false );
 
-		LocalDataService service = mFilterManager.getService( LocalDataService.class );
+		LocalDataService service = mMainController.getService( LocalDataService.class );
 
-		// Release bitmap memory
 		Bundle myExtras = getIntent().getExtras();
 
 		// if request intent has "return-data" then the result bitmap
@@ -1565,28 +1458,33 @@ public class FeatherActivity extends MonitoredActivity implements OnToolbarClick
 			finish();
 
 		} else {
-			ThreadUtils.startBackgroundJob( this, null, "Saving...", new Runnable() {
+			ThreadUtils.startBackgroundJob( this, null, getString( R.string.feather_save_progress ), new Runnable() {
 
 				@Override
 				public void run() {
-					doSave( bitmap );
+					doSave( bitmap, changed );
 				}
 			}, mHandler );
 		}
 	}
 
 	/**
-	 * Do save.
+	 * Final save operation
 	 * 
 	 * @param bitmap
-	 *            the bitmap
+	 *            the current Bitmap handled by the {@link AviaryMainController}
+	 * @param changed
+	 *            bitmap has been changed by the user
 	 */
-	protected void doSave( Bitmap bitmap ) {
+	protected void doSave( Bitmap bitmap, boolean changed ) {
 
 		// result extras
 		Bundle extras = new Bundle();
 
-		LocalDataService service = mFilterManager.getService( LocalDataService.class );
+		// save the "changed" information
+		extras.putBoolean( Constants.EXTRA_OUT_BITMAP_CHANGED, changed );
+
+		LocalDataService service = mMainController.getService( LocalDataService.class );
 		Uri saveUri = service.getDestImageUri();
 
 		// if the request intent has EXTRA_OUTPUT declared
@@ -1601,7 +1499,7 @@ public class FeatherActivity extends MonitoredActivity implements OnToolbarClick
 					outputStream = getContentResolver().openOutputStream( saveUri );
 				}
 				if ( outputStream != null ) {
-					int quality = Constants.getValueFromIntent( Constants.EXTRA_OUTPUT_QUALITY, 80 );
+					int quality = service.getIntentValue( Constants.EXTRA_OUTPUT_QUALITY, 80 );
 					bitmap.compress( service.getOutputFormat(), quality, outputStream );
 				}
 			} catch ( IOException ex ) {
@@ -1640,6 +1538,10 @@ public class FeatherActivity extends MonitoredActivity implements OnToolbarClick
 		finish();
 	}
 
+	/**
+	 * Save the exif tags
+	 * @param uri
+	 */
 	protected void saveExif( Uri uri ) {
 		logger.log( "saveExif: " + uri );
 		if ( null != uri ) {
@@ -1654,7 +1556,7 @@ public class FeatherActivity extends MonitoredActivity implements OnToolbarClick
 			return;
 		}
 
-		LocalDataService data = mFilterManager.getService( LocalDataService.class );
+		LocalDataService data = mMainController.getService( LocalDataService.class );
 		ExifInterfaceWrapper newexif = null;
 
 		if ( null != data ) {
@@ -1696,45 +1598,17 @@ public class FeatherActivity extends MonitoredActivity implements OnToolbarClick
 		}
 	}
 
-	protected void onSaveCustomTags( ExifInterfaceWrapper exif ) {
+	protected void onSaveCustomTags( ExifInterfaceWrapper exif ) {}
 
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.aviary.android.feather.FilterManager.OnToolListener#onToolCompleted()
-	 */
 	@Override
-	public void onToolCompleted() {
-
-		final long anim_time = mToolbar.getInAnimationTime();
-
-		mToolbarMainAnimator.postDelayed( new Runnable() {
-
-			@Override
-			public void run() {
-				mToolbarMainAnimator.setDisplayedChild( 2 );
-			}
-		}, anim_time + 100 );
-		mToolbarMainAnimator.postDelayed( new Runnable() {
-
-			@Override
-			public void run() {
-				mToolbarMainAnimator.setDisplayedChild( 0 );
-			}
-		}, anim_time + 900 );
-	}
-
-	private IToast mToastLoader;
+	public void onToolCompleted() {}
 
 	/**
 	 * show the progress indicator in the toolbar content.
 	 */
 	@Override
 	public void showToolProgress() {
-		mToolbarContentAnimator.setDisplayedChild( 1 );
+		mToolbar.setApplyProgressVisible( true );
 	}
 
 	/**
@@ -1743,13 +1617,13 @@ public class FeatherActivity extends MonitoredActivity implements OnToolbarClick
 	 */
 	@Override
 	public void hideToolProgress() {
-		mToolbarContentAnimator.setDisplayedChild( 0 );
+		mToolbar.setApplyProgressVisible( false );
 	}
 
 	@Override
 	public void showModalProgress() {
 		if ( mToastLoader == null ) {
-			mToastLoader = UIUtils.createModalLoaderToast();
+			mToastLoader = com.aviary.android.feather.utils.UIUtils.createModalLoaderToast( this );
 		}
 		mToastLoader.show();
 	}
@@ -1762,105 +1636,6 @@ public class FeatherActivity extends MonitoredActivity implements OnToolbarClick
 	}
 
 	/**
-	 * Creates the info screen animations.
-	 * 
-	 * @param isOpening
-	 *            the is opening
-	 */
-	private void createInfoScreenAnimations( final boolean isOpening ) {
-
-		final float centerX = mViewFlipper.getWidth() / 2.0f;
-		final float centerY = mViewFlipper.getHeight() / 2.0f;
-		Animation mMainViewAnimationIn, mMainViewAnimationOut;
-		final int duration = getResources().getInteger( R.integer.feather_config_infoscreen_animTime );
-
-		// we allow the flip3d animation only if the OS is > android 2.2
-		if ( android.os.Build.VERSION.SDK_INT > 8 ) {
-			mMainViewAnimationIn = new Flip3dAnimation( isOpening ? -180 : 180, 0, centerX, centerY );
-			mMainViewAnimationOut = new Flip3dAnimation( 0, isOpening ? 180 : -180, centerX, centerY );
-			mMainViewAnimationIn.setDuration( duration );
-			mMainViewAnimationOut.setDuration( duration );
-		} else {
-			// otherwise let's just use a regular alpha animation
-			mMainViewAnimationIn = new AlphaAnimation( 0.0f, 1.0f );
-			mMainViewAnimationOut = new AlphaAnimation( 1.0f, 0.0f );
-			mMainViewAnimationIn.setDuration( duration / 2 );
-			mMainViewAnimationOut.setDuration( duration / 2 );
-		}
-
-		mViewFlipper.setInAnimation( mMainViewAnimationIn );
-		mViewFlipper.setOutAnimation( mMainViewAnimationOut );
-	}
-
-	/**
-	 * Display the big info screen Flip the main image with the infoscreen view.
-	 */
-	private void showInfoScreen() {
-
-		createInfoScreenAnimations( true );
-
-		// Add the infoscreen view to the UI.
-		ViewGroup view = (ViewGroup) mViewFlipper.findViewById( R.id.infocreeen_container );
-		if ( null != view && view.getChildCount() == 0 ) {
-			LayoutInflater.from( getBaseContext() ).inflate( R.layout.feather_infoscreen, view, true );
-		}
-
-		mViewFlipper.setDisplayedChild( 1 );
-
-		TextView text = (TextView) mViewFlipper.findViewById( R.id.version_text );
-		text.setText( "v " + FeatherActivity.SDK_VERSION );
-
-		mViewFlipper.findViewById( R.id.aviary_infoscreen_submit ).setOnClickListener( new OnClickListener() {
-
-			@Override
-			public void onClick( View v ) {
-				String url = "http://www.aviary.com";
-				Intent i = new Intent( Intent.ACTION_VIEW );
-				i.setData( Uri.parse( url ) );
-				try {
-					startActivity( i );
-				} catch ( ActivityNotFoundException e ) {
-					e.printStackTrace();
-				}
-			}
-		} );
-	}
-
-	/**
-	 * Hide info screen.
-	 */
-	private void hideInfoScreen() {
-		createInfoScreenAnimations( false );
-		mViewFlipper.setDisplayedChild( 0 );
-
-		View convertView = mWorkspace.getChildAt( mWorkspace.getChildCount() - 1 );
-
-		if ( null != convertView ) {
-			View button = convertView.findViewById( R.id.tool_image );
-
-			if ( button != null && button instanceof ToggleButton ) {
-				( (ToggleButton) button ).setChecked( false );
-			}
-		}
-	}
-
-	/**
-	 * Checks if is info screen visible.
-	 * 
-	 * @return true, if is info screen visible
-	 */
-	private boolean isInfoScreenVisible() {
-		return mViewFlipper.getDisplayedChild() == 1;
-	}
-
-	/**
-	 * reset the toolbar indicator to the first null state.
-	 */
-	public void resetToolIndicator() {
-		mToolbarContentAnimator.setDisplayedChild( 0 );
-	}
-
-	/**
 	 * Gets the uI handler.
 	 * 
 	 * @return the uI handler
@@ -1869,45 +1644,43 @@ public class FeatherActivity extends MonitoredActivity implements OnToolbarClick
 		return mUIHandler;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.aviary.android.feather.MonitoredActivity#onStart()
-	 */
 	@Override
 	public void onStart() {
 		super.onStart();
 		mOrientation = getResources().getConfiguration().orientation; // getWindowManager().getDefaultDisplay().getRotation();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.aviary.android.feather.MonitoredActivity#onStop()
-	 */
 	@Override
 	public void onStop() {
 		super.onStop();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see android.app.Activity#onRestart()
-	 */
 	@Override
 	protected void onRestart() {
 		super.onRestart();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.aviary.android.feather.MonitoredActivity#onResume()
-	 */
 	@Override
 	protected void onResume() {
 		super.onResume();
+		mIsRunning = true;
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		mIsRunning = true;
+		// here we can tweak the default android animation between activities
+	}
+
+	/**
+	 * Current Activity is visible and active ( ie. within the {@link #onResume()} and the
+	 * {@link #onPause()} methods )
+	 * 
+	 * @return
+	 */
+	public boolean isActive() {
+		return mIsRunning;
 	}
 
 	protected void onImageSize( String originalSize, String scaledSize, String bucket ) {
@@ -1918,187 +1691,188 @@ public class FeatherActivity extends MonitoredActivity implements OnToolbarClick
 		Tracker.recordTag( "image: scaled", attributes );
 	}
 
-	/**
-	 * Adapter for the tools view
-	 */
-	class WorkspaceAdapter extends ArrayAdapter<EffectEntry> {
+	class ListAdapter extends BaseAdapterExtended<ToolEntry> {
 
-		public static final int TYPE_NORMALSCREEN = 0;
-		public static final int TYPE_INFOSCREEN = 1;
+		static final int TYPE_TOOL = 0;
+		static final int TYPE_FEDDBACK = 1;
 
-		private LayoutInflater mLayoutInflater;
-		private int mResourceId;
-		private boolean infoScreenVisible;
-
-		public WorkspaceAdapter ( Context context, int resource, int textViewResourceId, List<EffectEntry> objects,
-				boolean useinfoscreen ) {
-			super( context, resource, textViewResourceId, objects );
-			mResourceId = resource;
-			mLayoutInflater = (LayoutInflater) getContext().getSystemService( Context.LAYOUT_INFLATER_SERVICE );
-			infoScreenVisible = useinfoscreen;
+		class ViewHolder {
+			ImageView image;
+			TextView text;
 		}
 
-		/**
-		 * We need to return 1 page more than the real count because of the info
-		 * screen. Last page will be the info screen
-		 * 
-		 * @return the count
-		 */
-		@Override
-		public int getCount() {
-			int realCount = (int) Math.ceil( (double) super.getCount() / mItemsPerPage );
-			if ( infoScreenVisible ) return realCount + 1;
-			return realCount;
-		}
-
-		/**
-		 * Gets the real count.
-		 * 
-		 * @return the real count
-		 */
-		public int getRealCount() {
-			return super.getCount();
-		}
-
-		@Override
-		public int getItemViewType( int position ) {
-
-			if ( !infoScreenVisible ) return TYPE_NORMALSCREEN;
-
-			if ( position == getCount() - 1 ) {
-				return TYPE_INFOSCREEN;
-			} else {
-				return TYPE_NORMALSCREEN;
-			}
+		Object mLock = new Object();
+		LayoutInflater mInflater;
+		List<ToolEntry> mObjects;
+		int mViewWidth;
+		int mToolViewWidth;
+		boolean mWhiteLabel;
+		
+		public ListAdapter ( Context context, List<ToolEntry> objects, boolean whiteLabel ) {
+			super();
+			mViewWidth = context.getResources().getDisplayMetrics().widthPixels;
+			mToolViewWidth = -1;
+			
+			mInflater = LayoutInflater.from( context );
+			mObjects = objects;
+			mWhiteLabel = whiteLabel;
 		}
 
 		@Override
 		public int getViewTypeCount() {
-			if ( infoScreenVisible ) return 2;
-			else return 1;
+			if ( mWhiteLabel ) return 1;
+			return 2;
 		}
 
-		class WorkspaceToolViewHolder {
-			public ImageView image;
-			public TextView text;
-		};
+		@Override
+		public int getItemViewType( int position ) {
+			if ( mWhiteLabel ) return TYPE_TOOL;
+			return position == ( getCount() - 1 ) ? TYPE_FEDDBACK : TYPE_TOOL;
+		}
 
-		@SuppressLint ( "CutPasteId" )
 		@Override
 		public View getView( int position, View convertView, ViewGroup parent ) {
 
-			if ( convertView == null ) {
-				convertView = mLayoutInflater.inflate( mResourceId, mWorkspace, false );
-				( (CellLayout) convertView ).setNumRows( mScreenRows );
-				( (CellLayout) convertView ).setNumCols( mScreenCols );
-			}
+			final ViewHolder holder;
+			int type = getItemViewType( position );
 
-			CellLayout cell = (CellLayout) convertView;
-			int index = position * mItemsPerPage;
-			int realCount = getRealCount();
-			WorkspaceToolViewHolder holder;
+			if ( null == convertView ) {
+				if ( type == TYPE_TOOL ) {
+					
+					convertView = mInflater.inflate( R.layout.aviary_tool_layout, parent, false );
+					LayoutParams params = convertView.getLayoutParams();
+					
+					if( mToolViewWidth == -1 ) {
+						int[] sizes = mToolsList.measureChild( convertView );
 
-			if ( getItemViewType( position ) == TYPE_INFOSCREEN ) {
-				// last page, info screen
-
-				cell.removeAllViews();
-				CellInfo cellInfo = cell.findVacantCell( mScreenCols, 1 );
-				ViewGroup toolView = (ViewGroup) mLayoutInflater.inflate( R.layout.feather_egg_info_view, parent, false );
-				CellLayout.LayoutParams lp = new CellLayout.LayoutParams( cellInfo.cellX, cellInfo.cellY, cellInfo.spanH,
-						cellInfo.spanV );
-				cell.addView( toolView, -1, lp );
-
-				ToggleButton button = (ToggleButton) toolView.findViewById( R.id.tool_image );
-				button.setChecked( false );
-
-				button.setOnCheckedChangeListener( new OnCheckedChangeListener() {
-
-					@Override
-					public void onCheckedChanged( CompoundButton buttonView, boolean isChecked ) {
-						if ( isChecked ) {
-							showInfoScreen();
-							mWorkspace.setFocusable( false );
-						} else {
-							hideInfoScreen();
-							mWorkspace.setFocusable( true );
-						}
+						double numberOfItems = Math.floor((double) mViewWidth / sizes[0] ) + 0.5;
+						logger.log( "new number of items: " + numberOfItems );
+					
+						mToolViewWidth = (int)((double) mViewWidth / numberOfItems);
+						logger.log( "new size will be: " + mToolViewWidth );
 					}
-				} );
-
-				return cell;
-			}
-
-			if ( cell.findViewById( R.id.egg_info_view ) != null ) {
-				cell.removeAllViews();
-			}
-
-			for ( int i = 0; i < mItemsPerPage; i++ ) {
-				ViewGroup toolView;
-				CellInfo cellInfo = cell.findVacantCell( 1, 1 );
-
-				if ( cellInfo == null ) {
-					toolView = (ViewGroup) cell.getChildAt( i );
-					holder = (WorkspaceToolViewHolder) toolView.getTag();
+					
+					if( null != params ) {
+						params.width = mToolViewWidth;
+						convertView.setLayoutParams( params );
+					}
+					
 				} else {
-					toolView = (ViewGroup) mLayoutInflater.inflate( R.layout.feather_egg_view, parent, false );
-					CellLayout.LayoutParams lp = new CellLayout.LayoutParams( cellInfo.cellX, cellInfo.cellY, cellInfo.spanH,
-							cellInfo.spanV );
-					cell.addView( toolView, -1, lp );
-
-					holder = new WorkspaceToolViewHolder();
-					holder.image = (ImageView) toolView.findViewById( R.id.tool_image );
-					holder.text = (TextView) toolView.findViewById( R.id.tool_text );
-					toolView.setTag( holder );
+					convertView = mInflater.inflate( R.layout.aviary_tool_feedback_layout, parent, false );
 				}
 
-				if ( ( index + i ) < realCount ) {
-					loadEgg( index + i, toolView );
-					toolView.setVisibility( View.VISIBLE );
-				} else {
-					toolView.setVisibility( View.INVISIBLE );
-				}
+				holder = new ViewHolder();
+				holder.image = (ImageView) convertView.findViewById( R.id.image );
+				holder.text = (TextView) convertView.findViewById( R.id.text );
+				
+				convertView.setTag( holder );
+				convertView.setClickable( true );
+			} else {
+				holder = (ViewHolder) convertView.getTag();
 			}
 
-			convertView.requestLayout();
+			if ( type == TYPE_TOOL ) {
+				final ToolEntry item = getItem( position );
+				holder.image.setImageResource( item.iconResourceId );
+				holder.text.setText( getString( item.labelResourceId ) );
+			}
 			return convertView;
-
 		}
 
-		private void loadEgg( int position, final ViewGroup view ) {
-			EffectEntry entry = getItem( position );
-			final WorkspaceToolViewHolder holder = (WorkspaceToolViewHolder) view.getTag();
-			holder.image.setImageDrawable( new ToolIconsDrawable( getResources(), entry.iconResourceId ) );
-			holder.text.setText( entry.labelResourceId );
-			holder.image.setTag( entry );
+		@Override
+		public ToolEntry getItem( int position ) {
+			return mObjects.get( position );
+		}
 
-			holder.image.setOnClickListener( new OnClickListener() {
+		@Override
+		public int getCount() {
+			if ( mWhiteLabel ) return mObjects.size();
+			return mObjects.size() + 1;
+		}
 
-				@Override
-				public void onClick( View v ) {
+		@Override
+		public long getItemId( int position ) {
+			return 0;
+		}
+
+		public void replace( int position, ToolEntry newValue ) {
+			final int viewType = getItemViewType( position );
+			synchronized ( mLock ) {
+				mObjects.remove( position );
+				mObjects.add( position, newValue );
+			}
+			notifyDataSetReplaced( position, viewType );
+		}
+
+		public void insert( int position, ToolEntry... value ) {
+			int index = position;
+			synchronized ( mLock ) {
+				for ( ToolEntry v : value ) {
+					mObjects.add( index++, v );
+				}
+			}
+			notifyDataSetAdded( position );
+		}
+
+		public void add( ToolEntry... value ) {
+			final int position = mObjects.size();
+			synchronized ( mLock ) {
+				for ( ToolEntry v : value ) {
+					mObjects.add( v );
+				}
+			}
+			notifyDataSetAdded( position );
+		}
+
+		public void remove( int position ) {
+			int viewType = getItemViewType( position );
+			synchronized ( mLock ) {
+				mObjects.remove( position );
+			}
+			notifyDataSetRemoved( position, viewType );
+		}
+	}
+
+	/**
+	 * Returns the main controller
+	 * @return
+	 */
+	public AviaryMainController getMainController() {
+		return mMainController;
+	}
+
+	/**
+	 * Item in the main tools list has been clicked
+	 */
+	@SuppressWarnings ( "deprecation" )
+	@Override
+	public boolean onItemClick( AdapterView<?> parent, View view, int position, long id ) {
+		logger.info( "onItemClick: " + position );
+		if ( null != view && parent.isEnabled() && parent.getAdapter() != null ) {
+			int type = parent.getAdapter().getItemViewType( position );
+
+			if ( type == ListAdapter.TYPE_TOOL ) {
+				// tool
+				final Object tag = parent.getAdapter().getItem( position );
+
+				if ( tag instanceof ToolEntry ) {
 					mUIHandler.postDelayed( new Runnable() {
 
 						@Override
 						public void run() {
-							if ( mWorkspace.isEnabled() ) mFilterManager.activateEffect( (EffectEntry) holder.image.getTag() );
+							mMainController.activateTool( (ToolEntry) tag );
 						}
 					}, TOOLS_OPEN_DELAY_TIME );
 				}
-			} );
-		}
-	}
-
-	@Override
-	public void onPageChanged( int which, int old ) {
-		if ( mWorkspace != null && mWorkspace.getAdapter() != null ) {
-			if ( which == mWorkspace.getAdapter().getCount() - 2 && old == mWorkspace.getAdapter().getCount() - 1 ) {
-				if ( isInfoScreenVisible() ) {
-					hideInfoScreen();
-				}
+				return false;
+			} else if ( type == ListAdapter.TYPE_FEDDBACK ) {
+				// feedback
+				showDialog( ALERT_FEEDBACK );
+				return false;
+			} else {
+				return false;
 			}
 		}
-	}
-
-	public FilterManager getController() {
-		return mFilterManager;
+		return false;
 	}
 }

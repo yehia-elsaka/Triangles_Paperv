@@ -1,17 +1,19 @@
 package com.aviary.android.feather.async_tasks;
 
 import java.lang.ref.WeakReference;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.NoSuchElementException;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Message;
 import android.widget.ImageView;
+
 import com.aviary.android.feather.library.log.LoggerFactory;
 import com.aviary.android.feather.library.log.LoggerFactory.Logger;
 import com.aviary.android.feather.library.log.LoggerFactory.LoggerType;
+import com.aviary.android.feather.library.threading.PriorityThreadFactory;
 import com.aviary.android.feather.utils.SimpleBitmapCache;
 
 /**
@@ -21,47 +23,45 @@ import com.aviary.android.feather.utils.SimpleBitmapCache;
  */
 public class AsyncImageManager {
 
-	public static interface OnImageLoadListener {
+	public static enum Priority {
+		HIGH, LOW
+	};
+	
+	private static final int THUMBNAIL_LOADED = 1;
+	
+	abstract static class MyRunnable implements Runnable {
 
+		public WeakReference<ImageView> mView;
+
+		public MyRunnable ( ImageView image ) {
+			mView = new WeakReference<ImageView>( image );
+		}
+	}
+	
+	public static interface OnImageLoadListener {
 		public void onLoadComplete( ImageView view, Bitmap bitmap, int tag );
 	}
-
-	private static final int THUMBNAIL_LOADED = 1;
-
+	
+	
+	ExecutorService mExecutor1;
+	ExecutorService mExecutor2;
+	
 	private volatile Boolean mStopped = false;
 
-	private final int nThreads;
-
-	/** thread pool */
-	private final PoolWorker[] threads;
-
-	/** The current runnable queue. */
-	private final LinkedList<MyRunnable> mQueue;
-
 	private SimpleBitmapCache mBitmapCache;
-
 	private OnImageLoadListener mListener;
-
-	private static Handler mHandler;
+	private Handler mHandler;
 
 	private Logger logger = LoggerFactory.getLogger( "AsyncImageManager", LoggerType.ConsoleLoggerType );
 
+
 	public AsyncImageManager() {
-		this( 2 );
-	}
-
-	public AsyncImageManager( int nthreads ) {
+		
+		mExecutor1 = Executors.newCachedThreadPool( new PriorityThreadFactory( "async-image-high", android.os.Process.THREAD_PRIORITY_BACKGROUND ) );
+		mExecutor2 = Executors.newFixedThreadPool( 1, new PriorityThreadFactory( "async-image-low", android.os.Process.THREAD_PRIORITY_LOWEST ) );
+		
 		mBitmapCache = new SimpleBitmapCache();
-
-		nThreads = Math.min( 5, Math.max( 1, nthreads ) );
-		mQueue = new LinkedList<MyRunnable>();
-		threads = new PoolWorker[nThreads];
 		mHandler = new MyHandler( this );
-
-		for ( int i = 0; i < nThreads; i++ ) {
-			threads[i] = new PoolWorker();
-			threads[i].start();
-		}
 		mListener = null;
 	}
 
@@ -73,7 +73,7 @@ public class AsyncImageManager {
 
 		WeakReference<AsyncImageManager> mParent;
 
-		public MyHandler( AsyncImageManager parent ) {
+		public MyHandler ( AsyncImageManager parent ) {
 			mParent = new WeakReference<AsyncImageManager>( parent );
 		}
 
@@ -107,217 +107,130 @@ public class AsyncImageManager {
 		}
 	}
 
-	/**
-	 * Shut down now.
-	 */
 	public void shutDownNow() {
-		logger.info( "shutDownNow" );
-
+		// logger.info( "shutDownNow" );
+		
 		mStopped = true;
+		
+		mExecutor1.shutdownNow();
+		mExecutor2.shutdownNow();
+
 		mHandler = null;
-
-		synchronized ( mQueue ) {
-			mQueue.clear();
-			mQueue.notify();
-		}
-
 		clearCache();
-
-		for ( int i = 0; i < nThreads; i++ ) {
-			threads[i] = null;
-		}
 	}
 
-	/**
-	 * The Class MyRunnable.
-	 */
-	private abstract class MyRunnable implements Runnable {
-
-		/** The view. */
-		public WeakReference<ImageView> view;
-
-		/**
-		 * Instantiates a new my runnable.
-		 * 
-		 * @param image
-		 *           the image
-		 */
-		public MyRunnable( ImageView image ) {
-			this.view = new WeakReference<ImageView>( image );
+	public void executeDelayed( final Callable<Bitmap> executor, final String hash, final ImageView view, final int tag, final Priority priority, long delayMillis ) {
+		// logger.info( "executeDelayed: " + tag );
+		if( null != mHandler ) {
+			mHandler.postDelayed( new Runnable() {
+				
+				@Override
+				public void run() {
+					if( !mStopped ) {
+						execute( executor, hash, view, tag, priority );
+					}
+				}
+			}, delayMillis );
 		}
-	};
-
-	public void execute( final Callable<Bitmap> executor, final String hash, final ImageView view ) {
-		execute( executor, hash, view, -1 );
 	}
-
+	
 	/**
-	 * Retrive the bitmap either using the internal cache or executing the passed {@link Callable} instance.
+	 * Retrive the bitmap either using the internal cache or executing the passed
+	 * {@link Callable} instance.
 	 * 
-	 * @param executor
-	 *           - the executor
-	 * @param hash
-	 *           - the unique hash used to store/retrieve the bitmap from the cache
-	 * @param view
-	 *           - the final {@link ImageView} where the bitmap will be shown
-	 * @param tag
-	 *           - a custom tag
+	 * @param executor	the executor
+	 * @param hash	the unique hash used to store/retrieve the bitmap from the cache
+	 * @param view	the final {@link ImageView} where the bitmap will be shown
+	 * @param tag	a custom tag
+	 * @param priority	the process priority
 	 */
-	public void execute( final Callable<Bitmap> executor, final String hash, final ImageView view, final int tag ) {
+	public void execute( final Callable<Bitmap> executor, final String hash, final ImageView view, final int tag, final Priority priority ) {
 
 		if ( mStopped ) return;
 
 		mBitmapCache.resetPurgeTimer();
 
-		runTask( new MyRunnable( view ) {
-
+		// logger.info( "Adding executor with tag: " + tag + " and priority: " + priority );
+		
+		MyRunnable task = new MyRunnable( view ) {
+			
 			@Override
 			public void run() {
-				if ( mStopped ) return;
-
-				Message message = Message.obtain();
-
-				Bitmap bitmap = mBitmapCache.getBitmapFromCache( hash );
-				if ( bitmap != null ) {
-					logger.log( "bitmap from cache: " + hash );
-					message.what = THUMBNAIL_LOADED;
-					message.obj = new Thumb( bitmap, view.get(), tag );
-				} else {
-					try {
-						logger.log( "render bitmap: " + hash );
-						bitmap = executor.call();
-					} catch ( Exception e ) {
-						e.printStackTrace();
-						return;
-					}
-
-					if ( bitmap != null ) {
-						logger.log( "adding bitmap to cache: " + hash );
-						mBitmapCache.addBitmapToCache( hash, bitmap );
-					}
-
-					ImageView imageView = view.get();
-
-					if ( imageView != null ) {
-						MyRunnable bitmapTask = getBitmapTask( imageView );
-						if ( this == bitmapTask ) {
-							imageView.setTag( null );
-							message.what = THUMBNAIL_LOADED;
-							message.obj = new Thumb( bitmap, imageView, tag );
-						} else {
-							logger.error( "image tag is different than current task!" );
-						}
-					}
-				}
-
-				if ( message.what == THUMBNAIL_LOADED ) mHandler.sendMessage( message );
+				
+				// logger.log( "running task with priority: " + getPriority() + " and tag: " + tag );
+				
+				 if ( mStopped ) return;
+				 
+				 MyRunnable bitmapTask = getBitmapTask( mView.get() );
+				 if( !this.equals( bitmapTask ) ) {
+					 logger.warning( "not the same task: " + this + " != " + bitmapTask );
+					 return;
+				 }
+				  
+				 Message message = Message.obtain();
+				 Bitmap bitmap = mBitmapCache.getBitmapFromCache( hash );
+				 
+				 if ( bitmap != null ) {
+					 // logger.log( "bitmap from cache: " + hash );
+					 message.what = THUMBNAIL_LOADED;
+					 message.obj = new Thumb( bitmap, mView.get(), tag );
+				 } else {
+					 try {
+						 // logger.log( "render bitmap: " + hash );
+						 bitmap = executor.call();
+					 } catch ( Exception e ) {
+						 e.printStackTrace();
+						 return;
+					 }
+				 
+					 if ( bitmap != null ) {
+						 // logger.log( "adding bitmap to cache: " + hash );
+						 mBitmapCache.addBitmapToCache( hash, bitmap );
+					 }
+				 
+					 ImageView imageView = mView.get();
+				 
+					 if ( imageView != null ) {
+						 if ( this.equals( bitmapTask ) ) {
+							 imageView.setTag( null );
+							 message.what = THUMBNAIL_LOADED;
+							 message.obj = new Thumb( bitmap, imageView, tag );
+						 } else {
+							 logger.error( "image tag is different than current task!" );
+						 }
+				 	}
+				 }
+				 
+				 if ( message.what == THUMBNAIL_LOADED && null != mHandler ) {
+					 mHandler.sendMessage( message );
+				 }
 			}
-		} );
-	}
-
-	/**
-	 * Run task.
-	 * 
-	 * @param task
-	 *           the task
-	 */
-	private void runTask( MyRunnable task ) {
-		synchronized ( mQueue ) {
-
-			Iterator<MyRunnable> iterator = mQueue.iterator();
-			while ( iterator.hasNext() ) {
-				MyRunnable current = iterator.next();
-				ImageView image = current.view.get();
-
-				if ( image == null ) {
-					iterator.remove();
-				} else {
-					if ( image.equals( task.view.get() ) ) {
-						current.view.get().setTag( null );
-						iterator.remove();
-						break;
-					}
-				}
-			}
-
-			task.view.get().setTag( new CustomTag( task ) );
-
-			mQueue.add( task );
-			mQueue.notify();
+		};
+			
+		view.setTag( new CustomTag( task ) );
+		
+		if( priority == Priority.HIGH ) {
+			mExecutor1.execute( task );
+		} else {
+			mExecutor2.execute( task );
 		}
+		
 	}
 
-	/**
-	 * The Class PoolWorker.
-	 */
-	private class PoolWorker extends Thread {
-
-		@Override
-		public void run() {
-			Runnable r;
-
-			while ( mStopped != true ) {
-				synchronized ( mQueue ) {
-					while ( mQueue.isEmpty() ) {
-						if ( mStopped ) break;
-						try {
-							mQueue.wait();
-						} catch ( InterruptedException ignored ) {}
-					}
-
-					try {
-						r = (Runnable) mQueue.removeFirst();
-					} catch ( NoSuchElementException e ) {
-						// queue is empty
-						break;
-					}
-				}
-
-				try {
-					r.run();
-				} catch ( RuntimeException e ) {
-					logger.error( e.getMessage() );
-				}
-			}
-		}
-	}
-
-	/**
-	 * The Class CustomTag.
-	 */
 	static class CustomTag {
 
-		/** The task reference. */
 		private final WeakReference<MyRunnable> taskReference;
 
-		/**
-		 * Instantiates a new custom tag.
-		 * 
-		 * @param task
-		 *           the task
-		 */
-		public CustomTag( MyRunnable task ) {
+		public CustomTag ( MyRunnable task ) {
 			super();
 			taskReference = new WeakReference<MyRunnable>( task );
 		}
 
-		/**
-		 * Gets the downloader task.
-		 * 
-		 * @return the downloader task
-		 */
 		public MyRunnable getDownloaderTask() {
 			return taskReference.get();
 		}
 	}
 
-	/**
-	 * Gets the bitmap task.
-	 * 
-	 * @param imageView
-	 *           the image view
-	 * @return the bitmap task
-	 */
 	private static MyRunnable getBitmapTask( ImageView imageView ) {
 		if ( imageView != null ) {
 			Object tag = imageView.getTag();
@@ -330,7 +243,8 @@ public class AsyncImageManager {
 	}
 
 	/**
-	 * Clears the image cache used internally to improve performance. Note that for memory efficiency reasons, the cache will
+	 * Clears the image cache used internally to improve performance. Note that for memory
+	 * efficiency reasons, the cache will
 	 * automatically be cleared after a certain inactivity delay.
 	 */
 	public void clearCache() {
@@ -346,11 +260,11 @@ public class AsyncImageManager {
 		public WeakReference<ImageView> image;
 		public final int tag;
 
-		public Thumb( Bitmap bmp, ImageView img ) {
+		public Thumb ( Bitmap bmp, ImageView img ) {
 			this( bmp, img, -1 );
 		}
 
-		public Thumb( Bitmap bmp, ImageView img, int ntag ) {
+		public Thumb ( Bitmap bmp, ImageView img, int ntag ) {
 			image = new WeakReference<ImageView>( img );
 			bitmap = new WeakReference<Bitmap>( bmp );
 			tag = ntag;

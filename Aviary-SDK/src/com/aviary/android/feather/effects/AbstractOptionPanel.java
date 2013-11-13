@@ -3,13 +3,15 @@ package com.aviary.android.feather.effects;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import com.aviary.android.feather.Constants;
-import com.aviary.android.feather.effects.AbstractEffectPanel.OptionPanel;
-import com.aviary.android.feather.library.services.EffectContext;
+import com.aviary.android.feather.effects.AbstractPanel.OptionPanel;
+import com.aviary.android.feather.library.Constants;
+import com.aviary.android.feather.library.content.ToolEntry;
+import com.aviary.android.feather.library.services.IAviaryController;
+import com.aviary.android.feather.library.services.LocalDataService;
 import com.aviary.android.feather.library.services.PreferenceService;
 import com.aviary.android.feather.widget.VibrationWidget;
 
-abstract class AbstractOptionPanel extends AbstractEffectPanel implements OptionPanel {
+abstract class AbstractOptionPanel extends AbstractPanel implements OptionPanel {
 
 	protected ViewGroup mOptionView;
 
@@ -19,8 +21,8 @@ abstract class AbstractOptionPanel extends AbstractEffectPanel implements Option
 	 * @param context
 	 *           the context
 	 */
-	public AbstractOptionPanel( EffectContext context ) {
-		super( context );
+	public AbstractOptionPanel( IAviaryController context, ToolEntry entry ) {
+		super( context, entry );
 	}
 
 	@Override
@@ -68,7 +70,10 @@ abstract class AbstractOptionPanel extends AbstractEffectPanel implements Option
 	 */
 	protected void disableHapticIsNecessary( VibrationWidget... views ) {
 		boolean vibration = true;
-		if ( Constants.containsValue( Constants.EXTRA_TOOLS_DISABLE_VIBRATION ) ) {
+		
+		LocalDataService dataService = getContext().getService( LocalDataService.class );
+		
+		if ( dataService.getIntentContainsKey( Constants.EXTRA_TOOLS_DISABLE_VIBRATION ) ) {
 			vibration = false;
 		} else {
 			PreferenceService pref_service = getContext().getService( PreferenceService.class );

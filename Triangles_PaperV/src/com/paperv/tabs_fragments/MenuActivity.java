@@ -8,8 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-import com.paperv.www.R;
 import com.paperv.www.MainActivity;
+import com.paperv.www.R;
 
 public class MenuActivity extends Fragment{
 	

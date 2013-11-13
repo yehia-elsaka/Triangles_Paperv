@@ -3,10 +3,6 @@ package com.paperv.tabs_utils;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import com.paperv.tabs_fragments.MyApp;
-
-
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -19,6 +15,8 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
+import com.paperv.core.PapervApp;
+
 
 public class Utils {
 	public static final String BOLD_FONT_PATH = "fonts/Montserrat-Bold.ttf";
@@ -26,9 +24,10 @@ public class Utils {
 	public static Typeface regularFont, boldFont;
 
 	public static void loadFonts() {
-		regularFont = Typeface.createFromAsset(MyApp.getContext().getAssets(),
+		regularFont = Typeface.createFromAsset(PapervApp.getAppContext().getAssets(),
 				Utils.REGULAR_FONT_PATH);
-		boldFont = Typeface.createFromAsset(MyApp.getContext().getAssets(),
+		
+		boldFont = Typeface.createFromAsset(PapervApp.getAppContext().getAssets(),
 				Utils.REGULAR_FONT_PATH);
 	}
 

@@ -13,10 +13,10 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.paperv.www.R;
 import com.paperv.lazy_adapter_utils.ImageLoader;
 import com.paperv.models.PhotoItem;
 import com.paperv.models.Story;
+import com.paperv.www.R;
 
 public class ImageAdapter extends PagerAdapter {
 	

@@ -27,6 +27,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.paperv.core.CacheManager;
 import com.paperv.lazy_adapter_utils.ImageLoader;
 import com.paperv.models.LikeStory;
 import com.paperv.network.DataConnector;
@@ -34,7 +35,6 @@ import com.paperv.tabs_adapters.ImageAdapter;
 import com.paperv.tabs_adapters.LikesAdapter;
 import com.paperv.tabs_utils.DepthPageTransformer;
 import com.paperv.tabs_utils.FixedSpeedScroller;
-import com.paperv.tabs_utils.GlobalState;
 import com.paperv.tabs_utils.Utils;
 import com.paperv.www.MainActivity;
 import com.paperv.www.R;
@@ -52,7 +52,7 @@ public class LikesActivity extends Fragment implements OnItemClickListener,
 	View vw_detail;
 	LinearLayout comments_list;
 
-	GlobalState globalState = GlobalState.getInstance();
+	CacheManager globalState = CacheManager.getInstance();
 	DataConnector dataConnector = DataConnector.getInstance();
 
 	// detail view

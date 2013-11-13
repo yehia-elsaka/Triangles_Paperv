@@ -6,6 +6,8 @@ import android.os.Message;
 import android.os.Vibrator;
 import android.util.Log;
 
+import com.aviary.android.feather.library.log.LoggerFactory;
+
 
 public class VibrationHelper {
 	
@@ -35,6 +37,9 @@ public class VibrationHelper {
 	}
 
 	public void setEnabled( boolean value ) {
+		if( LoggerFactory.LOG_ENABLED ) {
+			Log.i( LOG_TAG, "setEnabled: " + value );
+		}
 		mEnabled = value && ( mVibrator != null );
 	}
 
@@ -64,7 +69,11 @@ public class VibrationHelper {
 					if( mVibrator != null ) {
 						try {
 							mVibrator.vibrate( msg.arg1 );
-						} catch( Throwable t ){}
+						} catch( Throwable t ){
+							if( LoggerFactory.LOG_ENABLED ) {
+								t.printStackTrace();
+							}
+						}
 					}
 			}
 		}

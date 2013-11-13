@@ -1,100 +1,159 @@
 package com.aviary.android.feather.effects;
 
 import org.json.JSONException;
+
 import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+
 import com.aviary.android.feather.R;
 import com.aviary.android.feather.headless.moa.Moa;
 import com.aviary.android.feather.headless.moa.MoaActionList;
+import com.aviary.android.feather.library.content.ToolEntry;
 import com.aviary.android.feather.library.filters.EnhanceFilter;
 import com.aviary.android.feather.library.filters.EnhanceFilter.Types;
 import com.aviary.android.feather.library.filters.FilterLoaderFactory;
 import com.aviary.android.feather.library.filters.FilterLoaderFactory.Filters;
-import com.aviary.android.feather.library.services.EffectContext;
+import com.aviary.android.feather.library.services.IAviaryController;
+import com.aviary.android.feather.library.services.LocalDataService;
 import com.aviary.android.feather.library.utils.BitmapUtils;
 import com.aviary.android.feather.library.utils.SystemUtils;
-import com.aviary.android.feather.widget.ImageButtonRadioGroup;
-import com.aviary.android.feather.widget.ImageButtonRadioGroup.OnCheckedChangeListener;
+import com.aviary.android.feather.widget.AviaryHighlightImageButton;
+import com.aviary.android.feather.widget.AviaryHighlightImageButton.OnCheckedChangeListener;
 
-// TODO: Auto-generated Javadoc
-/**
- * The Class EnhanceEffectPanel.
- */
-public class EnhanceEffectPanel extends AbstractOptionPanel implements OnCheckedChangeListener {
+public class EnhanceEffectPanel extends AbstractOptionPanel implements OnCheckedChangeListener  {
 
-	/** current rendering task */
+	// current rendering task
 	private RenderTask mCurrentTask;
-	private Filters mFilterType;
+	// panel is renderding
 	volatile boolean mIsRendering = false;
+	
+	private Filters mFilterType;
 	boolean enableFastPreview = false;
 	MoaActionList mActions = null;
+	// ui buttons
+	AviaryHighlightImageButton mButton1, mButton2, mButton3;
+	// current selected button
+	private AviaryHighlightImageButton mCurrent;
 
-	/**
-	 * Instantiates a new enhance effect panel.
-	 * 
-	 * @param context
-	 *           the context
-	 * @param type
-	 *           the type
-	 */
-	public EnhanceEffectPanel( EffectContext context, Filters type ) {
-		super( context );
+	public EnhanceEffectPanel( IAviaryController context, ToolEntry entry, Filters type ) {
+		super( context, entry );
 		mFilterType = type;
 	}
 
 	@Override
-	public void onCreate( Bitmap bitmap ) {
-		super.onCreate( bitmap );
+	public void onCreate( Bitmap bitmap, Bundle options ) {
+		super.onCreate( bitmap, options );
 
-		// well, it's better to have the big progress here
-		// enableFastPreview = Constants.getFastPreviewEnabled();
+		ViewGroup panel = getOptionView();
+
+		mButton1 = (AviaryHighlightImageButton) panel.findViewById( R.id.button1 );
+		mButton1.setOnCheckedChangeListener( this );
+		if ( mButton1.isChecked() ) mCurrent = mButton1;
+
+		mButton2 = (AviaryHighlightImageButton) panel.findViewById( R.id.button2 );
+		mButton2.setOnCheckedChangeListener( this );
+		if ( mButton2.isChecked() ) mCurrent = mButton2;
+
+		mButton3 = (AviaryHighlightImageButton) panel.findViewById( R.id.button3 );
+		mButton3.setOnCheckedChangeListener( this );
+		if ( mButton3.isChecked() ) mCurrent = mButton3;		
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.aviary.android.feather.effects.AbstractEffectPanel#onActivate()
-	 */
 	@Override
 	public void onActivate() {
 		super.onActivate();
 		mPreview = BitmapUtils.copy( mBitmap, Config.ARGB_8888 );
-		ImageButtonRadioGroup radio = (ImageButtonRadioGroup) getOptionView().findViewById( R.id.radio );
-		radio.setOnCheckedChangeListener( this );
+		
+		LocalDataService dataService = getContext().getService( LocalDataService.class );
+		enableFastPreview = dataService.getFastPreviewEnabled();
+	}
+	
+	@Override
+	public void onDeactivate() {
+		super.onDeactivate();
+		
+		mButton1.setOnCheckedChangeListener( null );
+		mButton2.setOnCheckedChangeListener( null );
+		mButton3.setOnCheckedChangeListener( null );
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.aviary.android.feather.effects.AbstractOptionPanel#generateOptionView(android.view.LayoutInflater,
-	 * android.view.ViewGroup)
-	 */
+	@Override
+	public void onCheckedChanged( AviaryHighlightImageButton buttonView, boolean isChecked, boolean fromUser ) {
+
+		if ( mCurrent != null && !buttonView.equals( mCurrent ) ) {
+			mCurrent.setChecked( false );
+		}
+		
+		final int id = buttonView.getId();
+		mCurrent = buttonView;
+
+		if ( !isActive() || !isEnabled() || !fromUser ) return;
+
+		Types type = Types.HiDef;
+
+		killCurrentTask();
+
+		if ( id == R.id.button1 ) {
+			type = Types.HiDef;
+		} else if ( id == R.id.button2 ) {
+			type = Types.Illuminate;
+		} else if ( id == R.id.button3 ) {
+			type = Types.ColorFix;
+		}
+
+		if ( !isChecked ) {
+			// restore the original image
+			BitmapUtils.copy( mBitmap, mPreview );
+			onPreviewChanged( mPreview, false, true );
+			setIsChanged( false );
+			mActions = null;
+			
+			mTrackingAttributes.clear();
+			
+		} else {
+			if ( type != null ) {
+				mCurrentTask = new RenderTask();
+				mCurrentTask.execute( type );
+				
+				mTrackingAttributes.put( "Effects", type.name() );
+			}
+		}
+	}
+	
+	@Override
+	protected void onProgressStart() {
+		if( !enableFastPreview ) {
+			onProgressModalStart();
+			return;
+		}
+		super.onProgressStart();
+	}
+	
+	@Override
+	protected void onProgressEnd() {
+		if( !enableFastPreview ) {
+			onProgressModalEnd();
+			return;
+		}
+		super.onProgressEnd();
+	}
+
 	@Override
 	protected ViewGroup generateOptionView( LayoutInflater inflater, ViewGroup parent ) {
-		return (ViewGroup) inflater.inflate( R.layout.feather_enhance_panel, parent, false );
+		return (ViewGroup) inflater.inflate( R.layout.aviary_panel_enhance, parent, false );
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.aviary.android.feather.effects.AbstractEffectPanel#onBackPressed()
-	 */
 	@Override
 	public boolean onBackPressed() {
-		mLogger.info( "onBackPressed" );
 		killCurrentTask();
 		return super.onBackPressed();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.aviary.android.feather.effects.AbstractEffectPanel#onCancelled()
-	 */
 	@Override
 	public void onCancelled() {
 		killCurrentTask();
@@ -102,20 +161,12 @@ public class EnhanceEffectPanel extends AbstractOptionPanel implements OnChecked
 		super.onCancelled();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.aviary.android.feather.effects.AbstractEffectPanel#onCancel()
-	 */
 	@Override
 	public boolean onCancel() {
 		killCurrentTask();
 		return super.onCancel();
 	}
 
-	/**
-	 * Kill current task.
-	 */
 	private void killCurrentTask() {
 		if ( mCurrentTask != null ) {
 			synchronized ( mCurrentTask ) {
@@ -129,68 +180,27 @@ public class EnhanceEffectPanel extends AbstractOptionPanel implements OnChecked
 	}
 
 	@Override
-	protected void onProgressEnd() {
-		if ( !enableFastPreview ) {
-			super.onProgressModalEnd();
-		} else {
-			super.onProgressEnd();
-		}
-	}
-
-	@Override
-	protected void onProgressStart() {
-		if ( !enableFastPreview ) {
-			super.onProgressModalStart();
-		} else {
-			super.onProgressStart();
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.aviary.android.feather.effects.AbstractEffectPanel#getIsChanged()
-	 */
-	@Override
 	public boolean getIsChanged() {
 		return super.getIsChanged() || mIsRendering == true;
 	}
 
-	/**
-	 * The Class RenderTask.
-	 */
 	class RenderTask extends AsyncTask<Types, Void, Bitmap> {
 
-		/** The m error. */
 		String mError;
 
-		/** The render filter. */
 		volatile EnhanceFilter renderFilter;
 
-		/**
-		 * Instantiates a new render task.
-		 */
 		public RenderTask() {
 			renderFilter = (EnhanceFilter) FilterLoaderFactory.get( mFilterType );
 			mError = null;
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see android.os.AsyncTask#onPreExecute()
-		 */
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
 			onProgressStart();
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see android.os.AsyncTask#doInBackground(Params[])
-		 */
 		@Override
 		protected Bitmap doInBackground( Types... params ) {
 			if ( isCancelled() ) return null;
@@ -213,11 +223,6 @@ public class EnhanceEffectPanel extends AbstractOptionPanel implements OnChecked
 			return result;
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
-		 */
 		@Override
 		protected void onPostExecute( Bitmap result ) {
 			super.onPostExecute( result );
@@ -234,7 +239,7 @@ public class EnhanceEffectPanel extends AbstractOptionPanel implements OnChecked
 					Moa.notifyPixelsChanged( mPreview );
 				}
 
-				onPreviewChanged( mPreview, true );
+				onPreviewChanged( mPreview, false, true );
 			} else {
 				if ( mError != null ) {
 					onGenericError( mError, android.R.string.ok, null );
@@ -252,52 +257,6 @@ public class EnhanceEffectPanel extends AbstractOptionPanel implements OnChecked
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.aviary.android.feather.widget.ImageButtonRadioGroup.OnCheckedChangeListener#onCheckedChanged(com.aviary.android.feather
-	 * .widget.ImageButtonRadioGroup, int, boolean)
-	 */
-	@Override
-	public void onCheckedChanged( ImageButtonRadioGroup group, int checkedId, boolean isChecked ) {
-		mLogger.info( "onCheckedChange: " + checkedId );
-
-		if ( !isActive() || !isEnabled() ) return;
-
-		Types type = null;
-
-		killCurrentTask();
-
-		if ( checkedId == R.id.button1 ) {
-			type = Types.Autoenhance;
-		} else if ( checkedId == R.id.button2 ) {
-			type = Types.Nightenhance;
-		} else if ( checkedId == R.id.button3 ) {
-			type = Types.Backlightenhance;
-		} else if ( checkedId == R.id.button4 ) {
-			type = Types.Labcorrect;
-		}
-
-		if ( !isChecked ) {
-			// restore the original image
-			BitmapUtils.copy( mBitmap, mPreview );
-			onPreviewChanged( mPreview, true );
-			setIsChanged( false );
-			mActions = null;
-		} else {
-			if ( type != null ) {
-				mCurrentTask = new RenderTask();
-				mCurrentTask.execute( type );
-			}
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.aviary.android.feather.effects.AbstractEffectPanel#onGenerateResult()
-	 */
 	@Override
 	protected void onGenerateResult() {
 
@@ -309,34 +268,21 @@ public class EnhanceEffectPanel extends AbstractOptionPanel implements OnChecked
 		}
 	}
 
-	/**
-	 * The Class GenerateResultTask.
-	 */
 	class GenerateResultTask extends AsyncTask<Void, Void, Void> {
 
 		/** The m progress. */
 		ProgressDialog mProgress = new ProgressDialog( getContext().getBaseContext() );
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see android.os.AsyncTask#onPreExecute()
-		 */
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
 			mProgress.setTitle( getContext().getBaseContext().getString( R.string.feather_loading_title ) );
-			mProgress.setMessage( getContext().getBaseContext().getString( R.string.effect_loading_message ) );
+			mProgress.setMessage( getContext().getBaseContext().getString( R.string.feather_effect_loading_message ) );
 			mProgress.setIndeterminate( true );
 			mProgress.setCancelable( false );
 			mProgress.show();
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see android.os.AsyncTask#doInBackground(Params[])
-		 */
 		@Override
 		protected Void doInBackground( Void... params ) {
 
@@ -349,11 +295,6 @@ public class EnhanceEffectPanel extends AbstractOptionPanel implements OnChecked
 			return null;
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
-		 */
 		@Override
 		protected void onPostExecute( Void result ) {
 			super.onPostExecute( result );

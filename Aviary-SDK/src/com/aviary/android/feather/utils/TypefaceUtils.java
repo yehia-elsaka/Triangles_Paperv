@@ -2,6 +2,7 @@ package com.aviary.android.feather.utils;
 
 import java.lang.ref.SoftReference;
 import java.util.HashMap;
+
 import android.content.res.AssetManager;
 import android.graphics.Typeface;
 

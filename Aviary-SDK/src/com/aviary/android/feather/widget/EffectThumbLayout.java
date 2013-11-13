@@ -3,48 +3,53 @@ package com.aviary.android.feather.widget;
 import it.sephiroth.android.library.imagezoom.easing.Easing;
 import it.sephiroth.android.library.imagezoom.easing.Linear;
 import android.content.Context;
+import android.content.res.Resources.Theme;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.RelativeLayout;
+
 import com.aviary.android.feather.R;
 
 public class EffectThumbLayout extends RelativeLayout {
 
-	private boolean opened;
-	int mThumbAnimationDuration = 200;
-	View mHiddenView;
-	View mImageView;
+	private boolean mOpened;
+	private int mThumbAnimationDuration;
+	private View mHiddenView;
+	private View mImageView;
 
-	public EffectThumbLayout( Context context, AttributeSet attrs ) {
+	public EffectThumbLayout ( Context context, AttributeSet attrs ) {
 		super( context, attrs );
-		init( context, attrs, 0 );
-		opened = false;
+		init( context, attrs, R.attr.aviaryEffectThumbLayoutStyle );
+		mOpened = false;
 	}
 
 	private void init( Context context, AttributeSet attrs, int defStyle ) {
-		TypedArray a = context.obtainStyledAttributes( attrs, R.styleable.EffectThumbLayout, defStyle, 0 );
-		mThumbAnimationDuration = a.getInteger( R.styleable.EffectThumbLayout_selectionAnimationDuration, 200 );
-		a.recycle();
+		Theme theme = context.getTheme();
+		TypedArray array = theme.obtainStyledAttributes( attrs, R.styleable.AviaryEffectThumbLayout, defStyle, 0 );
+		mThumbAnimationDuration = array.getInteger( R.styleable.AviaryEffectThumbLayout_aviary_animationDuration, 100 );
+		array.recycle();
+	}
+
+	public boolean isOpened() {
+		return mOpened;
 	}
 
 	@Override
 	public void setSelected( boolean selected ) {
-
 		boolean animate = isSelected() != selected;
-
 		super.setSelected( selected );
-
-		if ( null != mHiddenView && animate ) {
-			mHiddenView.setVisibility( View.VISIBLE );
-			if ( selected ) {
+		
+		if( null != getParent() && animate ) {
+			if( selected ) {
 				open();
 			} else {
 				close();
 			}
 		} else {
-			opened = selected;
+			mOpened = selected;
 		}
+		
 	}
 
 	void open() {
@@ -56,49 +61,48 @@ public class EffectThumbLayout extends RelativeLayout {
 	}
 
 	void setIsOpened( boolean value ) {
+
 		if ( null != mHiddenView ) {
-			opened = value;
-			postSetIsOpened();
+			mOpened = value;
+			postSetIsOpened( mOpened );
 		} else {
-			opened = value;
+			mOpened = value;
 		}
+
 	}
 
-	protected void postSetIsOpened() {
-		if ( null != getHandler() ) {
-			getHandler().postDelayed( new Runnable() {
+	protected void postSetIsOpened( final boolean opened ) {
+		
+		if( null == mHiddenView ) return;
 
-				@Override
-				public void run() {
-					if ( mImageView != null && mHiddenView != null ) {
-						if ( mHiddenView.getHeight() == 0 ) {
-							postSetIsOpened();
-							return;
-						}
+		if ( mHiddenView.getHeight() < 1 ) {
+			if ( null != getHandler() ) {
+				getHandler().postDelayed( new Runnable() {
 
-						mHiddenView.setVisibility( opened ? View.VISIBLE : View.INVISIBLE );
-
-						EffectThumbLayout.LayoutParams params = (LayoutParams) mImageView.getLayoutParams();
-						boolean shouldApplyLayoutParams = false;
-
-						if ( opened ) {
-							if ( params.bottomMargin != ( mHiddenView.getHeight() - mHiddenView.getPaddingTop() ) ) {
-								params.bottomMargin = mHiddenView.getHeight() - mHiddenView.getPaddingTop();
-								shouldApplyLayoutParams = true;
-							}
-						} else {
-							if ( params.bottomMargin != 0 ) {
-								params.bottomMargin = 0;
-								shouldApplyLayoutParams = true;
-							}
-						}
-
-						if ( shouldApplyLayoutParams ) {
-							mImageView.setLayoutParams( params );
-						}
+					@Override
+					public void run() {
+						postSetIsOpened( opened );
 					}
-				}
-			}, 10 );
+				}, 10 );
+			}
+			return;
+		}
+
+		mHiddenView.setVisibility( mOpened ? View.VISIBLE : View.INVISIBLE );
+
+		boolean shouldApplyLayoutParams = false;
+		int targetBottomMargin = opened ? mHiddenView.getHeight() + ( mHiddenView.getPaddingTop() + mHiddenView.getPaddingBottom() ) : 0;
+
+		LayoutParams params = (LayoutParams) mImageView.getLayoutParams();
+
+		if ( params.bottomMargin != targetBottomMargin ) {
+			shouldApplyLayoutParams = true;
+			params.bottomMargin = targetBottomMargin;
+		}
+
+		if( shouldApplyLayoutParams ) {
+			mImageView.setLayoutParams( params );
+			requestLayout();
 		}
 	}
 
@@ -112,9 +116,10 @@ public class EffectThumbLayout extends RelativeLayout {
 	@Override
 	protected void onAttachedToWindow() {
 		super.onAttachedToWindow();
-		mHiddenView = findViewById( R.id.hidden );
-		mImageView = findViewById( R.id.image );
-		setIsOpened( opened );
+		mOpened = isSelected();
+		mHiddenView = findViewById( R.id.aviary_hidden );
+		mImageView = findViewById( R.id.aviary_image );
+		setIsOpened( mOpened );
 	}
 
 	protected void postAnimateView( final int durationMs, final boolean isClosing ) {
@@ -131,7 +136,11 @@ public class EffectThumbLayout extends RelativeLayout {
 
 	protected void animateView( final int durationMs, final boolean isClosing ) {
 
-		boolean is_valid = mHiddenView != null && mImageView != null;
+		if( !isClosing ) {
+			mHiddenView.setVisibility( View.VISIBLE );
+		}
+
+		final boolean is_valid = mHiddenView != null && mImageView != null;
 
 		if ( !is_valid ) return;
 
@@ -141,7 +150,7 @@ public class EffectThumbLayout extends RelativeLayout {
 
 		final long startTime = System.currentTimeMillis();
 		final float startHeight = 0;
-		final float endHeight = isClosing ? mImageView.getPaddingBottom() : ( mHiddenView.getHeight() - mHiddenView.getPaddingTop() );
+		final float endHeight = isClosing ? 0 : ( mHiddenView.getHeight() + mHiddenView.getPaddingTop() + mHiddenView.getPaddingBottom() );
 
 		final Easing easing = new Linear();
 
@@ -162,6 +171,7 @@ public class EffectThumbLayout extends RelativeLayout {
 
 						LayoutParams params = (LayoutParams) mImageView.getLayoutParams();
 						params.bottomMargin = height;
+
 						mImageView.setLayoutParams( params );
 
 						if ( currentMs < durationMs ) {
@@ -170,12 +180,9 @@ public class EffectThumbLayout extends RelativeLayout {
 								invalidate();
 							}
 						} else {
-							opened = !isClosing;
+							mOpened = !isClosing;
 							if ( null != getParent() ) {
-
-								if ( !opened ) mHiddenView.setVisibility( View.INVISIBLE );
-
-								requestLayout();
+								if ( !mOpened ) mHiddenView.setVisibility( View.INVISIBLE );
 							}
 							postInvalidate();
 						}

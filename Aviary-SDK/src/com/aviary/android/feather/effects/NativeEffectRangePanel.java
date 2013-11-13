@@ -1,173 +1,88 @@
 package com.aviary.android.feather.effects;
 
 import org.json.JSONException;
+
 import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
-import android.view.LayoutInflater;
-import android.view.View;
-import com.aviary.android.feather.Constants;
+import android.os.Bundle;
+
 import com.aviary.android.feather.R;
 import com.aviary.android.feather.headless.filters.INativeRangeFilter;
 import com.aviary.android.feather.headless.moa.Moa;
 import com.aviary.android.feather.headless.moa.MoaActionList;
 import com.aviary.android.feather.headless.moa.MoaResult;
+import com.aviary.android.feather.library.content.ToolEntry;
 import com.aviary.android.feather.library.filters.FilterLoaderFactory;
 import com.aviary.android.feather.library.filters.FilterLoaderFactory.Filters;
-import com.aviary.android.feather.library.services.EffectContext;
+import com.aviary.android.feather.library.services.IAviaryController;
 import com.aviary.android.feather.library.utils.BitmapUtils;
 import com.aviary.android.feather.library.utils.SystemUtils;
-import com.aviary.android.feather.widget.Wheel;
 
-// TODO: Auto-generated Javadoc
-/**
- * The Class NativeEffectRangePanel.
- */
-public class NativeEffectRangePanel extends ColorMatrixEffectPanel {
+public class NativeEffectRangePanel extends SliderEffectPanel {
 
-	View mDrawingPanel;
-	int mLastValue;
 	ApplyFilterTask mCurrentTask;
 	volatile boolean mIsRendering = false;
 	boolean enableFastPreview;
 	MoaActionList mActions = null;
 
-	/**
-	 * Instantiates a new native effect range panel.
-	 * 
-	 * @param context
-	 *           the context
-	 * @param type
-	 *           the type
-	 * @param resourcesBaseName
-	 *           the resources base name
-	 */
-	public NativeEffectRangePanel( EffectContext context, Filters type, String resourcesBaseName ) {
-		super( context, type, resourcesBaseName );
+	public NativeEffectRangePanel ( IAviaryController context, ToolEntry entry, Filters type, String resourcesBaseName ) {
+		super( context, entry, type, resourcesBaseName );
 		mFilter = FilterLoaderFactory.get( type );
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.aviary.android.feather.effects.ColorMatrixEffectPanel#onCreate(android.graphics.Bitmap)
-	 */
 	@Override
-	public void onCreate( Bitmap bitmap ) {
-		super.onCreate( bitmap );
-
-		mWheel.setWheelScaleFactor( 2 );
-		mWheelRadio.setTicksNumber( mWheel.getTicks() * 4, mWheel.getWheelScaleFactor() );
-		enableFastPreview = Constants.getFastPreviewEnabled();
+	public void onCreate( Bitmap bitmap, Bundle options ) {
+		super.onCreate( bitmap, options );
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.aviary.android.feather.effects.ColorMatrixEffectPanel#onActivate()
-	 */
 	@Override
 	public void onActivate() {
 		super.onActivate();
-
-		disableHapticIsNecessary( mWheel );
-
-		int ticksCount = mWheel.getTicksCount();
-		mWheelRadio.setTicksNumber( ticksCount, mWheel.getWheelScaleFactor() );
 		mPreview = BitmapUtils.copy( mBitmap, Bitmap.Config.ARGB_8888 );
+		onPreviewChanged( mPreview, true, true );
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.aviary.android.feather.effects.ColorMatrixEffectPanel#onScrollStarted(com.aviary.android.feather.widget.Wheel, float,
-	 * int)
-	 */
 	@Override
-	public void onScrollStarted( Wheel view, float value, int roundValue ) {
-		mLogger.info( "onScrollStarted" );
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.aviary.android.feather.effects.ColorMatrixEffectPanel#onScroll(com.aviary.android.feather.widget.Wheel, float, int)
-	 */
-	@Override
-	public void onScroll( Wheel view, float value, int roundValue ) {
-		mWheelRadio.setValue( value );
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.aviary.android.feather.effects.ColorMatrixEffectPanel#onScrollFinished(com.aviary.android.feather.widget.Wheel,
-	 * float, int)
-	 */
-	@Override
-	public void onScrollFinished( Wheel view, float value, int roundValue ) {
-		mWheelRadio.setValue( value );
-
-		if ( mLastValue != roundValue ) {
-			float realValue = ( mWheelRadio.getValue() );
-			mLogger.info( "onScrollFinished: " + value + ", " + realValue );
-			applyFilter( realValue * 100 );
+	protected void onSliderStart( int value ) {
+		if( enableFastPreview ) {
+			onProgressStart();
 		}
-		mLastValue = roundValue;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.aviary.android.feather.effects.AbstractEffectPanel#onProgressEnd()
-	 */
 	@Override
-	protected void onProgressEnd() {
-		if ( !enableFastPreview )
-			onProgressModalEnd();
-		else
-			super.onProgressEnd();
+	protected void onSliderEnd(int value) {
+		mLogger.info( "onProgressEnd: " + value );
+
+		value = ( value - 50 ) * 2;
+		applyFilter( value, !enableFastPreview );
+		
+		if( enableFastPreview ) {
+			onProgressEnd();
+		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.aviary.android.feather.effects.AbstractEffectPanel#onProgressStart()
-	 */
 	@Override
-	protected void onProgressStart() {
-		if ( !enableFastPreview )
-			onProgressModalStart();
-		else
-			super.onProgressStart();
+	protected void onSliderChanged(int value, boolean fromUser) {
+		mLogger.info( "onProgressChanged: " + value + ", fromUser: " + fromUser );
+
+		if( enableFastPreview || !fromUser ) {
+			value = ( value - 50 ) * 2;
+			applyFilter( value, !fromUser );
+		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.aviary.android.feather.effects.AbstractEffectPanel#onDestroy()
-	 */
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.aviary.android.feather.effects.ColorMatrixEffectPanel#onDeactivate()
-	 */
 	@Override
 	public void onDeactivate() {
 		onProgressEnd();
 		super.onDeactivate();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.aviary.android.feather.effects.ColorMatrixEffectPanel#onGenerateResult()
-	 */
 	@Override
 	protected void onGenerateResult() {
 		mLogger.info( "onGenerateResult: " + mIsRendering );
@@ -180,11 +95,6 @@ public class NativeEffectRangePanel extends ColorMatrixEffectPanel {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.aviary.android.feather.effects.AbstractEffectPanel#onBackPressed()
-	 */
 	@Override
 	public boolean onBackPressed() {
 		mLogger.info( "onBackPressed" );
@@ -192,11 +102,6 @@ public class NativeEffectRangePanel extends ColorMatrixEffectPanel {
 		return super.onBackPressed();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.aviary.android.feather.effects.AbstractEffectPanel#onCancelled()
-	 */
 	@Override
 	public void onCancelled() {
 		killCurrentTask();
@@ -204,21 +109,11 @@ public class NativeEffectRangePanel extends ColorMatrixEffectPanel {
 		super.onCancelled();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.aviary.android.feather.effects.AbstractEffectPanel#getIsChanged()
-	 */
 	@Override
 	public boolean getIsChanged() {
 		return super.getIsChanged() || mIsRendering == true;
 	}
 
-	/**
-	 * Kill current task.
-	 * 
-	 * @return true, if successful
-	 */
 	boolean killCurrentTask() {
 		if ( mCurrentTask != null ) {
 			return mCurrentTask.cancel( true );
@@ -226,60 +121,31 @@ public class NativeEffectRangePanel extends ColorMatrixEffectPanel {
 		return false;
 	}
 
-	/**
-	 * Apply a filter.
-	 * 
-	 * @param value
-	 *           the value
-	 */
-	protected void applyFilter( float value ) {
+	protected void applyFilter( float value, boolean showProgress ) {
+		mLogger.info( "applyFilter: " + value );
 		killCurrentTask();
 
 		if ( value == 0 ) {
 			BitmapUtils.copy( mBitmap, mPreview );
-			onPreviewChanged( mPreview, true );
+			onPreviewChanged( mPreview, false, true );
 			setIsChanged( false );
 			mActions = null;
 		} else {
-			mCurrentTask = new ApplyFilterTask( value );
+			mCurrentTask = new ApplyFilterTask( value, showProgress );
 			mCurrentTask.execute( mBitmap );
 		}
 	}
 
-	/**
-	 * Generate content view.
-	 * 
-	 * @param inflater
-	 *           the inflater
-	 * @return the view
-	 */
-	protected View generateContentView( LayoutInflater inflater ) {
-		return inflater.inflate( R.layout.feather_native_range_effects_content, null );
-	}
-
-	/**
-	 * The Class ApplyFilterTask.
-	 */
 	class ApplyFilterTask extends AsyncTask<Bitmap, Void, Bitmap> {
 
-		/** The m result. */
 		MoaResult mResult;
+		boolean mShowProgress;
 
-		/**
-		 * Instantiates a new apply filter task.
-		 * 
-		 * @param value
-		 *           the value
-		 */
-		public ApplyFilterTask( float value ) {
+		public ApplyFilterTask ( float value, boolean showProgress ) {
+			mShowProgress = showProgress;
 			( (INativeRangeFilter) mFilter ).setValue( value );
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see android.os.AsyncTask#onPreExecute()
-		 */
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
@@ -290,7 +156,10 @@ public class NativeEffectRangePanel extends ColorMatrixEffectPanel {
 			} catch ( JSONException e ) {
 				e.printStackTrace();
 			}
-			onProgressStart();
+			
+			if( mShowProgress ) {
+				onProgressStart();
+			}
 		}
 
 		@Override
@@ -300,15 +169,13 @@ public class NativeEffectRangePanel extends ColorMatrixEffectPanel {
 			if ( mResult != null ) {
 				mResult.cancel();
 			}
-			onProgressEnd();
+			
+			if( mShowProgress ) {
+				onProgressEnd();
+			}
 			mIsRendering = false;
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see android.os.AsyncTask#doInBackground(Params[])
-		 */
 		@Override
 		protected Bitmap doInBackground( Bitmap... arg0 ) {
 
@@ -334,11 +201,6 @@ public class NativeEffectRangePanel extends ColorMatrixEffectPanel {
 			return mPreview;
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
-		 */
 		@Override
 		protected void onPostExecute( Bitmap result ) {
 			super.onPostExecute( result );
@@ -346,16 +208,20 @@ public class NativeEffectRangePanel extends ColorMatrixEffectPanel {
 			if ( !isActive() ) return;
 
 			mLogger.info( this, "onPostExecute" );
-			onProgressEnd();
+			
+			if( mShowProgress ) {
+				onProgressEnd();
+			}
 
 			if ( result != null ) {
 				if ( SystemUtils.isHoneyComb() ) {
 					Moa.notifyPixelsChanged( mPreview );
 				}
-				onPreviewChanged( mPreview, true );
+				onPreviewUpdated();
+				// onPreviewChanged( mPreview, true );
 			} else {
 				BitmapUtils.copy( mBitmap, mPreview );
-				onPreviewChanged( mPreview, true );
+				onPreviewChanged( mPreview, false, true );
 				setIsChanged( false );
 			}
 			mIsRendering = false;
@@ -363,60 +229,37 @@ public class NativeEffectRangePanel extends ColorMatrixEffectPanel {
 		}
 	}
 
-	/**
-	 * The Class GenerateResultTask.
-	 */
 	class GenerateResultTask extends AsyncTask<Void, Void, Void> {
 
-		/** The m progress. */
 		ProgressDialog mProgress = new ProgressDialog( getContext().getBaseContext() );
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see android.os.AsyncTask#onPreExecute()
-		 */
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
 			mProgress.setTitle( getContext().getBaseContext().getString( R.string.feather_loading_title ) );
-			mProgress.setMessage( getContext().getBaseContext().getString( R.string.effect_loading_message ) );
+			mProgress.setMessage( getContext().getBaseContext().getString( R.string.feather_effect_loading_message ) );
 			mProgress.setIndeterminate( true );
 			mProgress.setCancelable( false );
 			mProgress.show();
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see android.os.AsyncTask#doInBackground(Params[])
-		 */
 		@Override
 		protected Void doInBackground( Void... params ) {
-
 			mLogger.info( "GenerateResultTask::doInBackground", mIsRendering );
 
 			while ( mIsRendering ) {
 				// mLogger.log( "waiting...." );
 			}
-
 			return null;
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
-		 */
 		@Override
 		protected void onPostExecute( Void result ) {
 			super.onPostExecute( result );
-
 			mLogger.info( "GenerateResultTask::onPostExecute" );
 
 			if ( getContext().getBaseActivity().isFinishing() ) return;
 			if ( mProgress.isShowing() ) mProgress.dismiss();
-
 			onComplete( mPreview, mActions );
 		}
 	}

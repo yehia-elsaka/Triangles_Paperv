@@ -7,7 +7,6 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -21,43 +20,28 @@ import android.widget.ImageView;
 import android.widget.TabHost;
 import android.widget.TabHost.TabContentFactory;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.bugsense.trace.BugSenseHandler;
-import com.paperv.www.R;
-import com.paperv.network.DataConnector;
+import com.paperv.core.PapervActivity;
 import com.paperv.tabs_fragments.ExploreActivity;
 import com.paperv.tabs_fragments.GlideActivity;
 import com.paperv.tabs_fragments.HomeActivity;
 import com.paperv.tabs_fragments.LikesActivity;
 import com.paperv.tabs_fragments.ProfileActivity;
-import com.paperv.tabs_utils.GlobalState;
 import com.paperv.tabs_utils.Utils;
 import com.slidingmenu.lib.SlidingMenu;
 
-//
+public class MainActivity extends PapervActivity implements
+		TabHost.OnTabChangeListener, OnClickListener {
 
-public class MainActivity extends FragmentActivity implements
-		TabHost.OnTabChangeListener, OnClickListener{
-
-	Context myContext = this;
-	
 	public static SlidingMenu menu;
 	public static ImageButton btnList;
-	
 	private Fragment mContent;
-	
 	public static TextView page_title;
-
 	EditText comment;
-	
 	private TabHost mTabHost;
 	private HashMap<String, TabInfo> mapTabInfo = new HashMap<String, TabInfo>();
 	private TabInfo mLastTab = null;
 
-	GlobalState globalState = GlobalState.getInstance();
-	DataConnector dataConnector = DataConnector.getInstance();
-	
 	private class TabInfo {
 		private String _tag;
 		private int _labelId;
@@ -124,29 +108,15 @@ public class MainActivity extends FragmentActivity implements
 
 	}
 
-	/**
-	 * (non-Javadoc)
-	 * 
-	 * @see android.support.v4.app.FragmentActivity#onCreate(android.os.Bundle)
-	 */
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		BugSenseHandler.initAndStartSession(myContext, "0da77729");
-//		mContent = new HomeActivity();
-
-		// set the Above View
+	@Override
+	public void onCreateUI(android.os.Bundle savedInstanceState) {
 		setContentView(R.layout.activity_main);
-		
-		
 		comment = (EditText) findViewById(R.id.comment);
 		comment.requestFocus();
 		comment.setOnTouchListener(foucsHandler);
-		
 		page_title = (TextView) findViewById(R.id.page_title);
 		page_title.setText("Home");
-		
-		ViewGroup vg = (ViewGroup)findViewById(R.id.main_root);
-		
+		ViewGroup vg = (ViewGroup) findViewById(R.id.main_root);
 
 		// configure the SlidingMenu
 		menu = new SlidingMenu(this);
@@ -160,32 +130,29 @@ public class MainActivity extends FragmentActivity implements
 		getSupportFragmentManager().beginTransaction()
 				.replace(R.id.menu_frame, new MenuFragment()).commit();
 
-		
 		btnList = (ImageButton) findViewById(R.id.btnImg_list);
 		btnList.setOnClickListener(this);
-		
-		
+
 		ImageButton btnReload = (ImageButton) findViewById(R.id.btn_reload);
 		btnReload.setOnClickListener(this);
-		
+
 		// Step 2: Setup TabHost
 		initialiseTabHost(savedInstanceState);
-		
-		if (globalState.open_profile_tab)
-		{
+
+		if (cache.open_profile_tab) {
 			this.onTabChanged("tab" + R.string.lbl_profile);
 			mTabHost.setOnTabChangedListener(this);
-			
+
 			mTabHost.setCurrentTab(4);
-			
-			globalState.open_profile_tab = false;
+
+			cache.open_profile_tab = false;
 		}
-		
+
 		else if (savedInstanceState != null) {
 			// set the tab as per the saved state
 			mTabHost.setCurrentTabByTag(savedInstanceState.getString("tab"));
 		}
-		
+
 		Utils.setFontAllView(vg);
 	}
 
@@ -207,12 +174,16 @@ public class MainActivity extends FragmentActivity implements
 		mTabHost = (TabHost) findViewById(android.R.id.tabhost);
 		mTabHost.setup();
 
-		addTab(R.string.lbl_home, R.drawable.ico_home_2,HomeActivity.class, args);
-		addTab(R.string.lbl_explore, R.drawable.ico_search,ExploreActivity.class, args);
-		addTab(R.string.lbl_glide, R.drawable.ico_glide_2,GlideActivity.class, args);
-		addTab(R.string.lbl_likes, R.drawable.ico_likes_2, LikesActivity.class,args);
-		addTab(R.string.lbl_profile, R.drawable.ico_person, ProfileActivity.class,args);
-		
+		addTab(R.string.lbl_home, R.drawable.ico_home_2, HomeActivity.class,
+				args);
+		addTab(R.string.lbl_explore, R.drawable.ico_search,
+				ExploreActivity.class, args);
+		addTab(R.string.lbl_glide, R.drawable.ico_glide_2, GlideActivity.class,
+				args);
+		addTab(R.string.lbl_likes, R.drawable.ico_likes_2, LikesActivity.class,
+				args);
+		addTab(R.string.lbl_profile, R.drawable.ico_person,
+				ProfileActivity.class, args);
 
 		// Default to first tab
 		this.onTabChanged("tab" + R.string.lbl_home);
@@ -296,14 +267,12 @@ public class MainActivity extends FragmentActivity implements
 			this.getSupportFragmentManager().executePendingTransactions();
 		}
 	}
-	
-	
+
 	public void switchContent(Fragment fragment) {
 		mContent = fragment;
 		getSupportFragmentManager().beginTransaction()
 				.replace(R.id.content_frame, fragment).commit();
-		
-		
+
 		menu.showContent();
 	}
 
@@ -311,68 +280,49 @@ public class MainActivity extends FragmentActivity implements
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
 		if (v.getId() == R.id.btnImg_list) {
-			
-			
-			if (menu.isMenuShowing())
-			{
+
+			if (menu.isMenuShowing()) {
 				menu.showContent();
-				
-			} else 
-			{
+
+			} else {
 				menu.showMenu();
 			}
-				
+
 		}
-		
-		
+
 		if (v.getId() == R.id.btn_reload) {
-			
+
 			ReloadTask task = new ReloadTask();
 			task.execute();
 		}
-		
+
 	}
-	
+
 	OnTouchListener foucsHandler = new OnTouchListener() {
-	    @Override
-	    public boolean onTouch(View arg0, MotionEvent event) {
-	        // TODO Auto-generated method stub
-	        arg0.requestFocusFromTouch();
-	            return false;
-	    }
+		@Override
+		public boolean onTouch(View arg0, MotionEvent event) {
+			// TODO Auto-generated method stub
+			arg0.requestFocusFromTouch();
+			return false;
+		}
 	};
-	
-	
-	
-	
-	
-	
-	
+
 	@Override
 	public void onBackPressed() {
 		// TODO Auto-generated method stub
-		
-		globalState.is_logout = true;
-		
-		
-		
-		if (mTabHost.getCurrentTab() != 0)
-		{
+
+		cache.is_logout = true;
+
+		if (mTabHost.getCurrentTab() != 0) {
 			this.onTabChanged("tab" + R.string.lbl_home);
 			mTabHost.setOnTabChangedListener(this);
-			
+
 			mTabHost.setCurrentTab(0);
 		}
-		
+
 		else
 			super.onBackPressed();
 	}
-
-
-
-
-
-
 
 	private class ReloadTask extends AsyncTask<Void, Void, Void> {
 
@@ -381,9 +331,9 @@ public class MainActivity extends FragmentActivity implements
 
 		@Override
 		protected void onPreExecute() {
-			dialog = new ProgressDialog(myContext);
+			dialog = new ProgressDialog(mContext);
 			dialog.setTitle(" PaperV ");
-		
+
 			dialog.setIcon(R.drawable.ico_dialog);
 			dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 			dialog.setCancelable(false);
@@ -395,24 +345,24 @@ public class MainActivity extends FragmentActivity implements
 		protected Void doInBackground(Void... params) {
 
 			try {
-				
-				globalState.feed_list.clear();
-				globalState.explore_list.clear();
-				globalState.like_list.clear();
-				globalState.notification_list.clear();
-				globalState.userStories_list.clear();
-				
+
+				cache.feed_list.clear();
+				cache.explore_list.clear();
+				cache.like_list.clear();
+				cache.notification_list.clear();
+				cache.userStories_list.clear();
+
 				// load all data
 				dataConnector.getExploreFeed();
 				dataConnector.getHomeFeed();
 				dataConnector.getUserStories();
-				dataConnector.getFollowers(globalState.user.getId());
-				dataConnector.getFollowing(globalState.user.getId());
+				dataConnector.getFollowers(cache.user.getId());
+				dataConnector.getFollowing(cache.user.getId());
 				dataConnector.getAllNotification();
 				dataConnector.getAllLikes();
-				
-//				result = dataConnector.loginIn(user_name, password);
-				result =true;
+
+				// result = dataConnector.loginIn(user_name, password);
+				result = true;
 			} catch (Exception e) {
 
 				e.printStackTrace();
@@ -424,23 +374,21 @@ public class MainActivity extends FragmentActivity implements
 
 		@Override
 		protected void onPostExecute(Void result) {
-			
-			try{
+
+			try {
 				dialog.dismiss();
-			}
-			catch(Exception e){
-				
+			} catch (Exception e) {
+
 			}
 			if (this.result) {
-				
-				Toast.makeText(myContext, "Loading done ..,", 3000).show();
-				
+
+				showLongToast("Loading done ..,");
+
 			} else {
-				Toast.makeText(myContext, "Username or Password Incorrect", 3000).show();
+				showLongToast("Username or Password Incorrect");
 			}
 		}
 
 	}
-	
-	
+
 }

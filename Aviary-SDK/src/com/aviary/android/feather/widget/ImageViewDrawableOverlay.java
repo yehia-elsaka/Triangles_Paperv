@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import android.content.Context;
+import android.content.res.Resources.Theme;
+import android.content.res.TypedArray;
 import android.graphics.BlurMaskFilter;
 import android.graphics.BlurMaskFilter.Blur;
 import android.graphics.Canvas;
@@ -16,78 +18,31 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.GestureDetector;
-import android.view.GestureDetector.OnGestureListener;
 import android.view.MotionEvent;
-import android.view.ScaleGestureDetector;
-import android.view.ScaleGestureDetector.OnScaleGestureListener;
+import android.view.ViewConfiguration;
 
+import com.aviary.android.feather.R;
+import com.aviary.android.feather.library.graphics.drawable.EditableDrawable;
+import com.aviary.android.feather.library.graphics.drawable.FeatherDrawable;
 import com.aviary.android.feather.library.services.DragControllerService.DragSource;
 import com.aviary.android.feather.library.services.drag.DragView;
 import com.aviary.android.feather.library.services.drag.DropTarget;
-import com.aviary.android.feather.widget.DrawableHighlightView.Mode;
 
 public class ImageViewDrawableOverlay extends ImageViewTouch implements DropTarget {
 
-	/**
-	 * The listener interface for receiving onDrawableEvent events. The class that is interested in processing a onDrawableEvent
-	 * event implements this interface, and the object created with that class is registered with a component using the component's
-	 * <code>addOnDrawableEventListener<code> method. When
-	 * the onDrawableEvent event occurs, that object's appropriate
-	 * method is invoked.
-	 * 
-	 * @see OnDrawableEventEvent
-	 */
 	public static interface OnDrawableEventListener {
-
-		/**
-		 * On focus change.
-		 * 
-		 * @param newFocus
-		 *           the new focus
-		 * @param oldFocus
-		 *           the old focus
-		 */
 		void onFocusChange( DrawableHighlightView newFocus, DrawableHighlightView oldFocus );
-
-		/**
-		 * On down.
-		 * 
-		 * @param view
-		 *           the view
-		 */
 		void onDown( DrawableHighlightView view );
-
-		/**
-		 * On move.
-		 * 
-		 * @param view
-		 *           the view
-		 */
 		void onMove( DrawableHighlightView view );
-
-		/**
-		 * On click.
-		 * 
-		 * @param view
-		 *           the view
-		 */
 		void onClick( DrawableHighlightView view );
 	};
 
-	/** The m motion edge. */
-	private int mMotionEdge = DrawableHighlightView.GROW_NONE;
-
-	/** The m overlay views. */
 	private List<DrawableHighlightView> mOverlayViews = new ArrayList<DrawableHighlightView>();
 
-	/** The m overlay view. */
 	private DrawableHighlightView mOverlayView;
 
-	/** The m drawable listener. */
 	private OnDrawableEventListener mDrawableListener;
 
-	/** The m force single selection. */
 	private boolean mForceSingleSelection = true;
 
 	private DropTargetListener mDropTargetListener;
@@ -98,35 +53,43 @@ public class ImageViewDrawableOverlay extends ImageViewTouch implements DropTarg
 
 	private boolean mScaleWithContent = false;
 
-	/**
-	 * Instantiates a new image view drawable overlay.
-	 * 
-	 * @param context
-	 *           the context
-	 * @param attrs
-	 *           the attrs
-	 */
+	private int mOverlayStyleId;
+
 	public ImageViewDrawableOverlay( Context context, AttributeSet attrs ) {
 		super( context, attrs );
 	}
+	
+	public ImageViewDrawableOverlay( Context context, AttributeSet attrs, int defStyle ) {
+		super( context, attrs, defStyle );
+	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see it.sephiroth.android.library.imagezoom.ImageViewTouch#init()
-	 */
 	@Override
-	protected void init() {
-		super.init();
-		mTouchSlop = 20 * 20;
+	protected void init( Context context, AttributeSet attrs, int defStyle ) {
+		super.init( context, attrs, defStyle );
+		mTouchSlop = ViewConfiguration.get( context ).getScaledDoubleTapSlop();
 		mGestureDetector.setIsLongpressEnabled( false );
+		
+		Theme theme = context.getTheme();
+		
+		TypedArray array = theme.obtainStyledAttributes( attrs, R.styleable.AviaryImageViewDrawableOverlay, defStyle, 0 );
+		mOverlayStyleId = array.getResourceId( R.styleable.AviaryImageViewDrawableOverlay_aviary_highlightStyle, -1 );		
+		
+		array.recycle();
+	}
+	
+	/**
+	 * Return the overlay default style
+	 * @return
+	 */
+	public int getOverlayStyleId() {
+		return mOverlayStyleId;
 	}
 
 	/**
-	 * How overlay content will be scaled/moved when zomming/panning the base image
+	 * How overlay content will be scaled/moved 
+	 * when zomming/panning the base image
 	 * 
-	 * @param value
-	 *           - if true then the content will be scale according to the image
+	 * @param value	true if content will scale according to the image
 	 */
 	public void setScaleWithContent( boolean value ) {
 		mScaleWithContent = value;
@@ -137,10 +100,10 @@ public class ImageViewDrawableOverlay extends ImageViewTouch implements DropTarg
 	}
 
 	/**
-	 * If true, when the user tap outside the drawable overlay and there is only one active overlay selection is not changed.
+	 * If true, when the user tap outside the drawable overlay and 
+	 * there is only one active overlay selection is not changed.
 	 * 
-	 * @param value
-	 *           the new force single selection
+	 * @param value	the new force single selection
 	 */
 	public void setForceSingleSelection( boolean value ) {
 		mForceSingleSelection = value;
@@ -150,33 +113,12 @@ public class ImageViewDrawableOverlay extends ImageViewTouch implements DropTarg
 		mDropTargetListener = listener;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see it.sephiroth.android.library.imagezoom.ImageViewTouch#getGestureListener()
-	 */
-	@Override
-	protected OnGestureListener getGestureListener() {
-		return new CropGestureListener();
-	}
-
-	@Override
-	protected OnScaleGestureListener getScaleListener() {
-		return new CropScaleListener();
-	}
-
-
-	/**
-	 * Sets the on drawable event listener.
-	 * @param listener the new on drawable event listener
-	 */
 	public void setOnDrawableEventListener( OnDrawableEventListener listener ) {
 		mDrawableListener = listener;
 	}
 
 	@Override
 	public void setImageDrawable(android.graphics.drawable.Drawable drawable, Matrix initial_matrix, float min_zoom, float max_zoom) {
-		// clearOverlays();
 		super.setImageDrawable( drawable, initial_matrix, min_zoom, max_zoom );
 	}
 
@@ -195,11 +137,6 @@ public class ImageViewDrawableOverlay extends ImageViewTouch implements DropTarg
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see it.sephiroth.android.library.imagezoom.ImageViewTouchBase#postTranslate(float, float)
-	 */
 	@Override
 	protected void postTranslate( float deltaX, float deltaY ) {
 		super.postTranslate( deltaX, deltaY );
@@ -220,11 +157,6 @@ public class ImageViewDrawableOverlay extends ImageViewTouch implements DropTarg
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see it.sephiroth.android.library.imagezoom.ImageViewTouchBase#postScale(float, float, float)
-	 */
 	@Override
 	protected void postScale( float scale, float centerX, float centerY ) {
 
@@ -262,12 +194,6 @@ public class ImageViewDrawableOverlay extends ImageViewTouch implements DropTarg
 		}
 	}
 
-	/**
-	 * Ensure visible.
-	 * 
-	 * @param hv
-	 *           the hv
-	 */
 	private void ensureVisible( DrawableHighlightView hv, float deltaX, float deltaY ) {
 		RectF r = hv.getDrawRect();
 		int panDeltaX1 = 0, panDeltaX2 = 0;
@@ -287,19 +213,206 @@ public class ImageViewDrawableOverlay extends ImageViewTouch implements DropTarg
 			panBy( panDeltaX, panDeltaY );
 		}
 	}
+	
+	@Override
+	public boolean onSingleTapConfirmed( MotionEvent e ) {
+		
+		// iterate the items and post a single tap event to the selected item
+		Iterator<DrawableHighlightView> iterator = mOverlayViews.iterator();
+		while ( iterator.hasNext() ) {
+			DrawableHighlightView view = iterator.next();
+			if ( view.isSelected() ) {
+				view.onSingleTapConfirmed( e.getX(), e.getY() );
+				postInvalidate();
+			}
+		}		
+		
+		return super.onSingleTapConfirmed( e );
+	}
+	
+	@Override
+	public boolean onDown( MotionEvent e ) {
+		Log.i( LOG_TAG, "onDown" );
+		
+		mScrollStarted = false;
+		mLastMotionScrollX = e.getX();
+		mLastMotionScrollY = e.getY();
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see android.widget.ImageView#onDraw(android.graphics.Canvas)
-	 */
+		// return the item being clicked
+		DrawableHighlightView newSelection = checkSelection( e );
+		DrawableHighlightView realNewSelection = newSelection;
+
+		if ( newSelection == null && mOverlayViews.size() == 1 && mForceSingleSelection ) {
+			// force a selection if none is selected, when force single selection is turned on
+			newSelection = mOverlayViews.get( 0 );
+		}
+
+		setSelectedHighlightView( newSelection );
+
+		if ( realNewSelection != null && mScaleWithContent ) {
+			RectF displayRect = realNewSelection.getDisplayRect( realNewSelection.getMatrix(), realNewSelection.getCropRectF() );
+			boolean invalidSize = realNewSelection.getContent().validateSize( displayRect );
+			
+			Log.d( LOG_TAG, "invalidSize: " + invalidSize );
+			
+			if ( !invalidSize ) {
+				Log.w( LOG_TAG, "drawable too small!!!" );
+
+				float minW = realNewSelection.getContent().getMinWidth();
+				float minH = realNewSelection.getContent().getMinHeight();
+				
+				Log.d( LOG_TAG, "minW: " + minW );
+				Log.d( LOG_TAG, "minH: " + minH );
+
+				float minSize = Math.min( minW, minH ) * 1.1f;
+				
+				Log.d( LOG_TAG, "minSize: " + minSize );
+				
+				float minRectSize = Math.min( displayRect.width(), displayRect.height() );
+				
+				Log.d( LOG_TAG, "minRectSize: " + minRectSize );
+
+				float diff = minSize / minRectSize;
+				
+				Log.d( LOG_TAG, "diff: " + diff );
+
+				Log.d( LOG_TAG, "min.size: " + minW + "x" + minH );
+				Log.d( LOG_TAG, "cur.size: " + displayRect.width() + "x" + displayRect.height() );
+				Log.d( LOG_TAG, "zooming to: " + ( getScale() * diff ) );
+				
+				zoomTo( getScale() * diff, displayRect.centerX(), displayRect.centerY(), DEFAULT_ANIMATION_DURATION * 1.5f );
+				return true;
+			}
+		}
+
+		if ( mOverlayView != null ) {
+			int edge = mOverlayView.getHit( e.getX(), e.getY() );
+			if ( edge != DrawableHighlightView.NONE ) {
+				mOverlayView
+						.setMode( ( edge == DrawableHighlightView.MOVE ) ? DrawableHighlightView.MOVE
+								: ( edge == DrawableHighlightView.ROTATE ? DrawableHighlightView.ROTATE
+										: DrawableHighlightView.GROW ) );
+				postInvalidate();
+				if ( mDrawableListener != null ) {
+					mDrawableListener.onDown( mOverlayView );
+				}
+			}
+		}
+		
+		return super.onDown( e );
+	}
+	
+	@Override
+	public boolean onUp( MotionEvent e ) {
+		Log.i( LOG_TAG, "onUp" );
+		
+		if ( mOverlayView != null ) {
+			mOverlayView.setMode( DrawableHighlightView.NONE );
+			postInvalidate();
+		}
+		return super.onUp( e );
+	}
+	
+	@Override
+	public boolean onSingleTapUp( MotionEvent e ) {
+		Log.i( LOG_TAG, "onSingleTapUp" );
+		
+		if ( mOverlayView != null ) {
+
+			int edge = mOverlayView.getHit( e.getX(), e.getY() );
+			if ( ( edge & DrawableHighlightView.MOVE ) == DrawableHighlightView.MOVE ) {
+				if ( mDrawableListener != null ) {
+					mDrawableListener.onClick( mOverlayView );
+				}
+				return true;
+			}
+
+			mOverlayView.setMode( DrawableHighlightView.NONE );
+			postInvalidate();
+			
+			Log.d( LOG_TAG, "selected items: " + mOverlayViews.size() );
+
+			if ( mOverlayViews.size() != 1 ) {
+				setSelectedHighlightView( null );
+			}
+		}
+		
+		return super.onSingleTapUp( e );
+	}
+	
+	boolean mScrollStarted;
+	float mLastMotionScrollX, mLastMotionScrollY;
+	
+	@Override
+	public boolean onScroll( MotionEvent e1, MotionEvent e2, float distanceX, float distanceY ) {
+		Log.i( LOG_TAG, "onScroll" );
+		
+		float dx, dy;
+		
+		float x = e2.getX();
+		float y = e2.getY();
+		
+		if( !mScrollStarted ){
+			dx = 0;
+			dy = 0;
+			mScrollStarted = true;
+		} else {
+			dx = mLastMotionScrollX - x;
+			dy = mLastMotionScrollY - y;
+		}
+		
+		mLastMotionScrollX = x;
+		mLastMotionScrollY = y;
+
+		if ( mOverlayView != null && mOverlayView.getMode() != DrawableHighlightView.NONE ) {
+			mOverlayView.onMouseMove( mOverlayView.getMode(), e2, -dx, -dy );
+			postInvalidate();
+
+			if ( mDrawableListener != null ) {
+				mDrawableListener.onMove( mOverlayView );
+			}
+
+			if ( mOverlayView.getMode() == DrawableHighlightView.MOVE ) {
+				if ( !mScaleWithContent ) {
+					ensureVisible( mOverlayView, distanceX, distanceY );
+				}
+			}
+			return true;
+		} else {
+			return super.onScroll( e1, e2, distanceX, distanceY );
+		}		
+	}
+	
+	@Override
+	public boolean onFling( MotionEvent e1, MotionEvent e2, float velocityX, float velocityY ) {
+		Log.i( LOG_TAG, "onFling" );
+		
+		if ( mOverlayView != null && mOverlayView.getMode() != DrawableHighlightView.NONE ) return false;
+		return super.onFling( e1, e2, velocityX, velocityY );
+	}
+
 	@Override
 	public void onDraw( Canvas canvas ) {
 		super.onDraw( canvas );
+		
+		boolean shouldInvalidateAfter = false;
 
 		for ( int i = 0; i < mOverlayViews.size(); i++ ) {
 			canvas.save( Canvas.MATRIX_SAVE_FLAG );
-			mOverlayViews.get( i ).draw( canvas );
+			
+			DrawableHighlightView current = mOverlayViews.get( i );
+			current.draw( canvas );
+			
+			// check if we should invalidate again the canvas
+			if( !shouldInvalidateAfter ) {
+				FeatherDrawable content = current.getContent();
+				if( content instanceof EditableDrawable ) {
+					if( ((EditableDrawable) content).isEditing()  ) {
+						shouldInvalidateAfter = true;
+					}
+				}
+			}
+			
 			canvas.restore();
 		}
 
@@ -307,11 +420,12 @@ public class ImageViewDrawableOverlay extends ImageViewTouch implements DropTarg
 			getDrawingRect( mTempRect );
 			canvas.drawRect( mTempRect, mDropPaint );
 		}
+		
+		if( shouldInvalidateAfter ) {
+			postInvalidateDelayed( EditableDrawable.CURSOR_BLINK_TIME );
+		}
 	}
 
-	/**
-	 * Remove all the current overlays
-	 */
 	public void clearOverlays() {
 		Log.i( LOG_TAG, "clearOverlays" );
 		setSelectedHighlightView( null );
@@ -320,16 +434,8 @@ public class ImageViewDrawableOverlay extends ImageViewTouch implements DropTarg
 			hv.dispose();
 		}
 		mOverlayView = null;
-		mMotionEdge = DrawableHighlightView.GROW_NONE;
 	}
 
-	/**
-	 * Adds the highlight view.
-	 * 
-	 * @param hv
-	 *           the hv
-	 * @return true, if successful
-	 */
 	public boolean addHighlightView( DrawableHighlightView hv ) {
 		for ( int i = 0; i < mOverlayViews.size(); i++ ) {
 			if ( mOverlayViews.get( i ).equals( hv ) ) return false;
@@ -344,33 +450,14 @@ public class ImageViewDrawableOverlay extends ImageViewTouch implements DropTarg
 		return true;
 	}
 
-	/**
-	 * Gets the highlight count.
-	 * 
-	 * @return the highlight count
-	 */
 	public int getHighlightCount() {
 		return mOverlayViews.size();
 	}
 
-	/**
-	 * Gets the highlight view at.
-	 * 
-	 * @param index
-	 *           the index
-	 * @return the highlight view at
-	 */
 	public DrawableHighlightView getHighlightViewAt( int index ) {
 		return mOverlayViews.get( index );
 	}
 
-	/**
-	 * Removes the hightlight view.
-	 * 
-	 * @param view
-	 *           the view
-	 * @return true, if successful
-	 */
 	public boolean removeHightlightView( DrawableHighlightView view ) {
 		Log.i( LOG_TAG, "removeHightlightView" );
 		for ( int i = 0; i < mOverlayViews.size(); i++ ) {
@@ -392,95 +479,49 @@ public class ImageViewDrawableOverlay extends ImageViewTouch implements DropTarg
 		super.onZoomAnimationCompleted( scale );
 
 		if ( mOverlayView != null ) {
-			mOverlayView.setMode( Mode.Move );
-			mMotionEdge = DrawableHighlightView.MOVE;
+			mOverlayView.setMode( DrawableHighlightView.MOVE );
+			postInvalidate();
 		}
 	}
 
-	/**
-	 * Return the current selected highlight view.
-	 * 
-	 * @return the selected highlight view
-	 */
 	public DrawableHighlightView getSelectedHighlightView() {
 		return mOverlayView;
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see it.sephiroth.android.library.imagezoom.ImageViewTouch#onTouchEvent(android.view.MotionEvent)
-	 */
-	@Override
-	public boolean onTouchEvent( MotionEvent event ) {
-		int action = event.getAction() & MotionEvent.ACTION_MASK;
-
-		mScaleDetector.onTouchEvent( event );
-
-		if ( !mScaleDetector.isInProgress() ) mGestureDetector.onTouchEvent( event );
-
-		switch ( action ) {
-			case MotionEvent.ACTION_UP:
-
-				if ( mOverlayView != null ) {
-					mOverlayView.setMode( DrawableHighlightView.Mode.None );
-				}
-				mMotionEdge = DrawableHighlightView.GROW_NONE;
-
-				if ( getScale() < 1f ) {
-					Log.i( LOG_TAG, "current scale: " + getScale() );
-					zoomTo( 1f, 50 );
-				}
-				break;
+	
+	public void commit( Canvas canvas ) {
+		
+		DrawableHighlightView hv;
+		for( int i = 0; i < getHighlightCount(); i++ ) {
+			hv = getHighlightViewAt( i );
+			FeatherDrawable content = hv.getContent();
+			if( content instanceof EditableDrawable ) {
+				( (EditableDrawable) content ).endEdit();
+			}
+			
+			Matrix rotateMatrix = hv.getCropRotationMatrix();
+			Rect rect = hv.getCropRect();
+			
+			int saveCount = canvas.save( Canvas.MATRIX_SAVE_FLAG );
+			canvas.concat( rotateMatrix );
+			content.setBounds( rect );
+			content.draw( canvas );
+			canvas.restoreToCount( saveCount );		
 		}
-
-		return true;
 	}
-
-	@Override
-	protected float onDoubleTapPost( float scale, float maxZoom ) {
-		return super.onDoubleTapPost( scale, maxZoom );
-	}
-
-	private boolean onDoubleTap( MotionEvent e ) {
-		float scale = getScale();
-		float targetScale = scale;
-		targetScale = ImageViewDrawableOverlay.this.onDoubleTapPost( scale, getMaxScale() );
-		targetScale = Math.min( getMaxScale(), Math.max( targetScale, 1 ) );
-		zoomTo( targetScale, e.getX(), e.getY(), DEFAULT_ANIMATION_DURATION );
-		invalidate();
-		return true;
-	}
-
+	
 	private DrawableHighlightView checkSelection( MotionEvent e ) {
 		Iterator<DrawableHighlightView> iterator = mOverlayViews.iterator();
 		DrawableHighlightView selection = null;
 		while ( iterator.hasNext() ) {
 			DrawableHighlightView view = iterator.next();
 			int edge = view.getHit( e.getX(), e.getY() );
-			if ( edge != DrawableHighlightView.GROW_NONE ) {
+			if ( edge != DrawableHighlightView.NONE ) {
 				selection = view;
 			}
 		}
 		return selection;
 	}
 
-	private DrawableHighlightView checkUpSelection( MotionEvent e ) {
-		Iterator<DrawableHighlightView> iterator = mOverlayViews.iterator();
-		DrawableHighlightView selection = null;
-		while ( iterator.hasNext() ) {
-			DrawableHighlightView view = iterator.next();
-			if ( view.getSelected() ) {
-				view.onSingleTapConfirmed( e.getX(), e.getY() );
-			}
-		}
-		return selection;
-	}
-
-	/**
-	 * Sets the selected highlight view.
-	 * @param newView the new selected highlight view
-	 */
 	public void setSelectedHighlightView( DrawableHighlightView newView ) {
 
 		final DrawableHighlightView oldView = mOverlayView;
@@ -492,253 +533,13 @@ public class ImageViewDrawableOverlay extends ImageViewTouch implements DropTarg
 		if ( newView != null ) {
 			newView.setSelected( true );
 		}
+		
+		postInvalidate();
 
 		mOverlayView = newView;
 
 		if ( mDrawableListener != null ) {
 			mDrawableListener.onFocusChange( newView, oldView );
-		}
-	}
-
-	/**
-	 * The listener interface for receiving cropGesture events. The class that is interested in processing a cropGesture event
-	 * implements this interface, and the object created with that class is registered with a component using the component's
-	 * <code>addCropGestureListener<code> method. When
-	 * the cropGesture event occurs, that object's appropriate
-	 * method is invoked.
-	 * 
-	 * @see CropGestureEvent
-	 */
-	class CropGestureListener extends GestureDetector.SimpleOnGestureListener {
-		
-		boolean mScrollStarted;
-		float mLastMotionX, mLastMotionY;
-
-		@Override
-		public boolean onDown( MotionEvent e ) {
-			
-			mScrollStarted = false;
-			mLastMotionX = e.getX();
-			mLastMotionY = e.getY();
-
-			DrawableHighlightView newSelection = checkSelection( e );
-			DrawableHighlightView realNewSelection = newSelection;
-
-			if ( newSelection == null && mOverlayViews.size() == 1 && mForceSingleSelection ) {
-				newSelection = mOverlayViews.get( 0 );
-			}
-
-			setSelectedHighlightView( newSelection );
-
-			if ( realNewSelection != null && mScaleWithContent ) {
-				RectF displayRect = realNewSelection.getDisplayRect( realNewSelection.getMatrix(), realNewSelection.getCropRectF() );
-				boolean invalidSize = realNewSelection.getContent().validateSize( displayRect );
-				if ( !invalidSize ) {
-
-					float minW = realNewSelection.getContent().getMinWidth();
-					float minH = realNewSelection.getContent().getMinHeight();
-
-					float minSize = Math.min( minW, minH ) * 1.1f;
-					float minRectSize = Math.min( displayRect.width(), displayRect.height() );
-
-					float diff = minSize / minRectSize;
-
-					Log.d( LOG_TAG, "drawable too small!!!" );
-					Log.d( LOG_TAG, "min.size: " + minW + "x" + minH );
-					Log.d( LOG_TAG, "cur.size: " + displayRect.width() + "x" + displayRect.height() );
-					zoomTo( getScale() * diff, displayRect.centerX(), displayRect.centerY(), DEFAULT_ANIMATION_DURATION * 1.5f );
-					return true;
-				}
-			}
-
-			if ( mOverlayView != null ) {
-				int edge = mOverlayView.getHit( e.getX(), e.getY() );
-				if ( edge != DrawableHighlightView.GROW_NONE ) {
-					mMotionEdge = edge;
-					mOverlayView
-							.setMode( ( edge == DrawableHighlightView.MOVE ) ? DrawableHighlightView.Mode.Move
-									: ( edge == DrawableHighlightView.ROTATE ? DrawableHighlightView.Mode.Rotate
-											: DrawableHighlightView.Mode.Grow ) );
-					if ( mDrawableListener != null ) {
-						mDrawableListener.onDown( mOverlayView );
-					}
-				}
-			}
-
-			return super.onDown( e );
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see android.view.GestureDetector.SimpleOnGestureListener#onSingleTapConfirmed(android.view.MotionEvent)
-		 */
-		@Override
-		public boolean onSingleTapConfirmed( MotionEvent e ) {
-			checkUpSelection( e );
-			return super.onSingleTapConfirmed( e );
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see android.view.GestureDetector.SimpleOnGestureListener#onSingleTapUp(android.view.MotionEvent)
-		 */
-		@Override
-		public boolean onSingleTapUp( MotionEvent e ) {
-			if ( mOverlayView != null ) {
-
-				int edge = mOverlayView.getHit( e.getX(), e.getY() );
-				if ( ( edge & DrawableHighlightView.MOVE ) == DrawableHighlightView.MOVE ) {
-					if ( mDrawableListener != null ) mDrawableListener.onClick( mOverlayView );
-					return true;
-				}
-
-				mOverlayView.setMode( Mode.None );
-
-				if ( mOverlayViews.size() != 1 ) setSelectedHighlightView( null );
-			}
-
-			return super.onSingleTapUp( e );
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see android.view.GestureDetector.SimpleOnGestureListener#onDoubleTap(android.view.MotionEvent)
-		 */
-		@Override
-		public boolean onDoubleTap( MotionEvent e ) {
-
-			if ( !mDoubleTapEnabled ) return false;
-
-			return ImageViewDrawableOverlay.this.onDoubleTap( e );
-		}
-		
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see android.view.GestureDetector.SimpleOnGestureListener#onScroll(android.view.MotionEvent, android.view.MotionEvent,
-		 * float, float)
-		 */
-		@Override
-		public boolean onScroll( MotionEvent e1, MotionEvent e2, float distanceX, float distanceY ) {
-
-			if ( !mScrollEnabled ) return false;
-
-			if ( e1 == null || e2 == null ) return false;
-			if ( e1.getPointerCount() > 1 || e2.getPointerCount() > 1 ) return false;
-			if ( mScaleDetector.isInProgress() ) return false;
-			
-			// remove the touch slop lag ( see bug @1084 )
-			float x = e2.getX();
-			float y = e2.getY();
-			
-			if( !mScrollStarted ){
-            distanceX = 0;
-            distanceY = 0;
-            mScrollStarted = true;
-			} else {
-				distanceX = mLastMotionX - x;
-				distanceY = mLastMotionY - y;
-			}
-			
-			mLastMotionX = x;
-			mLastMotionY = y;
-
-			if ( mOverlayView != null && mMotionEdge != DrawableHighlightView.GROW_NONE ) {
-				mOverlayView.onMouseMove( mMotionEdge, e2, -distanceX, -distanceY );
-
-				if ( mDrawableListener != null ) {
-					mDrawableListener.onMove( mOverlayView );
-				}
-
-				if ( mMotionEdge == DrawableHighlightView.MOVE ) {
-					if ( !mScaleWithContent ) {
-						ensureVisible( mOverlayView, distanceX, distanceY );
-					}
-				}
-				return true;
-			} else {
-				scrollBy( -distanceX, -distanceY );
-				invalidate();
-				return true;
-			}
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see android.view.GestureDetector.SimpleOnGestureListener#onFling(android.view.MotionEvent, android.view.MotionEvent,
-		 * float, float)
-		 */
-		@Override
-		public boolean onFling( MotionEvent e1, MotionEvent e2, float velocityX, float velocityY ) {
-
-			if ( !mScrollEnabled ) return false;
-
-			if ( e1.getPointerCount() > 1 || e2.getPointerCount() > 1 ) return false;
-			if ( mScaleDetector.isInProgress() ) return false;
-			if ( mOverlayView != null && mOverlayView.getMode() != Mode.None ) return false;
-
-			float diffX = e2.getX() - e1.getX();
-			float diffY = e2.getY() - e1.getY();
-
-			if ( Math.abs( velocityX ) > 800 || Math.abs( velocityY ) > 800 ) {
-				scrollBy( diffX / 2, diffY / 2, 300 );
-				invalidate();
-			}
-			return super.onFling( e1, e2, velocityX, velocityY );
-		}
-	}
-
-	/**
-	 * The listener interface for receiving cropScale events. The class that is interested in processing a cropScale event implements
-	 * this interface, and the object created with that class is registered with a component using the component's
-	 * <code>addCropScaleListener<code> method. When
-	 * the cropScale event occurs, that object's appropriate
-	 * method is invoked.
-	 * 
-	 * @see CropScaleEvent
-	 */
-	class CropScaleListener extends ScaleListener {
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * it.sephiroth.android.library.imagezoom.ScaleGestureDetector.SimpleOnScaleGestureListener#onScaleBegin(it.sephiroth.android
-		 * .library.imagezoom.ScaleGestureDetector)
-		 */
-		@Override
-		public boolean onScaleBegin( ScaleGestureDetector detector ) {
-			if ( !mScaleEnabled ) return false;
-			return super.onScaleBegin( detector );
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * it.sephiroth.android.library.imagezoom.ScaleGestureDetector.SimpleOnScaleGestureListener#onScaleEnd(it.sephiroth.android
-		 * .library.imagezoom.ScaleGestureDetector)
-		 */
-		@Override
-		public void onScaleEnd( ScaleGestureDetector detector ) {
-			if ( !mScaleEnabled ) return;
-			super.onScaleEnd( detector );
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see it.sephiroth.android.library.imagezoom.ImageViewTouch.ScaleListener#onScale(it.sephiroth.android.library.imagezoom.
-		 * ScaleGestureDetector)
-		 */
-		@Override
-		public boolean onScale( ScaleGestureDetector detector ) {
-			if ( !mScaleEnabled ) return false;
-			return super.onScale( detector );
 		}
 	}
 

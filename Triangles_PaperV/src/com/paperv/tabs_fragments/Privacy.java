@@ -1,9 +1,6 @@
 package com.paperv.tabs_fragments;
 
 
-import com.paperv.www.R;
-import com.paperv.www.MainActivity;
-
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -11,6 +8,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.LinearLayout;
+
+import com.paperv.www.MainActivity;
+import com.paperv.www.R;
 
 public class Privacy extends Fragment{
 	

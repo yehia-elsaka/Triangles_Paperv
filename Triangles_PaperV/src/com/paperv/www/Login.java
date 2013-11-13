@@ -1,49 +1,29 @@
 package com.paperv.www;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences.Editor;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.bugsense.trace.BugSenseHandler;
-import com.paperv.www.R;
-import com.paperv.network.DataConnector;
-import com.paperv.tabs_utils.GlobalState;
+import com.paperv.core.PapervActivity;
 
-public class Login extends Activity {
+public class Login extends PapervActivity {
 
-	Activity myActivity = this;
 	public static String user_name = "";
 	public static String password = "";
 	EditText user_name_field;
 	EditText password_field;
 	CheckBox remember_me;
-	Context myContext = this;
-
 	TextView forgot_password;
 
-	GlobalState globalState = GlobalState.getInstance();
-	DataConnector dataConnector = DataConnector.getInstance();
-	public static final String PREFS_NAME = "MyPrefsFile";
-
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		BugSenseHandler.initAndStartSession(myContext, "0da77729");
+	public void onCreateUI(android.os.Bundle savedInstanceState) {
 		setContentView(R.layout.login);
-
-		getWindow().setSoftInputMode(
-				WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
 		TextView page_title = (TextView) findViewById(R.id.page_title);
 		page_title.setText("Sign In");
@@ -51,21 +31,15 @@ public class Login extends Activity {
 		user_name_field = (EditText) findViewById(R.id.user_name);
 		password_field = (EditText) findViewById(R.id.password);
 		remember_me = (CheckBox) findViewById(R.id.remember_me);
-		globalState.prefs = getSharedPreferences(PREFS_NAME, 0);
-
 		forgot_password = (TextView) findViewById(R.id.forget_pass);
 		forgot_password.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-
-				Intent i = new Intent(myContext, ForgotPasswordActivity.class);
+				Intent i = new Intent(mContext, ForgotPasswordActivity.class);
 				startActivityForResult(i, 700);
 				overridePendingTransition(R.anim.slide_in_right,
 						R.anim.slide_out_left);
-
 			}
 		});
-
-		
 
 		final Button sign_in = (Button) findViewById(R.id.signin);
 		sign_in.setOnClickListener(new View.OnClickListener() {
@@ -85,29 +59,15 @@ public class Login extends Activity {
 	
 	
 	
-	
-	
-
 	@Override
 	public void onBackPressed() {
-		// TODO Auto-generated method stub
 		super.onBackPressed();
-		
 		finish();
-		
-		Intent i = new Intent(myContext, StartActivity.class);
+		Intent i = new Intent(mContext, StartActivity.class);
 		startActivityForResult(i, 700);
 		overridePendingTransition(R.anim.slide_in_left,
 				R.anim.slide_out_right);
 	}
-
-
-
-
-
-
-
-
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -120,9 +80,8 @@ public class Login extends Activity {
 
 		@Override
 		protected void onPreExecute() {
-			dialog = new ProgressDialog(myContext);
+			dialog = new ProgressDialog(mContext);
 			dialog.setTitle(" PaperV ");
-
 			dialog.setIcon(R.drawable.ico_dialog);
 			dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 			dialog.setCancelable(false);
@@ -154,29 +113,24 @@ public class Login extends Activity {
 			if (result) {
 
 				if (remember_me.isChecked()){
-					Editor editor = globalState.prefs.edit();
-					editor.putString("user_name", user_name);
-					editor.putString("password", password);
-					editor.putBoolean("remember_me", true);
-					editor.commit();
+					appInstance.setUserName(user_name);
+					appInstance.setPassword(password);
+					appInstance.setRememberMe(true);
 				}
 				else
 				{
-					Editor editor = globalState.prefs.edit();
-					editor.remove("user_name");
-					editor.remove("password");
-					editor.putBoolean("remember_me", false);
-					editor.commit();
+					appInstance.setUserName("");
+					appInstance.setPassword("");
+					appInstance.setRememberMe(false);
 				}
 				finish();
-				Intent i = new Intent(myContext, MainActivity.class);
+				Intent i = new Intent(mContext, MainActivity.class);
 				startActivityForResult(i, 700);
 				overridePendingTransition(R.anim.slide_in_right,
 						R.anim.slide_out_left);
 
 			} else {
-				Toast.makeText(myContext, "Username or Password Incorrect",
-						3000).show();
+				showLongToast("Username or Password Incorrect");
 			}
 		}
 

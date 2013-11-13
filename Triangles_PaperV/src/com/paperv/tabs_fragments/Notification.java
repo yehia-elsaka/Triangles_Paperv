@@ -2,15 +2,6 @@ package com.paperv.tabs_fragments;
 
 import java.util.ArrayList;
 
-
-import com.paperv.www.R;
-import com.paperv.models.NotificationItem;
-import com.paperv.network.DataConnector;
-import com.paperv.tabs_adapters.NotificationAdapter;
-import com.paperv.tabs_utils.GlobalState;
-import com.paperv.www.MainActivity;
-
-
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -19,10 +10,17 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
+import com.paperv.core.CacheManager;
+import com.paperv.models.NotificationItem;
+import com.paperv.network.DataConnector;
+import com.paperv.tabs_adapters.NotificationAdapter;
+import com.paperv.www.MainActivity;
+import com.paperv.www.R;
+
 public class Notification extends Fragment{
 	
 	
-	GlobalState globalState = GlobalState.getInstance();
+	CacheManager globalState = CacheManager.getInstance();
 	DataConnector dataConnector = DataConnector.getInstance();
 	
 	

@@ -3,15 +3,17 @@ package com.aviary.android.feather.widget;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.net.MalformedURLException;
+import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.Future;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory.Options;
 import android.graphics.drawable.BitmapDrawable;
-import android.util.AttributeSet;
-import android.util.Log;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -23,16 +25,22 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
-import android.widget.LinearLayout;
 
-import com.aviary.android.feather.Constants;
+import com.aviary.android.feather.AviaryMainController;
 import com.aviary.android.feather.FeatherActivity;
-import com.aviary.android.feather.FilterManager;
 import com.aviary.android.feather.R;
+import com.aviary.android.feather.library.Constants;
 import com.aviary.android.feather.library.content.FeatherIntent;
+import com.aviary.android.feather.library.log.LoggerFactory;
+import com.aviary.android.feather.library.log.LoggerFactory.Logger;
+import com.aviary.android.feather.library.log.LoggerFactory.LoggerType;
+import com.aviary.android.feather.library.plugins.ExternalPacksTask;
+import com.aviary.android.feather.library.plugins.ExternalType;
+import com.aviary.android.feather.library.plugins.FeatherExternalPack;
+import com.aviary.android.feather.library.plugins.PluginFactory;
 import com.aviary.android.feather.library.plugins.PluginFactory.ExternalPlugin;
-import com.aviary.android.feather.library.services.EffectContext;
 import com.aviary.android.feather.library.services.FutureListener;
+import com.aviary.android.feather.library.services.IAviaryController;
 import com.aviary.android.feather.library.services.ImageCacheService;
 import com.aviary.android.feather.library.services.ImageCacheService.SimpleCachedRemoteBitmap;
 import com.aviary.android.feather.library.services.PluginService;
@@ -40,34 +48,77 @@ import com.aviary.android.feather.library.services.ThreadPoolService;
 import com.aviary.android.feather.library.services.ThreadPoolService.BackgroundCallable;
 import com.aviary.android.feather.library.tracking.Tracker;
 import com.aviary.android.feather.library.utils.SystemUtils;
-import com.aviary.android.feather.widget.wp.CellLayout;
-import com.aviary.android.feather.widget.wp.CellLayout.CellInfo;
-import com.aviary.android.feather.widget.wp.Workspace;
-import com.aviary.android.feather.widget.wp.Workspace.OnPageChangeListener;
-import com.aviary.android.feather.widget.wp.WorkspaceIndicator;
+import com.aviary.android.feather.widget.AviaryWorkspace.OnPageChangeListener;
+import com.aviary.android.feather.widget.CellLayout.CellInfo;
 
-public class IapDialog extends LinearLayout implements OnPageChangeListener, OnClickListener {
+public class IAPDialog implements OnPageChangeListener, OnClickListener {
 
 	public interface OnCloseListener {
-
 		void onClose();
 	}
 
-	private int mMainLayoutResId = R.layout.feather_iap_workspace_screen_stickers;
-	private int mCellResId = R.layout.feather_iap_cell_item_stickers;
+	public static class IAPUpdater {
+
+		private ExternalPlugin plugin;
+		private String packagename;
+		private int type;
+		
+		public String getPackageName() {
+			if( null != packagename ) {
+				return packagename;
+			}
+			
+			if( null != plugin ) {
+				return plugin.getPackageName();
+			}
+			
+			return null;
+		}
+
+		public static class Builder {
+
+			IAPUpdater result;
+
+			public Builder () {
+				result = new IAPUpdater();
+			}
+
+			public Builder setPlugin( ExternalPlugin plugin ) {
+				result.plugin = plugin;
+				return this;
+			}
+
+			public Builder setPlugin( String packagename, int type ) {
+				result.packagename = packagename;
+				result.type = type;
+				return this;
+			}
+
+			public IAPUpdater build() {
+				return result;
+			}
+		}
+	}
+
+	private int mMainLayoutResId = R.layout.aviary_iap_workspace_screen_stickers;
+	private int mCellResId = R.layout.aviary_iap_cell_item_stickers;
+
+	private View mErrorView;
+	private Button mRetryButton;
+
+	private View mLoader;
 
 	private View mBackground;
-	private TextViewCustomFont mTitle, mSubTitle, mDescription;
+	private AviaryTextView mTitle, mDescription;
 	private Button mButton;
-	private Workspace mWorkspace;
-	private WorkspaceIndicator mWorkspaceIndicator;
+	private AviaryWorkspace mWorkspace;
+	private AviaryWorkspaceIndicator mWorkspaceIndicator;
 	private ImageView mIcon;
-	private ExternalPlugin mPlugin;
-	private int mPluginType;
+	private IAPUpdater mCurrentData;
 
 	private ThreadPoolService mThreadService;
 	private ImageCacheService mCacheService;
-	private FilterManager mController;
+	private AviaryMainController mController;
 
 	private boolean mDownloadOnDemand = true;
 
@@ -77,51 +128,114 @@ public class IapDialog extends LinearLayout implements OnPageChangeListener, OnC
 	int mCols;
 	int mItemsPerPage;
 
-	public IapDialog( Context context, AttributeSet attrs ) {
-		super( context, attrs );
+	private ViewGroup mView;
+	private static Logger logger = LoggerFactory.getLogger( "iap-dialog", LoggerType.ConsoleLoggerType );
+
+	public static IAPDialog create( ViewGroup container, IAPUpdater data ) {
+		
+		logger.info( "create" );
+		
+		ViewGroup dialog = (ViewGroup) container.findViewById( R.id.aviary_main_iap_dialog_container );
+		IAPDialog instance = null;
+
+		if ( dialog == null ) {
+			dialog = (ViewGroup) LayoutInflater.from( container.getContext() ).inflate( R.layout.aviary_iap_dialog_container, container, false );
+			dialog.setFocusable( true );
+			instance = new IAPDialog( dialog );
+			container.addView( dialog );
+			
+			instance.update( data );
+		} else {
+			instance = (IAPDialog) dialog.getTag();
+			instance.update( data );
+		}
+		return instance;
 	}
 
-	@Override
-	protected void onAttachedToWindow() {
-		Log.i( VIEW_LOG_TAG, "onAttachedFromWindow" );
-		super.onAttachedToWindow();
+	public IAPDialog ( ViewGroup view ) {
+		mView = view;
+		mView.setTag( this );
+		onAttachedToWindow();
+	}
 
-		computeLayoutItems( getResources() );
+	public void onConfigurationChanged( Configuration newConfig ) {
+		logger.info( "onConfigurationChanged" );
+		
+		if( !valid() ) return;
+		
+		ViewGroup parent = (ViewGroup) mView.getParent();
+		if( null != parent ) {
+			int index = parent.indexOfChild( mView );
+			parent.removeView( mView );
+			mView = null;
+			
+			mView = (ViewGroup) LayoutInflater.from( parent.getContext() ).inflate( R.layout.aviary_iap_dialog_container, parent, false );
+			
+			parent.addView( mView, index );
+			
+			mView.setFocusable( true );
+			
+			ViewGroup animator = (ViewGroup) mView.findViewById( R.id.aviary_main_iap_dialog );
+			if( null != animator ) {
+				animator.setLayoutAnimation( null );
+			}
+			
+			onAttachedToWindow();
+			update( mCurrentData );
+		} else {
+			logger.error( "parent is null" );
+		}
+	}
+
+	public IAPUpdater getData() {
+		return mCurrentData;
+	}
+
+	protected void onAttachedToWindow() {
+		logger.info( "onAttachedFromWindow" );
+
+		ExternalPlugin plugin = getPlugin();
+		computeLayoutItems( mView.getResources(), plugin != null ? plugin.getType() : 0 );
 
 		mDownloadOnDemand = SystemUtils.getApplicationTotalMemory() < Constants.APP_MEMORY_MEDIUM;
 
-		mIcon = (ImageView) findViewById( R.id.icon );
-		mBackground = findViewById( R.id.main_iap_dialog );
-		mButton = (Button) findViewById( R.id.button );
-		mTitle = (TextViewCustomFont) findViewById( R.id.title );
-		mSubTitle = (TextViewCustomFont) findViewById( R.id.subtitle );
-		mDescription = (TextViewCustomFont) findViewById( R.id.description );
-		mWorkspace = (Workspace) findViewById( R.id.workspace );
-		mWorkspaceIndicator = (WorkspaceIndicator) findViewById( R.id.workspace_indicator );
+		mIcon = (ImageView) mView.findViewById( R.id.aviary_icon );
+		mBackground = mView.findViewById( R.id.aviary_main_iap_dialog );
+		mButton = (Button) mView.findViewById( R.id.aviary_button );
+		mTitle = (AviaryTextView) mView.findViewById( R.id.aviary_title );
+		mDescription = (AviaryTextView) mView.findViewById( R.id.aviary_description );
+		mWorkspace = (AviaryWorkspace) mView.findViewById( R.id.aviary_workspace );
+		mWorkspaceIndicator = (AviaryWorkspaceIndicator) mView.findViewById( R.id.aviary_workspace_indicator );
+		mLoader = mView.findViewById( R.id.aviary_progress );
+
+		mRetryButton = (Button) mView.findViewById( R.id.aviary_retry_button );
+		mRetryButton.setEnabled( true );
+		mErrorView = mView.findViewById( R.id.aviary_error_message );
 
 		mBackground.setOnClickListener( this );
+		mRetryButton.setOnClickListener( this );
 	}
 
-	private void computeLayoutItems( Resources res ) {
-		if ( mPluginType == FeatherIntent.PluginType.TYPE_FILTER || mPluginType == FeatherIntent.PluginType.TYPE_BORDER ) {
-			mMainLayoutResId = R.layout.feather_iap_workspace_screen_effects;
-			mCellResId = R.layout.feather_iap_cell_item_effects;
-			mCols = res.getInteger( R.integer.feather_iap_dialog_cols_effects );
-			mRows = res.getInteger( R.integer.feather_iap_dialog_rows_effects );
+	private void computeLayoutItems( Resources res, int pluginType ) {
+		if ( pluginType == FeatherIntent.PluginType.TYPE_FILTER || pluginType == FeatherIntent.PluginType.TYPE_BORDER ) {
+			mMainLayoutResId = R.layout.aviary_iap_workspace_screen_effects;
+			mCellResId = R.layout.aviary_iap_cell_item_effects;
+			mCols = res.getInteger( R.integer.aviary_iap_dialog_cols_effects );
+			mRows = res.getInteger( R.integer.aviary_iap_dialog_rows_effects );
 		} else {
-			mMainLayoutResId = R.layout.feather_iap_workspace_screen_stickers;
-			mCellResId = R.layout.feather_iap_cell_item_stickers;
-			mCols = res.getInteger( R.integer.feather_iap_dialog_cols );
-			mRows = res.getInteger( R.integer.feather_iap_dialog_rows );
+			mMainLayoutResId = R.layout.aviary_iap_workspace_screen_stickers;
+			mCellResId = R.layout.aviary_iap_cell_item_stickers;
+			mCols = res.getInteger( R.integer.aviary_iap_dialog_cols_stickers );
+			mRows = res.getInteger( R.integer.aviary_iap_dialog_rows_stickers );
 		}
 		mItemsPerPage = mRows * mCols;
 	}
 
-	@Override
 	protected void onDetachedFromWindow() {
-		Log.i( VIEW_LOG_TAG, "onDetachedFromWindow" );
-		super.onDetachedFromWindow();
+		logger.info( "onDetachedFromWindow" );
+		setOnCloseListener( null );
 		mButton.setOnClickListener( null );
+		mRetryButton.setOnClickListener( null );
 		mWorkspace.setAdapter( null );
 		mWorkspace.setOnPageChangeListener( null );
 		mBackground.setOnClickListener( null );
@@ -129,24 +243,31 @@ public class IapDialog extends LinearLayout implements OnPageChangeListener, OnC
 		mController = null;
 		mThreadService = null;
 		mCacheService = null;
-		mPlugin = null;
+		mCurrentData = null;
+		mView = null;
 	}
 
 	@Override
 	public void onClick( View v ) {
+		
 		if ( v.equals( mBackground ) ) {
 			if ( mCloseListener != null ) {
 				mCloseListener.onClose();
 			}
+		} else if ( v.equals( mRetryButton ) ) {
+			update( mCurrentData );
 		}
 	}
 
 	private void initWorkspace( ExternalPlugin plugin ) {
-		if ( null != plugin && null != plugin.getItems() ) {
+		
+		logger.info( "initWorkspace" );
+		
+		if ( null != plugin && null != plugin.getItems() && valid() ) {
 
 			String[] items = plugin.getItems();
 			String folder = getRemoteFolder( plugin );
-			mWorkspace.setAdapter( new WorkspaceAdapter( getContext(), folder, mMainLayoutResId, -1, items ) );
+			mWorkspace.setAdapter( new WorkspaceAdapter( mView.getContext(), folder, mMainLayoutResId, -1, items ) );
 			mWorkspace.setOnPageChangeListener( this );
 
 			if ( plugin.getItems().length <= mItemsPerPage ) {
@@ -155,6 +276,7 @@ public class IapDialog extends LinearLayout implements OnPageChangeListener, OnC
 				mWorkspaceIndicator.setVisibility( View.VISIBLE );
 			}
 		} else {
+			logger.error( "invalid plugin" );
 			mWorkspace.setAdapter( null );
 			mWorkspace.setOnPageChangeListener( null );
 		}
@@ -178,51 +300,184 @@ public class IapDialog extends LinearLayout implements OnPageChangeListener, OnC
 	}
 
 	public ExternalPlugin getPlugin() {
-		return mPlugin;
+		if ( null != mCurrentData ) return mCurrentData.plugin;
+		return null;
 	}
 
 	public int getPluginType() {
-		return mPluginType;
+		if ( mCurrentData != null && mCurrentData.plugin != null ) {
+			return mCurrentData.plugin.getType();
+		}
+		return 0;
 	}
 
-	public void setPlugin( ExternalPlugin value, int type, Context context ) {
-		mPlugin = value;
-		mPluginType = type;
+	public void update( IAPUpdater updater ) {
+		if ( null == updater || !valid() ) return;
+		
+		logger.info( "update" );
+		
+		String pname = updater.getPackageName();
+		if( null != pname ) {
+			Tracker.recordTag( "Unpurchased(" + pname + ") : Opened" );
+		}
+		
+		mCurrentData = updater;
 
-		computeLayoutItems( getResources() );
-
-		Log.d( VIEW_LOG_TAG, "cols: " + mCols + ", rows: " + mRows );
-
-		if ( null != context && null == mController ) {
-			if ( context instanceof FeatherActivity ) {
-				mController = ( (FeatherActivity) context ).getController();
+		if ( null == mController ) {
+			
+			if ( mView.getContext() instanceof FeatherActivity ) {
+				mController = ( (FeatherActivity) mView.getContext() ).getMainController();
+				logger.log( "controller: " + mController );
 
 				if ( null != mController ) {
 					mThreadService = mController.getService( ThreadPoolService.class );
 					mCacheService = mController.getService( ImageCacheService.class );
 				}
 			}
+		} else {
+			logger.log( "controller: " + mController );
 		}
 
-		mTitle.setText( value.getPackageLabel() );
-		mSubTitle.setText( "(" + value.size() + ")" );
-		mDescription.setText( value.getDescription() != null ? value.getDescription() : "" );
+		if ( updater.plugin != null ) {
+			processPlugin();
+		} else {
+			if ( updater.packagename != null && updater.type != 0 ) {
+				downloadPlugin( updater.packagename, updater.type );
+			}
+		}
+	}
 
-		if ( null != mPlugin.getPackageName() ) {
+	private void downloadPlugin( final String name, final int type ) {
+		logger.info( "downloadPlugin: " + name + ", type: " + type );
+		
+		if( !valid() ) return;
+
+		mButton.setVisibility( View.INVISIBLE );
+
+		// show loader
+		mLoader.setVisibility( View.VISIBLE );
+		mErrorView.setVisibility( View.GONE );
+
+		mTitle.setText("");
+
+		if ( null != mThreadService ) {
+
+			Bundle params = new Bundle();
+			params.putBoolean( ExternalPacksTask.OPTION_IN_USE_CACHE, false );
+			FutureListener<Bundle> listener = new FutureListener<Bundle>() {
+
+				@SuppressWarnings ( "unchecked" )
+				@Override
+				public void onFutureDone( Future<Bundle> future ) {
+
+					if ( !valid() ) return;
+					
+					Bundle result = null;
+					try {
+						result = future.get();
+					} catch ( Exception e ) {
+						result = null;
+						logger.error( e.getMessage() );
+					}
+
+					if ( null != result ) {
+						if ( result.containsKey( ExternalPacksTask.BUNDLE_RESULT_LIST ) ) {
+							final List<ExternalType> allplugins = (List<ExternalType>) result
+									.get( ExternalPacksTask.BUNDLE_RESULT_LIST );
+
+							mView.post( new Runnable() {
+
+								@Override
+								public void run() {
+									processPlugins( allplugins, name, type );
+								}
+							} );
+						}
+					} else {
+						mView.post( new Runnable() {
+							@Override
+							public void run() {
+								onDownloadError();
+							}
+						} );
+					}
+
+				}
+			};
+			mThreadService.submit( new ExternalPacksTask(), listener, params );
+		}
+	}
+
+	private void processPlugins( List<ExternalType> list, String pkgname, int type ) {
+		logger.info( "processPlugins" );
+		
+		if( !valid() ) return;
+
+		Iterator<ExternalType> iterator = list.iterator();
+		while ( iterator.hasNext() ) {
+			ExternalType current = iterator.next();
+			if ( null != current ) {
+				if ( pkgname.equals( current.getPackageName() ) ) {
+					FeatherExternalPack pack = new FeatherExternalPack( current );
+					ExternalPlugin plugin = (ExternalPlugin) PluginFactory.create( mView.getContext(), pack, type );
+					update( new IAPUpdater.Builder().setPlugin( plugin ).build() );
+					return;
+				}
+			}
+		}
+		onDownloadError();
+	}
+
+	/**
+	 * Error downloading plugin informations
+	 */
+	private void onDownloadError() {
+		mErrorView.setVisibility( View.VISIBLE );
+		mLoader.setVisibility( View.GONE );
+		
+		mTitle.setText( "" );
+		mRetryButton.setEnabled( true );
+	}
+
+	private void processPlugin() {
+		logger.info( "processPlugin" );
+		
+		if( !valid() ) return;
+		if ( null == mCurrentData || mCurrentData.plugin == null ) return;
+
+		final ExternalPlugin plugin = mCurrentData.plugin;
+
+		mButton.setVisibility( View.VISIBLE );
+		mLoader.setVisibility( View.GONE );
+		
+		mErrorView.setVisibility( View.GONE );
+
+		computeLayoutItems( mView.getResources(), plugin.getType() );
+
+		logger.log( "cols: " + mCols + ", rows: " + mRows );
+
+		mTitle.setText( plugin.getPackageLabel() + " (" + plugin.size() + " effects)" );
+		mTitle.setSelected( true );
+		
+		mDescription.setText( plugin.getDescription() != null ? plugin.getDescription() : "" );
+
+		if ( null != plugin.getPackageName() ) {
 
 			mWorkspace.setIndicator( mWorkspaceIndicator );
-			initWorkspace( mPlugin );
-			downloadPackIcon( mPlugin );
+			initWorkspace( plugin );
+			downloadPackIcon( plugin );
 
 			mButton.setOnClickListener( new OnClickListener() {
 
 				@Override
 				public void onClick( View v ) {
 					if ( null != mController ) {
-						Tracker.recordTag( "Unpurchased(" + mPlugin.getPackageLabel() + ") : StoreButtonClicked" );
-						mController.downloadPlugin( mPlugin.getPackageName(), mPluginType );
+						Tracker.recordTag( "Unpurchased(" + plugin.getPackageName() + ") : StoreButtonClicked" );
+						mController.downloadPlugin( plugin.getPackageName(), plugin.getType() );
 
-						postDelayed( new Runnable() {
+						if ( !valid() ) return;
+
+						mView.postDelayed( new Runnable() {
 
 							@Override
 							public void run() {
@@ -244,7 +499,10 @@ public class IapDialog extends LinearLayout implements OnPageChangeListener, OnC
 	 * @param plugin
 	 */
 	private void downloadPackIcon( ExternalPlugin plugin ) {
-		if ( null != plugin ) {
+		
+		logger.info( "downloadPackIcon" );
+		
+		if ( null != plugin && valid() ) {
 			if ( null != mThreadService && null != mIcon ) {
 				final String url = PluginService.CONTENT_DEFAULT_URL + "/" + plugin.getIconUrl();
 				BackgroundImageLoader callable = new BackgroundImageLoader( mCacheService, false );
@@ -260,7 +518,7 @@ public class IapDialog extends LinearLayout implements OnPageChangeListener, OnC
 		int mResId;
 		String mUrlPrefix;
 
-		public WorkspaceAdapter( Context context, String urlPrefix, int resource, int textResourceId, String[] objects ) {
+		public WorkspaceAdapter ( Context context, String urlPrefix, int resource, int textResourceId, String[] objects ) {
 			super( context, resource, textResourceId, objects );
 			mUrlPrefix = urlPrefix;
 			mResId = resource;
@@ -287,8 +545,8 @@ public class IapDialog extends LinearLayout implements OnPageChangeListener, OnC
 
 		@Override
 		public View getView( int position, View convertView, ViewGroup parent ) {
-
-			Log.i( VIEW_LOG_TAG, "getView: " + position + ", convertView: " + convertView );
+			
+			logger.info( "getView: " + position + ", convertView: " + convertView );
 
 			if ( convertView == null ) {
 				convertView = mLayoutInflater.inflate( mResId, mWorkspace, false );
@@ -306,13 +564,14 @@ public class IapDialog extends LinearLayout implements OnPageChangeListener, OnC
 					toolView = cell.getChildAt( i );
 				} else {
 					toolView = mLayoutInflater.inflate( mCellResId, parent, false );
-					CellLayout.LayoutParams lp = new CellLayout.LayoutParams( cellInfo.cellX, cellInfo.cellY, cellInfo.spanH, cellInfo.spanV );
+					CellLayout.LayoutParams lp = new CellLayout.LayoutParams( cellInfo.cellX, cellInfo.cellY, cellInfo.spanH,
+							cellInfo.spanV );
 					cell.addView( toolView, -1, lp );
 				}
 
 				final int index = ( position * mItemsPerPage ) + i;
-				final ImageView imageView = (ImageView) toolView.findViewById( R.id.image );
-				final View progress = toolView.findViewById( R.id.progress );
+				final ImageView imageView = (ImageView) toolView.findViewById( R.id.aviary_image );
+				final View progress = toolView.findViewById( R.id.aviary_progress );
 
 				if ( index < getRealCount() ) {
 					final String url = getUrlPrefix() + "/" + getItem( index ) + ".png";
@@ -357,10 +616,11 @@ public class IapDialog extends LinearLayout implements OnPageChangeListener, OnC
 	public void onPageChanged( int which, int old ) {
 
 		if ( !mDownloadOnDemand ) return;
+		if ( !valid() ) return;
 
-		Log.i( VIEW_LOG_TAG, "onPageChanged: " + which + " from " + old );
+		logger.info( "onPageChanged: " + which + " from " + old );
 
-		if ( null != mWorkspace && null != getContext() ) {
+		if ( null != mWorkspace ) {
 			WorkspaceAdapter adapter = (WorkspaceAdapter) mWorkspace.getAdapter();
 
 			int index = which * mItemsPerPage;
@@ -372,50 +632,83 @@ public class IapDialog extends LinearLayout implements OnPageChangeListener, OnC
 				View toolView = cellLayout.getChildAt( i - index );
 				if ( i < total ) {
 					final String url = adapter.getUrlPrefix() + "/" + adapter.getItem( i ) + ".png";
-					final ImageView imageView = (ImageView) toolView.findViewById( R.id.image );
+					final ImageView imageView = (ImageView) toolView.findViewById( R.id.aviary_image );
 					final String tag = (String) imageView.getTag();
 
 					if ( tag == null || !url.equals( tag ) ) {
 						if ( null != mThreadService ) {
 
-							Log.d( VIEW_LOG_TAG, "fetching image: " + url );
+							logger.log( "fetching image: " + url );
 							BackgroundImageLoader callable = new BackgroundImageLoader( mCacheService, true );
 							BackgroundImageLoaderListener listener = new BackgroundImageLoaderListener( imageView, url );
 							mThreadService.submit( callable, listener, url );
 
 						}
 					} else {
-						Log.w( VIEW_LOG_TAG, "image already loaded?" );
+						logger.warning( "image already loaded?" );
 					}
 				}
 			}
 		}
 	}
 
-	/**
-	 * Hide the current view and remove from its parent once the hide animation is completed
-	 */
-	public void hide() {
+	public boolean valid() {
+		return mView != null && mView.getWindowToken() != null;
+	}
 
-		if ( null != mPlugin ) {
-			Tracker.recordTag( "Unpurchased(" + mPlugin.getPackageLabel() + ") : Cancelled" );
+	protected void hide() {
+		if ( !valid() ) return;
+		logger.info( "hide" );
+		if ( null != getPlugin() ) {
+			Tracker.recordTag( "Unpurchased(" + getPlugin().getPackageName() + ") : Cancelled" );
 		}
+		mView.post( mHide );
+	}
 
-		if ( null != getHandler() ) {
-			getHandler().post( mHide );
-		}
+	@Override
+	protected void finalize() throws Throwable {
+		logger.info( "finalize" );
+		super.finalize();
 	}
 
 	private Runnable mHide = new Runnable() {
-
 		@Override
 		public void run() {
 			handleHide();
 		}
 	};
 
+	/**
+	 * Dismiss the current dialog
+	 * @param animate
+	 */
+	public void dismiss( boolean animate ) {
+		logger.info( "dismiss, animate: " + animate );
+		if ( animate ) {
+			hide();
+		} else {
+			removeFromParent();
+		}
+	}
+
+	private void removeFromParent() {
+		logger.info( "removeFromParent" );
+		
+		if ( null != mView ) {
+			ViewGroup parent = (ViewGroup) mView.getParent();
+			if ( null != parent ) {
+				parent.removeView( mView );
+				onDetachedFromWindow();
+			}
+		}
+	}
+
 	private void handleHide() {
-		Animation animation = AnimationUtils.loadAnimation( getContext(), R.anim.feather_iap_close_animation );
+		logger.info( "handleHide" );
+		
+		if ( !valid() ) return;
+
+		Animation animation = AnimationUtils.loadAnimation( mView.getContext(), R.anim.aviary_iap_close_animation );
 		AnimationListener listener = new AnimationListener() {
 
 			@Override
@@ -426,14 +719,11 @@ public class IapDialog extends LinearLayout implements OnPageChangeListener, OnC
 
 			@Override
 			public void onAnimationEnd( Animation animation ) {
-				ViewGroup parent = (ViewGroup) getParent();
-				if ( null != parent ) {
-					parent.removeView( IapDialog.this );
-				}
+				removeFromParent();
 			}
 		};
 		animation.setAnimationListener( listener );
-		startAnimation( animation );
+		mView.startAnimation( animation );
 	}
 
 	class BackgroundImageLoaderListener implements FutureListener<Bitmap> {
@@ -441,7 +731,7 @@ public class IapDialog extends LinearLayout implements OnPageChangeListener, OnC
 		WeakReference<ImageView> mImageView;
 		String mUrl;
 
-		public BackgroundImageLoaderListener( final ImageView view, final String url ) {
+		public BackgroundImageLoaderListener ( final ImageView view, final String url ) {
 			mImageView = new WeakReference<ImageView>( view );
 			mUrl = url;
 		}
@@ -454,16 +744,19 @@ public class IapDialog extends LinearLayout implements OnPageChangeListener, OnC
 			if ( null != image ) {
 				try {
 					final Bitmap bitmap = future.get();
-					if ( null != getHandler() ) {
-						getHandler().post( new Runnable() {
+					if ( valid() ) {
+						mView.post( new Runnable() {
 
-							@SuppressWarnings("deprecation")
+							@SuppressWarnings ( "deprecation" )
 							@Override
 							public void run() {
+								
+								if( !valid() ) return;
+								if( mView.getContext() == null ) return;
 
 								if ( null == bitmap ) {
 									image.setScaleType( ScaleType.CENTER );
-									image.setImageResource( R.drawable.feather_iap_dialog_image_na );
+									image.setImageResource( R.drawable.aviary_ic_na );
 								} else {
 									image.setScaleType( ScaleType.FIT_CENTER );
 									image.setImageDrawable( new BitmapDrawable( bitmap ) );
@@ -471,15 +764,19 @@ public class IapDialog extends LinearLayout implements OnPageChangeListener, OnC
 
 								View parent = (View) image.getParent();
 								if ( null != parent ) {
-									View progress = parent.findViewById( R.id.progress );
+									View progress = parent.findViewById( R.id.aviary_progress );
 									if ( null != progress ) {
 										progress.setVisibility( View.INVISIBLE );
 									}
 								}
 
-								Animation anim = AnimationUtils.loadAnimation( getContext(), android.R.anim.fade_in );
-								image.startAnimation( anim );
-								image.setTag( mUrl );
+								try {
+									Animation anim = AnimationUtils.loadAnimation( mView.getContext(), android.R.anim.fade_in );
+									image.startAnimation( anim );
+									image.setTag( mUrl );
+								} catch( Exception e ){
+									e.printStackTrace();
+								}
 							}
 						} );
 					}
@@ -487,7 +784,7 @@ public class IapDialog extends LinearLayout implements OnPageChangeListener, OnC
 					e.printStackTrace();
 				}
 			} else {
-				Log.w( VIEW_LOG_TAG, "imageView is null" );
+				logger.warning( "imageView is null" );
 			}
 		}
 	}
@@ -503,13 +800,13 @@ public class IapDialog extends LinearLayout implements OnPageChangeListener, OnC
 		WeakReference<ImageCacheService> mImageCache;
 		boolean mSaveToCache;
 
-		public BackgroundImageLoader( ImageCacheService service, boolean saveToCache ) {
+		public BackgroundImageLoader ( ImageCacheService service, boolean saveToCache ) {
 			mImageCache = new WeakReference<ImageCacheService>( service );
 			mSaveToCache = saveToCache;
 		}
 
 		@Override
-		public Bitmap call( EffectContext context, String url ) {
+		public Bitmap call( IAviaryController context, String url ) {
 
 			if ( null != url ) {
 

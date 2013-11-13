@@ -10,33 +10,32 @@ import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import android.app.ProgressDialog;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 
 import com.aviary.android.feather.R;
 import com.aviary.android.feather.headless.filters.NativeToolFilter.TiltShiftMode;
 import com.aviary.android.feather.headless.moa.MoaActionFactory;
 import com.aviary.android.feather.headless.moa.MoaActionList;
+import com.aviary.android.feather.library.content.ToolEntry;
 import com.aviary.android.feather.library.filters.FilterLoaderFactory;
 import com.aviary.android.feather.library.filters.FilterLoaderFactory.Filters;
 import com.aviary.android.feather.library.filters.TiltShiftFilter;
-import com.aviary.android.feather.library.services.ConfigService;
-import com.aviary.android.feather.library.services.EffectContext;
+import com.aviary.android.feather.library.services.IAviaryController;
 import com.aviary.android.feather.library.tracking.Tracker;
 import com.aviary.android.feather.library.utils.BitmapUtils;
 import com.aviary.android.feather.library.utils.UIConfiguration;
+import com.aviary.android.feather.widget.AviaryHighlightImageButton;
+import com.aviary.android.feather.widget.AviaryHighlightImageButton.OnCheckedChangeListener;
 import com.aviary.android.feather.widget.ImageViewTiltiShiftTouch;
 import com.aviary.android.feather.widget.ImageViewTiltiShiftTouch.OnTiltShiftDrawListener;
 import com.aviary.android.feather.widget.ImageViewTiltiShiftTouch.TiltShiftDrawMode;
@@ -44,87 +43,58 @@ import com.aviary.android.feather.widget.ImageViewTiltiShiftTouch.TiltShiftDrawM
 /**
  * The Class SpotDrawPanel.
  */
-public class TiltShiftPanel extends AbstractContentPanel implements OnTiltShiftDrawListener, OnClickListener, OnDrawableChangeListener {
+public class TiltShiftPanel extends AbstractContentPanel implements OnTiltShiftDrawListener, OnDrawableChangeListener, OnCheckedChangeListener {
 
 	private BackgroundDrawThread mBackgroundDrawThread;
 	private TiltShiftFilter mFilter;
-	private ImageButton mCircleButton;
-	private ImageButton mRectButton;
-	private View mDisabledStatusView;
+	private AviaryHighlightImageButton mCircleButton;
+	private AviaryHighlightImageButton mRectButton;
 
 	static float BRUSH_MULTIPLIER = 2f;
 
 	MoaActionList mActions = MoaActionFactory.actionList();
-	TiltShiftMode mTiltShiftMode = TiltShiftMode.Radial;
+	TiltShiftMode mTiltShiftMode;
 
-	public TiltShiftPanel( EffectContext context ) {
-		super( context );
+	public TiltShiftPanel( IAviaryController context, ToolEntry entry ) {
+		super( context, entry );
 	}
 
 	@Override
-	public void onCreate( Bitmap bitmap ) {
-		super.onCreate( bitmap );
-		ConfigService config = getContext().getService( ConfigService.class );
+	public void onCreate( Bitmap bitmap, Bundle options ) {
+		super.onCreate( bitmap, options );
 
-		mRectButton = (ImageButton) getOptionView().findViewById( R.id.rectangle );
-		mCircleButton = (ImageButton) getOptionView().findViewById( R.id.circle );
-		mImageView = (ImageViewTiltiShiftTouch) getContentView().findViewById( R.id.image );
-		mDisabledStatusView = getOptionView().findViewById( R.id.disable_status );
+		mRectButton = (AviaryHighlightImageButton) getOptionView().findViewById( R.id.aviary_button_rectangle );
+		mCircleButton = (AviaryHighlightImageButton) getOptionView().findViewById( R.id.aviary_button_circle );
+		mImageView = (ImageViewTiltiShiftTouch) getContentView().findViewById( R.id.aviary_image );
 
 		mPreview = Bitmap.createBitmap( mBitmap.getWidth(), mBitmap.getHeight(), Bitmap.Config.ARGB_8888 );
 		mPreview.eraseColor( Color.BLACK );
 		
-		ImageViewTiltiShiftTouch image = (ImageViewTiltiShiftTouch) mImageView;
-		int color = config.getColor( R.color.feather_tiltshift_stroke_color );
-		int width = config.getInteger( R.integer.feather_tiltshift_stroke_width );
-		int maxSize = config.getInteger( R.integer.feather_tiltshift_dimension_max );
-		int minSize = config.getInteger( R.integer.feather_tiltshift_dimension_min );
-		int crossWidth = config.getInteger( R.integer.feather_tiltshift_crosshair_stroke_width );
-		int bgColor = config.getColor( R.color.feather_tiltshift_background_stroke_color );
-		int crossRadius = config.getInteger( R.integer.feather_tiltshift_crosshair_radius );
-		int crossEdge = config.getInteger( R.integer.feather_tiltshift_crosshair_edge );
-		int fadeout_timeout = config.getInteger( R.integer.feather_tiltshift_fadeout_timeout );
-		int fadeout_duration = config.getInteger( R.integer.feather_tiltshift_fadeout_duration );
-		
-		image.setShapeLimits( minSize, maxSize );
-		image.setPaintStrokeWidth( width, crossWidth );
-		image.setPaintStrokeColor( color, bgColor );
-		image.setCrossHairSize( crossRadius, crossEdge );
-		image.setFadeoutTimeout( fadeout_timeout );
-		image.setFadeoutDuration( fadeout_duration );
+		final ImageViewTiltiShiftTouch image = (ImageViewTiltiShiftTouch) mImageView;
+		image.setOnDrawableChangedListener( this );
 		image.setDisplayType( DisplayType.FIT_IF_BIGGER );
+		// image.setPointWaveEnabled( true );
 		
+		mCircleButton.setOnCheckedChangeListener( this );
+		mRectButton.setOnCheckedChangeListener( this );
 
-		if( mTiltShiftMode == TiltShiftMode.Radial ) {
-			mCircleButton.setSelected( true );
-			image.setTiltShiftDrawMode( TiltShiftDrawMode.Radial );
-		} else {
-			mRectButton.setSelected( true );
-			image.setTiltShiftDrawMode( TiltShiftDrawMode.Linear );
-		}
-
-		mRectButton.setOnClickListener( this );
-		mCircleButton.setOnClickListener( this );
-
+		// create the background thread for drawing chanched
 		mBackgroundDrawThread = new BackgroundDrawThread( "filter-thread", Thread.NORM_PRIORITY );
 
 		// initialize the filter
 		mFilter = createFilter();
-		mFilter.setTiltShiftMode( mTiltShiftMode );
 	}
 
 	@Override
 	public void onActivate() {
 		super.onActivate();
-		
+
 		mPreview = BitmapUtils.copy( mBitmap, Config.ARGB_8888 );
 		mBackgroundDrawThread.start();
 		
 		( (ImageViewTiltiShiftTouch) mImageView ).setOnDrawStartListener( this );
-		mImageView.setOnDrawableChangedListener( this );
 		mImageView.setDisplayType( DisplayType.FIT_IF_BIGGER );
 		mImageView.setImageBitmap( mPreview, null, ImageViewTouchBase.ZOOM_INVALID, UIConfiguration.IMAGE_VIEW_MAX_ZOOM );
-		
 		contentReady();
 	}
 
@@ -138,26 +108,31 @@ public class TiltShiftPanel extends AbstractContentPanel implements OnTiltShiftD
 	}
 	
 	@Override
-	public void onConfigurationChanged( Configuration newConfig, Configuration oldConfig ) {
-		super.onConfigurationChanged( newConfig, oldConfig );
-	}
-	
+	public void onCheckedChanged( AviaryHighlightImageButton button, boolean isChecked, boolean fromUser ) {
+		
+		mLogger.info( "onCheckedChanged: " + isChecked + ", fromUser: " + fromUser );
+		
+		final int id = button.getId();
 
-	@Override
-	public void onClick( View v ) {
-
-		if ( v.isSelected() ) return;
-
-		mRectButton.setSelected( false );
-		mCircleButton.setSelected( false );
-
-		if ( v.equals( mRectButton ) ) {
-			mTiltShiftMode = TiltShiftMode.Linear;
-		} else if ( v.equals( mCircleButton ) ) {
-			mTiltShiftMode = TiltShiftMode.Radial;
+		// button already checked, skip
+		if ( !isChecked ){
+			return;
 		}
 
-		v.setSelected( true );
+		if ( id == mRectButton.getId() ) {
+			mLogger.log( "rect" );
+			mTiltShiftMode = TiltShiftMode.Linear;
+			mCircleButton.setChecked( false );
+		} else if ( id == mCircleButton.getId() ) {
+			mLogger.log( "circle" );
+			mTiltShiftMode = TiltShiftMode.Radial;
+			mRectButton.setChecked( false );
+		}
+		
+		if( !fromUser ) {
+			mLogger.log( "return" );
+			return;
+		}
 
 		if( mTiltShiftMode == TiltShiftMode.Radial ) {
 			((ImageViewTiltiShiftTouch)mImageView).setTiltShiftDrawMode( TiltShiftDrawMode.Radial );
@@ -166,14 +141,14 @@ public class TiltShiftPanel extends AbstractContentPanel implements OnTiltShiftD
 			((ImageViewTiltiShiftTouch)mImageView).setTiltShiftDrawMode( TiltShiftDrawMode.Linear );
 			Tracker.recordTag( Filters.TILT_SHIFT.name().toLowerCase( Locale.US ) + ": RectangleClicked" );
 		}
-	}	
+	}
 
 	@Override
 	public void onDeactivate() {
 		
 		mImageView.setOnDrawableChangedListener( null );
-		mRectButton.setOnClickListener( null );
-		mCircleButton.setOnClickListener( null );
+		mCircleButton.setOnCheckedChangeListener( this );
+		mRectButton.setOnCheckedChangeListener( this );
 
 		( (ImageViewTiltiShiftTouch) mImageView ).setOnDrawStartListener( null );
 
@@ -223,15 +198,30 @@ public class TiltShiftPanel extends AbstractContentPanel implements OnTiltShiftD
 
 	@Override
 	public void onDrawableChanged( Drawable drawable ) {
-		ImageViewTiltiShiftTouch image = (ImageViewTiltiShiftTouch) mImageView;
 		
-		if( mTiltShiftMode == TiltShiftMode.Radial ) {
-			mCircleButton.setSelected( true );
-			image.setTiltShiftDrawMode( TiltShiftDrawMode.Radial );
-		} else {
-			mRectButton.setSelected( true );
-			image.setTiltShiftDrawMode( TiltShiftDrawMode.Linear );
+		mLogger.info( "onDrawableChanged: " + drawable );
+		
+		if( mCircleButton.isChecked() ) {
+			mTiltShiftMode = TiltShiftMode.Radial;
+		} else if( mRectButton.isChecked() ) {
+			mTiltShiftMode = TiltShiftMode.Linear;
 		}
+		
+		getHandler().postDelayed( new Runnable() {
+			
+			@Override
+			public void run() {
+				ImageViewTiltiShiftTouch image = (ImageViewTiltiShiftTouch) mImageView;
+				
+				if( mTiltShiftMode == TiltShiftMode.Radial ) {
+					mCircleButton.setChecked( true );
+					image.setTiltShiftDrawMode( TiltShiftDrawMode.Radial );
+				} else {
+					mRectButton.setChecked( true );
+					image.setTiltShiftDrawMode( TiltShiftDrawMode.Linear );
+				}
+			}
+		}, 500 );
 	}
 
 	@Override
@@ -256,33 +246,6 @@ public class TiltShiftPanel extends AbstractContentPanel implements OnTiltShiftD
 		super.onComplete( bitmap, actions );
 	}
 
-	/**
-	 * Sets the panel enabled.
-	 */
-	public void setPanelEnabled( boolean value ) {
-
-		if ( mOptionView != null ) {
-			if ( value != mOptionView.isEnabled() ) {
-				mOptionView.setEnabled( value );
-
-				if ( value ) {
-					getContext().restoreToolbarTitle();
-				} else {
-					getContext().setToolbarTitle( R.string.zoom_mode );
-				}
-
-				mDisabledStatusView.setVisibility( value ? View.INVISIBLE : View.VISIBLE );
-			}
-		}
-	}
-
-	public boolean getPanelEnabled() {
-		if ( mOptionView != null ) {
-			return mOptionView.isEnabled();
-		}
-		return false;
-	}
-
 	@SuppressWarnings("unused")
 	private String printRect( Rect rect ) {
 		return "( left=" + rect.left + ", top=" + rect.top + ", width=" + rect.width() + ", height=" + rect.height() + ")";
@@ -294,17 +257,12 @@ public class TiltShiftPanel extends AbstractContentPanel implements OnTiltShiftD
 
 	@Override
 	protected View generateContentView( LayoutInflater inflater ) {
-		return inflater.inflate( R.layout.feather_tiltshift_content, null );
+		return inflater.inflate( R.layout.aviary_content_focus, null );
 	}
 
 	@Override
 	protected ViewGroup generateOptionView( LayoutInflater inflater, ViewGroup parent ) {
-		return (ViewGroup) inflater.inflate( R.layout.feather_tiltshift_panel, parent, false );
-	}
-
-	@Override
-	public Matrix getContentDisplayMatrix() {
-		return mImageView.getDisplayMatrix();
+		return (ViewGroup) inflater.inflate( R.layout.aviary_panel_focus, parent, false );
 	}
 
 	static class DrawQueue extends LinkedBlockingQueue<float[]> {
@@ -545,7 +503,7 @@ public class TiltShiftPanel extends AbstractContentPanel implements OnTiltShiftD
 		protected void onPreExecute() {
 			super.onPreExecute();
 			mProgress.setTitle( getContext().getBaseContext().getString( R.string.feather_loading_title ) );
-			mProgress.setMessage( getContext().getBaseContext().getString( R.string.effect_loading_message ) );
+			mProgress.setMessage( getContext().getBaseContext().getString( R.string.feather_effect_loading_message ) );
 			mProgress.setIndeterminate( true );
 			mProgress.setCancelable( false );
 			mProgress.show();

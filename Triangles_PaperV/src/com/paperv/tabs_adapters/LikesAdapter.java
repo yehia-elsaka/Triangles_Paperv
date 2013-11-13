@@ -2,11 +2,6 @@ package com.paperv.tabs_adapters;
 
 import java.util.List;
 
-import com.paperv.www.R;
-import com.paperv.lazy_adapter_utils.ImageLoader;
-import com.paperv.models.LikeStory;
-import com.paperv.tabs_utils.Utils;
-
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +9,11 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.paperv.lazy_adapter_utils.ImageLoader;
+import com.paperv.models.LikeStory;
+import com.paperv.tabs_utils.Utils;
+import com.paperv.www.R;
 
 public class LikesAdapter extends BaseAdapter {
 

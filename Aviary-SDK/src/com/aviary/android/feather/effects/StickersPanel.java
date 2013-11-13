@@ -1,6 +1,10 @@
 package com.aviary.android.feather.effects;
 
 import it.sephiroth.android.library.imagezoom.ImageViewTouchBase.DisplayType;
+import it.sephiroth.android.library.widget.BaseAdapterExtended;
+import it.sephiroth.android.library.widget.HorizontalListView.OnItemDragListener;
+import it.sephiroth.android.library.widget.HorizontalVariableListView;
+import it.sephiroth.android.library.widget.HorizontalVariableListView.OnItemClickedListener;
 
 import java.io.InputStream;
 import java.lang.ref.SoftReference;
@@ -9,14 +13,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -24,8 +26,6 @@ import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
-import android.graphics.Paint;
-import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
@@ -33,7 +33,6 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,22 +41,23 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
-import com.aviary.android.feather.Constants;
-import com.aviary.android.feather.FilterManager.FeatherContext;
+import com.aviary.android.feather.AviaryMainController.FeatherContext;
 import com.aviary.android.feather.R;
 import com.aviary.android.feather.async_tasks.AsyncImageManager;
+import com.aviary.android.feather.async_tasks.AsyncImageManager.OnImageLoadListener;
+import com.aviary.android.feather.async_tasks.AsyncImageManager.Priority;
 import com.aviary.android.feather.effects.BordersPanel.ViewHolder;
 import com.aviary.android.feather.effects.SimpleStatusMachine.OnStatusChangeListener;
-import com.aviary.android.feather.graphics.PluginDividerDrawable;
-import com.aviary.android.feather.graphics.RepeatableHorizontalDrawable;
+import com.aviary.android.feather.effects.StickersPanel.StickerEffectPack.StickerEffectPackType;
 import com.aviary.android.feather.headless.moa.MoaActionFactory;
 import com.aviary.android.feather.headless.moa.MoaActionList;
 import com.aviary.android.feather.headless.utils.IOUtils;
+import com.aviary.android.feather.library.Constants;
 import com.aviary.android.feather.library.content.FeatherIntent;
+import com.aviary.android.feather.library.content.ToolEntry;
 import com.aviary.android.feather.library.filters.StickerFilter;
 import com.aviary.android.feather.library.graphics.drawable.FeatherDrawable;
 import com.aviary.android.feather.library.graphics.drawable.StickerDrawable;
@@ -74,9 +74,10 @@ import com.aviary.android.feather.library.services.ConfigService;
 import com.aviary.android.feather.library.services.DragControllerService;
 import com.aviary.android.feather.library.services.DragControllerService.DragListener;
 import com.aviary.android.feather.library.services.DragControllerService.DragSource;
-import com.aviary.android.feather.library.services.EffectContext;
+import com.aviary.android.feather.library.services.IAviaryController;
 import com.aviary.android.feather.library.services.ImageCacheService;
 import com.aviary.android.feather.library.services.ImageCacheService.SimpleCachedRemoteBitmap;
+import com.aviary.android.feather.library.services.LocalDataService;
 import com.aviary.android.feather.library.services.PluginService;
 import com.aviary.android.feather.library.services.PluginService.OnUpdateListener;
 import com.aviary.android.feather.library.services.PluginService.StickerType;
@@ -91,26 +92,21 @@ import com.aviary.android.feather.library.utils.MatrixUtils;
 import com.aviary.android.feather.library.utils.PackageManagerUtils;
 import com.aviary.android.feather.library.utils.SystemUtils;
 import com.aviary.android.feather.library.utils.UIConfiguration;
-import com.aviary.android.feather.utils.UIUtils;
-import com.aviary.android.feather.widget.ArrayAdapterExtended;
 import com.aviary.android.feather.widget.DrawableHighlightView;
 import com.aviary.android.feather.widget.DrawableHighlightView.OnDeleteClickListener;
 import com.aviary.android.feather.widget.EffectThumbLayout;
-import com.aviary.android.feather.widget.HorizontalListView.OnItemDragListener;
-import com.aviary.android.feather.widget.HorizontalVariableListView;
-import com.aviary.android.feather.widget.HorizontalVariableListView.OnItemClickedListener;
-import com.aviary.android.feather.widget.IapDialog;
-import com.aviary.android.feather.widget.IapDialog.OnCloseListener;
+import com.aviary.android.feather.widget.IAPDialog;
+import com.aviary.android.feather.widget.IAPDialog.IAPUpdater;
+import com.aviary.android.feather.widget.IAPDialog.OnCloseListener;
 import com.aviary.android.feather.widget.ImageViewDrawableOverlay;
 
-public class StickersPanel extends AbstractContentPanel implements OnUpdateListener, OnStatusChangeListener, OnItemClickedListener, DragListener, DragSource, DropTargetListener, OnItemSelectedListener {
+public class StickersPanel extends AbstractContentPanel implements OnUpdateListener, OnStatusChangeListener, OnItemClickedListener,
+		DragListener, DragSource, DropTargetListener, OnItemSelectedListener, OnImageLoadListener {
 
 	private static final int STATUS_NULL = SimpleStatusMachine.INVALID_STATUS;
 	private static final int STATUS_PACKS = 1;
 	private static final int STATUS_STICKERS = 2;
 	private static final int STATUS_IAP = 3;
-
-	private static final int THUMBNAIL_INSET = 8;
 
 	/** panel's status */
 	private SimpleStatusMachine mStatus;
@@ -139,14 +135,11 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 	/** canvas used to draw stickers */
 	private Canvas mCanvas;
 
-	/** default width of rolls elements */
-	private int mPacksCellWidth;
+	private int mPackCellWidth;
+	private int mStickerCellWidth;
 
 	/** installed plugins */
 	private List<String> mInstalledPackages;
-
-	/** total number of available plugins */
-	private int mAvailablePacks = 0;
 
 	/** required services */
 	private PluginService mPluginService;
@@ -155,14 +148,11 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 	private ImageCacheService mCacheService;
 	private DragControllerService mDragControllerService;
 
-	/** should display the iap notification popup? */
-	private boolean mShowIapNotificationAndValue;
-
 	/** max number of featured elements to display */
 	private int mFeaturedCount;
 
 	/** iap dialog for inline previews */
-	private IapDialog mIapDialog;
+	private IAPDialog mIapDialog;
 
 	/** the current selected sticker pack */
 	private IPlugin mPlugin;
@@ -170,59 +160,46 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 	private MoaActionList mActionList;
 	private StickerFilter mCurrentFilter;
 
-	/** sticker configurations */
-	private int mStickerHvEllipse, mStickerHvStrokeWidth, mStickerHvMinSize;
-	private int mStickerHvPadding;;
-	private ColorStateList mStickerHvStrokeColorStateList;
-	private ColorStateList mStickerHvFillColorStateList;
+	private int mPackThumbSize;
+	private int mStickerThumbSize;
 
-	/** sticker thumbnail for the horizontal list final size */
-	private int mThumbSize;
-	
-	/** default title for featured divider */
-	private String mFeaturedDefaultTitle;
-	
-	private int mItemsGapPixelSize = 4;
+	private boolean mFirstTimeRenderer;
 
-	public StickersPanel( EffectContext context ) {
-		super( context );
+	public StickersPanel ( IAviaryController context, ToolEntry entry ) {
+		super( context, entry );
 	}
 
-	@SuppressLint("NewApi")
-	@SuppressWarnings("deprecation")
 	@Override
-	public void onCreate( Bitmap bitmap ) {
-		super.onCreate( bitmap );
+	public void onCreate( Bitmap bitmap, Bundle options ) {
+		super.onCreate( bitmap, options );
 
 		mStatus = new SimpleStatusMachine();
 
-		// determine if the external packs are enabled
-		mExternalPacksEnabled = Constants.getExternalStickersEnabled();
 
 		// init layout components
-		mListPacks = (HorizontalVariableListView) getOptionView().findViewById( R.id.list_packs );
-		mListStickers = (HorizontalVariableListView) getOptionView().findViewById( R.id.list_stickers );
-		mViewFlipper = (ViewFlipper) getOptionView().findViewById( R.id.flipper );
-		mImageView = (ImageViewDrawableOverlay) getContentView().findViewById( R.id.overlay );
+		mListPacks = (HorizontalVariableListView) getOptionView().findViewById( R.id.aviary_list_packs );
+		mListStickers = (HorizontalVariableListView) getOptionView().findViewById( R.id.aviary_list_stickers );
+		mViewFlipper = (ViewFlipper) getOptionView().findViewById( R.id.aviary_flipper );
+		mImageView = (ImageViewDrawableOverlay) getContentView().findViewById( R.id.aviary_overlay );
 
 		// init services
 		mPluginService = getContext().getService( PluginService.class );
 		mConfigService = getContext().getService( ConfigService.class );
 		mPreferenceService = getContext().getService( PreferenceService.class );
 		mCacheService = getContext().getService( ImageCacheService.class );
+		
+		LocalDataService dataService = getContext().getService( LocalDataService.class );
+		// determine if the external packs are enabled
+		mExternalPacksEnabled = dataService.getExternalPacksEnabled( FeatherIntent.PluginType.TYPE_STICKER );
 
 		// TODO: only for testing
 		// mCacheService.deleteCache();
 
 		// setup the main horizontal listview
-		mListPacks.setGravity( Gravity.BOTTOM );
 		mListPacks.setOverScrollMode( HorizontalVariableListView.OVER_SCROLL_ALWAYS );
-		mListPacks.setEdgeGravityY( Gravity.BOTTOM );
 
 		// setup the stickers listview
-		mListStickers.setGravity( Gravity.BOTTOM );
 		mListStickers.setOverScrollMode( HorizontalVariableListView.OVER_SCROLL_ALWAYS );
-		mListStickers.setEdgeGravityY( Gravity.BOTTOM );
 
 		// setup the main imageview
 		( (ImageViewDrawableOverlay) mImageView ).setDisplayType( DisplayType.FIT_IF_BIGGER );
@@ -233,52 +210,35 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 		// create the default action list
 		mActionList = MoaActionFactory.actionList();
 
-		// load the configuration for the sticker drawable
-		mStickerHvEllipse = mConfigService.getInteger( R.integer.feather_sticker_highlight_ellipse );
-		mStickerHvStrokeWidth = mConfigService.getInteger( R.integer.feather_sticker_highlight_stroke_width );
-
-		mStickerHvStrokeColorStateList = mConfigService.getColorStateList( R.color.feather_sticker_color_stroke_selector );
-		mStickerHvFillColorStateList = mConfigService.getColorStateList( R.color.feather_sticker_color_fill_selector );
-
-		mStickerHvMinSize = mConfigService.getInteger( R.integer.feather_sticker_highlight_minsize );
-		mStickerHvPadding = mConfigService.getInteger( R.integer.feather_sticker_highlight_padding );
-
-		mFeaturedCount = mConfigService.getInteger( R.integer.feather_featured_count );
-		mFeaturedDefaultTitle = mConfigService.getString( R.string.feather_featured );
-
-		// update the background drawable
-		View content = getOptionView().findViewById( R.id.background );
-		content.setBackgroundDrawable( RepeatableHorizontalDrawable.createFromView( content ) );
+		mFeaturedCount = mConfigService.getInteger( R.integer.aviary_featured_packs_count );
 
 		mImageManager = new AsyncImageManager();
 
 		// create the preview for the main imageview
 		createAndConfigurePreview();
 
-		if ( android.os.Build.VERSION.SDK_INT > 8 ) {
-			DragControllerService dragger = getContext().getService( DragControllerService.class );
-			dragger.addDropTarget( (DropTarget) mImageView );
-			dragger.setMoveTarget( mImageView );
-			dragger.setDragListener( this );
-			// TODO: remember to activate this!
-			// dragger.activate();
-			setDragController( dragger );
-		}
+		DragControllerService dragger = getContext().getService( DragControllerService.class );
+		dragger.addDropTarget( (DropTarget) mImageView );
+		dragger.setMoveTarget( mImageView );
+		dragger.setDragListener( this );
+
+		setDragController( dragger );
 	}
 
 	@Override
 	public void onActivate() {
 		super.onActivate();
 
-		@SuppressWarnings ( "unused" ) Matrix current = getContext().getCurrentImageViewMatrix();
+		@SuppressWarnings ( "unused" )
+		Matrix current = getContext().getCurrentImageViewMatrix();
 		mImageView.setImageBitmap( mPreview, null, -1, UIConfiguration.IMAGE_VIEW_MAX_ZOOM );
 
-		//mPacksCellWidth = mConfigService.getDimensionPixelSize( R.dimen.feather_sticker_pack_cell_width );
-		//mPacksCellWidth = (int) ( ( Constants.SCREEN_WIDTH / UIUtils.getScreenOptimalColumnsPixels( mPacksCellWidth ) ) );
-		
-		mPacksCellWidth = (int) ( ( getOptionView().findViewById( R.id.background ).getHeight() - getOptionView().findViewById( R.id.bottom_background_overlay ).getHeight() ) * 0.8 );
-		
-		mItemsGapPixelSize = mConfigService.getDimensionPixelSize( R.dimen.feather_stickers_panel_items_gap );
+		mPackCellWidth = mConfigService.getDimensionPixelSize( R.dimen.aviary_sticker_pack_width );
+		mPackThumbSize = mConfigService.getDimensionPixelSize( R.dimen.aviary_sticker_pack_image_width );
+		mStickerCellWidth = mConfigService.getDimensionPixelSize( R.dimen.aviary_sticker_single_item_width );
+		mStickerThumbSize = mConfigService.getDimensionPixelSize( R.dimen.aviary_sticker_single_item_image_width );
+
+		mImageManager.setOnLoadCompleteListener( this );
 
 		mInstalledPackages = Collections.synchronizedList( new ArrayList<String>() );
 
@@ -362,6 +322,8 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 	public void onDeactivate() {
 		super.onDeactivate();
 
+		mImageManager.setOnLoadCompleteListener( null );
+
 		// disable the drag controller
 		if ( null != getDragController() ) {
 			getDragController().deactivate();
@@ -415,43 +377,45 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 	public void onConfigurationChanged( Configuration newConfig, Configuration oldConfig ) {
 
 		// TODO: To be verified
+		mLogger.info( "onConfigurationChanged: " + newConfig );
 
 		super.onConfigurationChanged( newConfig, oldConfig );
 
 		mImageManager.clearCache();
 
 		if ( mStatus.getCurrentStatus() == STATUS_NULL || mStatus.getCurrentStatus() == STATUS_PACKS ) {
-			updateInstalledPacks( false );
+			// updateInstalledPacks( false );
 		} else if ( mStatus.getCurrentStatus() == STATUS_STICKERS ) {
-			loadStickers();
-		} else if( mStatus.getCurrentStatus() == STATUS_IAP ) {
+			// loadStickers();
+		} else if ( mStatus.getCurrentStatus() == STATUS_IAP ) {
 			if ( mIapDialog != null ) {
-				
-				ViewGroup parent = (ViewGroup) mIapDialog.getParent();
-				
-				if( null != parent ) {
-					ExternalPlugin currentPlugin = mIapDialog.getPlugin();
-					
-					int index = parent.indexOfChild( mIapDialog );
-					parent.removeView( mIapDialog );
-					mIapDialog = (IapDialog) LayoutInflater.from( getContext().getBaseContext() ).inflate( R.layout.feather_iap_dialog, parent, false );
-					mIapDialog.setLayoutAnimation( null );
-					parent.addView( mIapDialog, index );
-					mIapDialog.setPlugin( currentPlugin, FeatherIntent.PluginType.TYPE_STICKER, getContext().getBaseContext() );
-				}
+				mIapDialog.onConfigurationChanged( newConfig );
 			}
-			updateInstalledPacks( false );
+			// updateInstalledPacks( false );
 		}
 	}
 
 	@Override
 	protected View generateContentView( LayoutInflater inflater ) {
-		return inflater.inflate( R.layout.feather_stickers_content, null );
+		return inflater.inflate( R.layout.aviary_content_stickers, null );
 	}
 
 	@Override
 	protected ViewGroup generateOptionView( LayoutInflater inflater, ViewGroup parent ) {
-		return (ViewGroup) inflater.inflate( R.layout.feather_stickers2_panel, null );
+		return (ViewGroup) inflater.inflate( R.layout.aviary_panel_stickers, null );
+	}
+
+	@Override
+	public void onLoadComplete( ImageView view, Bitmap bitmap, int tag ) {
+
+		if ( !isActive() ) return;
+
+		if ( null != bitmap ) {
+			view.setImageBitmap( bitmap );
+		} else {
+			view.setImageResource( R.drawable.aviary_ic_na );
+		}
+		view.setVisibility( View.VISIBLE );
 	}
 
 	// /////////////////////////
@@ -461,7 +425,6 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 	public void OnStatusChanged( int oldStatus, int newStatus ) {
 		mLogger.info( "OnStatusChange: " + oldStatus + " >> " + newStatus );
 
-		
 		switch ( newStatus ) {
 			case STATUS_PACKS:
 
@@ -482,9 +445,7 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 				} else if ( oldStatus == STATUS_IAP ) {
 					// only using back button
 					mPlugin = null;
-					removeIapDialog();
-					setApplyEnabled( true );
-
+					removeIAPDialog();
 				}
 				break;
 
@@ -492,10 +453,9 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 				if ( oldStatus == STATUS_PACKS ) {
 					loadStickers();
 				} else if ( oldStatus == STATUS_IAP ) {
-					removeIapDialog();
+					removeIAPDialog();
 					loadStickers();
-					setApplyEnabled( true );
-				} else if( oldStatus == STATUS_NULL ) {
+				} else if ( oldStatus == STATUS_NULL ) {
 					loadStickers();
 				}
 
@@ -507,9 +467,7 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 				break;
 
 			case STATUS_IAP:
-				mIapDialog = createIapDialog();
-				updateIapDialog();
-				setApplyEnabled( false );
+				showIAPDialog();
 				break;
 
 			default:
@@ -523,7 +481,7 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 		mLogger.info( "OnStatusUpdated: " + status );
 		switch ( status ) {
 			case STATUS_IAP:
-				updateIapDialog();
+				showIAPDialog();
 				break;
 		}
 	}
@@ -533,7 +491,7 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 	// ///////////////////////////
 
 	@Override
-	public void onUpdate( Bundle delta ) {
+	public void onUpdate( PluginService service, Bundle delta ) {
 		mLogger.info( "onUpdate" );
 
 		if ( !isActive() || !mExternalPacksEnabled ) return;
@@ -553,60 +511,64 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 
 		if ( status == STATUS_NULL || status == STATUS_PACKS ) {
 			// PACKS
-			dialog = new AlertDialog.Builder( getContext().getBaseContext() ).setMessage( R.string.sticker_pack_updated_1 ).setPositiveButton( android.R.string.ok, new DialogInterface.OnClickListener() {
+			dialog = new AlertDialog.Builder( getContext().getBaseContext() ).setMessage( R.string.feather_sticker_pack_updated_1 )
+					.setPositiveButton( android.R.string.ok, new DialogInterface.OnClickListener() {
 
-				@Override
-				public void onClick( DialogInterface dialog, int which ) {
-					updateInstalledPacks( false );
-				}
-			} ).create();
+						@Override
+						public void onClick( DialogInterface dialog, int which ) {
+							updateInstalledPacks( false );
+						}
+					} ).create();
 
 		} else if ( status == STATUS_STICKERS ) {
 			// STICKERS
 
 			if ( stickersOnScreen() ) {
 
-				dialog = new AlertDialog.Builder( getContext().getBaseContext() ).setMessage( R.string.sticker_pack_updated_3 ).setPositiveButton( android.R.string.yes, new DialogInterface.OnClickListener() {
+				dialog = new AlertDialog.Builder( getContext().getBaseContext() ).setMessage( R.string.feather_sticker_pack_updated_3 )
+						.setPositiveButton( android.R.string.yes, new DialogInterface.OnClickListener() {
 
-					@Override
-					public void onClick( DialogInterface dialog, int which ) {
-						onApplyCurrent();
-						mStatus.setStatus( STATUS_PACKS );
-						updateInstalledPacks( false );
-					}
-				} ).setNegativeButton( android.R.string.no, new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick( DialogInterface dialog, int which ) {
+								onApplyCurrent();
+								mStatus.setStatus( STATUS_PACKS );
+								updateInstalledPacks( false );
+							}
+						} ).setNegativeButton( android.R.string.no, new DialogInterface.OnClickListener() {
 
-					@Override
-					public void onClick( DialogInterface dialog, int which ) {
-						onClearCurrent( true );
-						mStatus.setStatus( STATUS_PACKS );
-						updateInstalledPacks( false );
-					}
-				} ).create();
+							@Override
+							public void onClick( DialogInterface dialog, int which ) {
+								onClearCurrent( true );
+								mStatus.setStatus( STATUS_PACKS );
+								updateInstalledPacks( false );
+							}
+						} ).create();
 
 			} else {
 
-				dialog = new AlertDialog.Builder( getContext().getBaseContext() ).setMessage( R.string.sticker_pack_updated_2 ).setPositiveButton( android.R.string.ok, new DialogInterface.OnClickListener() {
+				dialog = new AlertDialog.Builder( getContext().getBaseContext() ).setMessage( R.string.feather_sticker_pack_updated_2 )
+						.setPositiveButton( android.R.string.ok, new DialogInterface.OnClickListener() {
 
-					@Override
-					public void onClick( DialogInterface dialog, int which ) {
-						mStatus.setStatus( STATUS_PACKS );
-						updateInstalledPacks( false );
-					}
-				} ).create();
+							@Override
+							public void onClick( DialogInterface dialog, int which ) {
+								mStatus.setStatus( STATUS_PACKS );
+								updateInstalledPacks( false );
+							}
+						} ).create();
 			}
 
 		} else if ( status == STATUS_IAP ) {
 			// IAP
-			dialog = new AlertDialog.Builder( getContext().getBaseContext() ).setMessage( R.string.sticker_pack_updated_2 ).setPositiveButton( android.R.string.ok, new DialogInterface.OnClickListener() {
+			dialog = new AlertDialog.Builder( getContext().getBaseContext() ).setMessage( R.string.feather_sticker_pack_updated_2 )
+					.setPositiveButton( android.R.string.ok, new DialogInterface.OnClickListener() {
 
-				@Override
-				public void onClick( DialogInterface dialog, int which ) {
-					mStatus.setStatus( STATUS_PACKS );
-					mListPacks.setSelectedPosition( HorizontalVariableListView.INVALID_POSITION, true );
-					updateInstalledPacks( false );
-				}
-			} ).create();
+						@Override
+						public void onClick( DialogInterface dialog, int which ) {
+							mStatus.setStatus( STATUS_PACKS );
+							mListPacks.setSelectedPosition( HorizontalVariableListView.INVALID_POSITION, true );
+							updateInstalledPacks( false );
+						}
+					} ).create();
 		}
 
 		if ( dialog != null ) {
@@ -619,7 +581,6 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 	// ///////////////////////////
 	// Iap Notification methods //
 	// ///////////////////////////
-
 
 	// //////////////////////
 	// OnItemClickListener //
@@ -637,7 +598,7 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 			StickerEffectPack item = (StickerEffectPack) mListPacks.getAdapter().getItem( position );
 
 			// "get more" button
-			if ( null == item ) {
+			if ( item.mType == StickerEffectPackType.GET_MORE_FIRST || item.mType == StickerEffectPackType.GET_MORE_LAST ) {
 
 				if ( position == 0 ) {
 					Tracker.recordTag( "LeftGetMoreStickers : Selected" );
@@ -651,20 +612,19 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 
 			if ( null != item ) {
 
-				if ( item.isDivider ) {
-					return false;
-				} else if ( item.isExternal ) {
+				if ( item.mType == StickerEffectPackType.EXTERNAL ) {
 
-					// open the IAP Dialog only if current build is > froyo and app memory is >= 32
-					if ( android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.FROYO && SystemUtils.getApplicationTotalMemory() >= Constants.APP_MEMORY_SMALL ) {
+					// open the IAP Dialog only if current build is > froyo and app memory
+					// is >= 32
+					if ( android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.FROYO
+							&& SystemUtils.getApplicationTotalMemory() >= Constants.APP_MEMORY_SMALL ) {
 						mPlugin = (ExternalPlugin) item.mPluginRef;
 						mStatus.setStatus( STATUS_IAP );
-						Tracker.recordTag( "Unpurchased(" + mPlugin.getPackageLabel() + ") : Opened" );
 						return true;
 
 					} else {
 						// external plugin - download from the play store
-						Tracker.recordTag( "Unpurchased(" + item.mTitle + ") : StoreButtonClicked" );
+						Tracker.recordTag( "Unpurchased(" + item.mPackageName + ") : StoreButtonClicked" );
 						getContext().downloadPlugin( item.mPackageName.toString(), FeatherIntent.PluginType.TYPE_STICKER );
 						return false;
 					}
@@ -679,7 +639,7 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 				}
 			}
 		}
-		
+
 		return false;
 	}
 
@@ -709,15 +669,15 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 	 * Starts the drag and drop operation
 	 * 
 	 * @param parent
-	 *           - the parent list
+	 *            - the parent list
 	 * @param view
-	 *           - the current view clicked
+	 *            - the current view clicked
 	 * @param position
-	 *           - the position in the list
+	 *            - the position in the list
 	 * @param id
-	 *           - the item id
+	 *            - the item id
 	 * @param nativeClick
-	 *           - it's a native click
+	 *            - it's a native click
 	 * @return
 	 */
 	private boolean startDrag( AdapterView<?> parent, View view, int position, long id, boolean animate ) {
@@ -738,18 +698,23 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 			if ( null != image ) {
 				final String dragInfo = (String) parent.getAdapter().getItem( position );
 
-				int size = mThumbSize;
+				int size = mStickerThumbSize;
 				Bitmap bitmap;
 				try {
 					bitmap = ImageLoader.getPluginItemBitmap( (InternalPlugin) mPlugin, dragInfo, StickerType.Small, size, size );
 					int offsetx = Math.abs( image.getWidth() - bitmap.getWidth() ) / 2;
 					int offsety = Math.abs( image.getHeight() - bitmap.getHeight() ) / 2;
-					return getDragController().startDrag( image, bitmap, offsetx, offsety, StickersPanel.this, dragInfo, DragControllerService.DRAG_ACTION_MOVE, animate );
+					
+					mLogger.error( "bitmap: " + bitmap + ", is recycled? " + bitmap.isRecycled() );
+					
+					return getDragController().startDrag( image, bitmap, offsetx, offsety, StickersPanel.this, dragInfo,
+							DragControllerService.DRAG_ACTION_MOVE, animate );
 				} catch ( Exception e ) {
 					e.printStackTrace();
 				}
 
-				return getDragController().startDrag( image, StickersPanel.this, dragInfo, DragControllerService.DRAG_ACTION_MOVE, animate );
+				return getDragController().startDrag( image, StickersPanel.this, dragInfo, DragControllerService.DRAG_ACTION_MOVE,
+						animate );
 			}
 		}
 		return false;
@@ -819,17 +784,18 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 	// /////////////////////////
 
 	/**
-	 * bundle contains a list of all updates applications. if one meets the criteria ( is a sticker apk ) then return true
+	 * bundle contains a list of all updates applications. if one meets the criteria ( is
+	 * a sticker apk ) then return true
 	 * 
 	 * @param bundle
-	 *           - the bundle delta
+	 *            - the bundle delta
 	 * @return true if bundle contains a valid filter package
 	 */
 	private boolean validDelta( Bundle bundle ) {
 		if ( null != bundle ) {
 			if ( bundle.containsKey( "delta" ) ) {
 				try {
-					@SuppressWarnings("unchecked")
+					@SuppressWarnings ( "unchecked" )
 					ArrayList<UpdateType> updates = (ArrayList<UpdateType>) bundle.getSerializable( "delta" );
 					if ( null != updates ) {
 						for ( UpdateType update : updates ) {
@@ -857,16 +823,17 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 
 	/**
 	 * Ask to leave without apply changes.
-	 * 
 	 */
 	void askToLeaveWithoutApply() {
-		new AlertDialog.Builder( getContext().getBaseContext() ).setTitle( R.string.attention ).setMessage( R.string.tool_leave_question ).setPositiveButton( android.R.string.yes, new DialogInterface.OnClickListener() {
+		new AlertDialog.Builder( getContext().getBaseContext() ).setTitle( R.string.feather_attention )
+				.setMessage( R.string.feather_tool_leave_question )
+				.setPositiveButton( android.R.string.yes, new DialogInterface.OnClickListener() {
 
-			@Override
-			public void onClick( DialogInterface dialog, int which ) {
-				getContext().cancel();
-			}
-		} ).setNegativeButton( android.R.string.no, null ).show();
+					@Override
+					public void onClick( DialogInterface dialog, int which ) {
+						getContext().cancel();
+					}
+				} ).setNegativeButton( android.R.string.no, null ).show();
 	}
 
 	/**
@@ -895,38 +862,44 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 		new PluginInstallTask().execute();
 	}
 
-	private IapDialog createIapDialog() {
-		ViewGroup container = ( (FeatherContext) getContext().getBaseContext() ).activatePopupContainer();
-		IapDialog dialog = (IapDialog) container.findViewById( R.id.main_iap_dialog );
-		if ( dialog == null ) {
-			LayoutInflater.from( getContext().getBaseContext() ).inflate( R.layout.feather_iap_dialog, container, true );
-			dialog = (IapDialog) container.findViewById( R.id.main_iap_dialog );
-			dialog.setFocusable( true );
-			dialog.setOnCloseListener( new OnCloseListener() {
+	protected final void showIAPDialog() {
+		if ( mPlugin != null && mPlugin instanceof ExternalPlugin ) {
+			final ExternalPlugin plugin = (ExternalPlugin) mPlugin;
+			createIAPDialog( new IAPUpdater.Builder().setPlugin( plugin ).build() );
+		}
+	}
 
+	private final void createIAPDialog( IAPUpdater data ) {
+		if ( null != mIapDialog ) {
+			if ( mIapDialog.valid() ) {
+				mIapDialog.update( data );
+				setApplyEnabled( false );
+				return;
+			} else {
+				mIapDialog.dismiss( false );
+				mIapDialog = null;
+			}
+		}
+
+		ViewGroup container = ( (FeatherContext) getContext().getBaseContext() ).activatePopupContainer();
+		IAPDialog dialog = IAPDialog.create( container, data );
+		if ( dialog != null ) {
+			dialog.setOnCloseListener( new OnCloseListener() {
 				@Override
 				public void onClose() {
 					mStatus.setStatus( STATUS_PACKS );
 					mListPacks.setSelectedPosition( HorizontalVariableListView.INVALID_POSITION, true );
 				}
 			} );
-
 		}
-		return dialog;
+		mIapDialog = dialog;
+		setApplyEnabled( false );
 	}
 
-	private void updateIapDialog() {
-		final ExternalPlugin plugin = (ExternalPlugin) mPlugin;
-
-		if ( null != mIapDialog && null != plugin ) {
-			mIapDialog.setPlugin( plugin, FeatherIntent.PluginType.TYPE_STICKER, getContext().getBaseContext() );
-		}
-	}
-
-	private boolean removeIapDialog() {
+	private boolean removeIAPDialog() {
+		setApplyEnabled( true );
 		if ( null != mIapDialog ) {
-			mIapDialog.setOnCloseListener( null );
-			mIapDialog.hide();
+			mIapDialog.dismiss( true );
 			mIapDialog = null;
 			return true;
 		}
@@ -958,7 +931,7 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 	 * Add a new sticker to the canvas.
 	 * 
 	 * @param drawable
-	 *           - the drawable name
+	 *            - the drawable name
 	 */
 	private void addSticker( String drawable, RectF position ) {
 
@@ -970,7 +943,6 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 
 		onApplyCurrent();
 
-		final boolean rotateAndResize = true;
 		InputStream stream = null;
 
 		try {
@@ -1003,7 +975,7 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 
 				Tracker.recordTag( drawable + ": Selected" );
 
-				addSticker( d, rotateAndResize, position );
+				addSticker( d, position );
 
 			} else {
 				onGenericError( "Sorry I'm not able to load the selected sticker", android.R.string.ok, null );
@@ -1015,17 +987,18 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 	 * Adds the sticker.
 	 * 
 	 * @param drawable
-	 *           - the drawable
+	 *            - the drawable
 	 * @param rotateAndResize
-	 *           - allow rotate and resize
+	 *            - allow rotate and resize
 	 */
-	private void addSticker( FeatherDrawable drawable, boolean rotateAndResize, RectF positionRect ) {
+	private void addSticker( FeatherDrawable drawable, RectF positionRect ) {
 
-		mLogger.info( "addSticker: " + drawable + ", rotate: " + rotateAndResize + ", position: " + positionRect );
+		mLogger.info( "addSticker: " + drawable + ", position: " + positionRect );
 
 		setIsChanged( true );
 
-		DrawableHighlightView hv = new DrawableHighlightView( mImageView, drawable );
+		DrawableHighlightView hv = new DrawableHighlightView( mImageView,
+				( (ImageViewDrawableOverlay) mImageView ).getOverlayStyleId(), drawable );
 
 		hv.setOnDeleteClickListener( new OnDeleteClickListener() {
 
@@ -1048,8 +1021,8 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 			cropWidth = (int) positionRect.width();
 			cropHeight = (int) positionRect.height();
 		} else {
-			cropWidth = drawable.getIntrinsicWidth();
-			cropHeight = drawable.getIntrinsicHeight();
+			cropWidth = (int) drawable.getCurrentWidth();
+			cropHeight = (int) drawable.getCurrentHeight();
 		}
 
 		final int cropSize = Math.max( cropWidth, cropHeight );
@@ -1072,7 +1045,8 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 			if ( positionRect == null ) {
 				int w = mImageView.getWidth();
 				int h = mImageView.getHeight();
-				positionRect = new RectF( w / 2 - cropWidth / 2, h / 2 - cropHeight / 2, w / 2 + cropWidth / 2, h / 2 + cropHeight / 2 );
+				positionRect = new RectF( w / 2 - cropWidth / 2, h / 2 - cropHeight / 2, w / 2 + cropWidth / 2, h / 2 + cropHeight
+						/ 2 );
 			}
 
 			positionRect.inset( ( positionRect.width() - cropWidth ) / 2, ( positionRect.height() - cropHeight ) / 2 );
@@ -1095,30 +1069,16 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 		RectF cropRect = new RectF( pts[0], pts[1], pts[2], pts[3] );
 		Rect imageRect = new Rect( 0, 0, width, height );
 
-		hv.setRotateAndScale( rotateAndResize );
+		// hv.setRotateAndScale( rotateAndResize );
 		hv.setup( getContext().getBaseContext(), mImageMatrix, imageRect, cropRect, false );
-
-		hv.drawOutlineFill( true );
-		hv.drawOutlineStroke( true );
-		hv.setPadding( mStickerHvPadding );
-
-		hv.setOutlineStrokeColor( mStickerHvStrokeColorStateList );
-		hv.setOutlineFillColor( mStickerHvFillColorStateList );
-
-		hv.setOutlineEllipse( mStickerHvEllipse );
-		hv.setMinSize( mStickerHvMinSize );
-
-		Paint stroke = hv.getOutlineStrokePaint();
-		stroke.setStrokeWidth( mStickerHvStrokeWidth );
-
-		hv.getOutlineFillPaint().setXfermode( new PorterDuffXfermode( android.graphics.PorterDuff.Mode.SRC_ATOP ) );
 
 		( (ImageViewDrawableOverlay) mImageView ).addHighlightView( hv );
 		( (ImageViewDrawableOverlay) mImageView ).setSelectedHighlightView( hv );
 	}
 
 	/**
-	 * Flatten the current sticker within the preview bitmap. No more changes will be possible on this sticker.
+	 * Flatten the current sticker within the preview bitmap. No more changes will be
+	 * possible on this sticker.
 	 */
 	private void onApplyCurrent() {
 
@@ -1137,7 +1097,8 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 
 			Matrix rotateMatrix = hv.getCropRotationMatrix();
 			Matrix matrix = new Matrix( mImageView.getImageMatrix() );
-			if ( !matrix.invert( matrix ) ) {}
+			if ( !matrix.invert( matrix ) ) {
+			}
 
 			int saveCount = mCanvas.save( Canvas.MATRIX_SAVE_FLAG );
 			mCanvas.concat( rotateMatrix );
@@ -1173,14 +1134,15 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 		}
 
 		onClearCurrent( false );
-		onPreviewChanged( mPreview, false );
+		onPreviewChanged( mPreview, false, false );
 	}
 
 	/**
 	 * Remove the current sticker.
 	 * 
 	 * @param removed
-	 *           - true if the current sticker is being removed, otherwise it was flattened
+	 *            - true if the current sticker is being removed, otherwise it was
+	 *            flattened
 	 */
 	private void onClearCurrent( boolean removed ) {
 		mLogger.info( "onClearCurrent. removed=" + removed );
@@ -1196,9 +1158,9 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 	 * Removes the current active sticker.
 	 * 
 	 * @param hv
-	 *           - the {@link DrawableHighlightView} of the active sticker
+	 *            - the {@link DrawableHighlightView} of the active sticker
 	 * @param removed
-	 *           - current sticker is removed
+	 *            - current sticker is removed
 	 */
 	private void onClearCurrent( DrawableHighlightView hv, boolean removed ) {
 
@@ -1243,14 +1205,34 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 	 * 
 	 * @param result
 	 */
-	private void onStickersPackListUpdated( List<StickerEffectPack> result ) {
+	private void onStickersPackListUpdated( List<StickerEffectPack> result, int installedCount, int externalCount, int firstIndex ) {
 		mLogger.info( "onStickersPackListUpdated: " + result.size() );
 
 		if ( mExternalPacksEnabled ) {
 
-			StickerPacksAdapter adapter = new StickerPacksAdapter( getContext().getBaseContext(), R.layout.feather_sticker_pack2, R.layout.feather_sticker_pack2_external, R.layout.feather_stickers_pack_divider_empty,
-					R.layout.feather_getmore_stickers_thumb, R.layout.feather_getmore_stickers_thumb_inverted, result );
+			StickerPacksAdapter adapter = new StickerPacksAdapter( getContext().getBaseContext(), R.layout.aviary_sticker_item,
+					R.layout.aviary_frame_item_external, R.layout.aviary_sticker_item_more, result );
 			mListPacks.setAdapter( adapter );
+
+			// scroll the list to 'n' position
+			if ( mExternalPacksEnabled && externalCount > 0 && !mFirstTimeRenderer && firstIndex > 2 ) {
+				
+				final int delta = (int) ( mPackCellWidth * ( firstIndex - 2.5 ) );
+				mListPacks.post( new Runnable() {
+					
+					@Override
+					public void run() {
+						int clamped = mListPacks.computeScroll( delta );
+						if( clamped != 0 ) {
+							mListPacks.smoothScrollBy( delta, 500 );
+						} else {
+							mListPacks.scrollTo( delta );
+						}
+					}
+				} );				
+				
+			}
+			mFirstTimeRenderer = true;
 
 			if ( mViewFlipper.getDisplayedChild() != 1 ) {
 				mViewFlipper.setDisplayedChild( 1 );
@@ -1265,14 +1247,17 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 
 						@Override
 						public void onClick( DialogInterface dialog, int which ) {
-							Tracker.recordTag( "Unpurchased(Aviary Default Stickers) : StoreButtonClicked" );
-							getContext().downloadPlugin( PluginService.FREE_STICKERS_PACKAGENAME, FeatherIntent.PluginType.TYPE_STICKER );
+							Tracker.recordTag( "Unpurchased("+PluginService.FREE_STICKERS_PACKAGENAME+") : StoreButtonClicked" );
+							getContext().downloadPlugin( PluginService.FREE_STICKERS_PACKAGENAME,
+									FeatherIntent.PluginType.TYPE_STICKER );
 							dialog.dismiss();
 						}
 					};
 
-					AlertDialog dialog = new AlertDialog.Builder( getContext().getBaseContext() ).setMessage( R.string.feather_stickers_dialog_first_time ).setPositiveButton( android.R.string.ok, listener )
-							.setNegativeButton( android.R.string.cancel, null ).create();
+					AlertDialog dialog = new AlertDialog.Builder( getContext().getBaseContext() )
+							.setMessage( R.string.feather_stickers_dialog_first_time )
+							.setPositiveButton( android.R.string.ok, listener ).setNegativeButton( android.R.string.cancel, null )
+							.create();
 
 					mPreferenceService.putBoolean( this.getClass().getSimpleName() + "-install-first-time", true );
 
@@ -1280,7 +1265,7 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 				}
 			}
 		} else {
-			if( result.size() > 0 ) {
+			if ( result.size() > 0 ) {
 				mPlugin = (InternalPlugin) result.get( 0 ).mPluginRef;
 				mStatus.setStatus( STATUS_STICKERS );
 			}
@@ -1288,6 +1273,10 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 	}
 
 	class PluginInstallTask extends AsyncTask<Void, Void, List<StickerEffectPack>> {
+
+		private int mInstalledCount = 0;
+		private int mExternalCount = 0;
+		private int mFirstValidIndex = -1;
 
 		@Override
 		protected void onPreExecute() {
@@ -1298,16 +1287,12 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 		@Override
 		protected List<StickerEffectPack> doInBackground( Void... params ) {
 
-			long sharedUpdateTime = 0, lastUpdateTime = 0;
 			FeatherInternalPack installedPacks[] = null;
 			FeatherPack availablePacks[] = null;
 
 			if ( getContext() == null ) {
 				return null;
 			}
-
-			if ( null != mPreferenceService && mExternalPacksEnabled ) sharedUpdateTime = mPreferenceService.getLong( this.getClass().getName() + "-plugins-update-date", 0 );
-			if ( null != mPluginService ) lastUpdateTime = mPluginService.getLastUpdateTime();
 
 			final Context context = getContext().getBaseContext();
 			List<StickerEffectPack> result = Collections.synchronizedList( new ArrayList<StickerEffectPack>() );
@@ -1330,85 +1315,82 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 					installedPacks = new FeatherInternalPack[] { FeatherInternalPack.getDefault( getContext().getBaseContext() ) };
 					availablePacks = new FeatherExternalPack[] {};
 				}
-
-				mAvailablePacks = availablePacks.length;
 			}
 
 			// List of the available plugins online
 			mInstalledPackages.clear();
 
+			mInstalledCount = 0;
+			mExternalCount = 0;
+			mFirstValidIndex = -1;
+
+			int index;
+
 			if ( mExternalPacksEnabled ) {
-				result.add( null );
+				mExternalCount++;
+				result.add( new StickerEffectPack( StickerEffectPackType.GET_MORE_FIRST ) );
 			}
+
+			// cycle the available "external" packs
+			if ( mExternalPacksEnabled && context != null ) {
+
+				if ( availablePacks != null ) {
+					index = 0;
+					for ( FeatherPack pack : availablePacks ) {
+						if ( index >= mFeaturedCount ) break;
+						ExternalPlugin plugin = (ExternalPlugin) PluginFactory.create( context, pack,
+								FeatherIntent.PluginType.TYPE_STICKER );
+						final CharSequence packagename = plugin.getPackageName();
+						final CharSequence label = plugin.getPackageLabel();
+
+						final StickerEffectPack effectPack = new StickerEffectPack( StickerEffectPackType.EXTERNAL, packagename, label, PluginService.ERROR_NONE, plugin );
+						result.add( effectPack );
+						mExternalCount++;
+						index++;
+					}
+				}
+			}
+			
+			if( mExternalCount > 0 ) {
+				result.add( new StickerEffectPack( StickerEffectPackType.RIGHT_DIVIDER ) );
+			}
+
+			if ( !isActive() ) return result;
+
+			index = 0;
 
 			// cycle the installed "internal" packages
 			if ( null != context && installedPacks != null ) {
 				for ( FeatherPack pack : installedPacks ) {
 					if ( pack instanceof FeatherInternalPack ) {
-						StickerPlugin plugin = (StickerPlugin) PluginFactory.create( getContext().getBaseContext(), pack, FeatherIntent.PluginType.TYPE_STICKER );
+						StickerPlugin plugin = (StickerPlugin) PluginFactory.create( getContext().getBaseContext(), pack,
+								FeatherIntent.PluginType.TYPE_STICKER );
 						final CharSequence packagename = plugin.getPackageName();
 						final CharSequence label = plugin.getPackageLabel();
 
-						final StickerEffectPack effectPack = new StickerEffectPack( packagename, label, PluginService.ERROR_NONE, plugin, false );
+						final StickerEffectPack effectPack = new StickerEffectPack( StickerEffectPackType.INTERNAL, packagename, label, PluginService.ERROR_NONE, plugin );
 
 						mInstalledPackages.add( packagename.toString() );
+						result.add( effectPack );
 
-						if ( isActive() ) {
-							result.add( effectPack );
+						if ( mFirstValidIndex == -1 ) {
+							mFirstValidIndex = result.size() - 1;
 						}
+
+						mInstalledCount++;
 					}
+					index++;
 				}
 			}
 
-			// cycle the available "external" packs
-			if ( mExternalPacksEnabled && context != null ) {
-				// Add divider if necessary
-				if ( installedPacks != null && availablePacks != null ) {
-					if ( availablePacks.length > 0 && installedPacks.length > 0 ) {
-						result.add( new StickerEffectPack( mFeaturedDefaultTitle ) );
-					}
-				}
-
-				if ( availablePacks != null ) {
-					int index = 0;
-					for ( FeatherPack pack : availablePacks ) {
-						if ( index >= mFeaturedCount ) break;
-						ExternalPlugin plugin = (ExternalPlugin) PluginFactory.create( context, pack, FeatherIntent.PluginType.TYPE_STICKER );
-						final CharSequence packagename = plugin.getPackageName();
-						final CharSequence label = plugin.getPackageLabel();
-
-						final StickerEffectPack effectPack = new StickerEffectPack( packagename, label, PluginService.ERROR_NONE, plugin, true );
-
-						if ( isActive() ) {
-							result.add( effectPack );
-						}
-
-						index++;
-					}
-				}
-			}
+			if ( !isActive() ) return result;
 
 			// add ending "get more" if necessary
-			if ( mInstalledPackages != null && mInstalledPackages.size() > 0 && mExternalPacksEnabled ) {
-				if ( mExternalPacksEnabled ) {
-					result.add( null );
-				}
+			if ( mInstalledPackages != null && mInstalledPackages.size() > 0 && mExternalPacksEnabled && mInstalledCount > 3 ) {
+				result.add( new StickerEffectPack( StickerEffectPackType.LEFT_DIVIDER ) );
+				result.add( new StickerEffectPack( StickerEffectPackType.GET_MORE_LAST ) );
 			}
 
-			// display the notification popup?
-			if ( mExternalPacksEnabled && context != null ) {
-
-				mLogger.log( "shared update time: " + sharedUpdateTime );
-				mLogger.log( "last update time: " + lastUpdateTime );
-
-				if ( sharedUpdateTime != lastUpdateTime ) {
-					if ( mPreferenceService != null ) mPreferenceService.putLong( this.getClass().getName() + "-plugins-update-date", lastUpdateTime );
-					mShowIapNotificationAndValue = mAvailablePacks > 0;
-				} else {
-					mShowIapNotificationAndValue = false;
-				}
-				mLogger.log( "mShowIapNotificationAndValue: " + mShowIapNotificationAndValue );
-			}
 			return result;
 		}
 
@@ -1416,7 +1398,7 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 		protected void onPostExecute( List<StickerEffectPack> result ) {
 			super.onPostExecute( result );
 			mIsAnimating = false;
-			onStickersPackListUpdated( result );
+			onStickersPackListUpdated( result, mInstalledCount, mExternalCount, mFirstValidIndex );
 		}
 	}
 
@@ -1424,42 +1406,61 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 	 * Sticker pack listview adapter class
 	 * 
 	 * @author alessandro
-	 * 
 	 */
-	class StickerPacksAdapter extends ArrayAdapterExtended<StickerEffectPack> {
+	class StickerPacksAdapter extends BaseAdapterExtended<StickerEffectPack> {
 
-		static final int TYPE_GET_MORE_FIRST = 0;
-		static final int TYPE_GET_MORE_LAST = 1;
+		static final int TYPE_INVALID = -1;
+		static final int TYPE_GETMORE_FIRST = 0;
+		static final int TYPE_GETMORE_LAST = 1;
 		static final int TYPE_NORMAL = 2;
 		static final int TYPE_EXTERNAL = 3;
-		static final int TYPE_DIVIDER = 4;
+		static final int TYPE_LEFT_DIVIDER = 4;
+		static final int TYPE_RIGHT_DIVIDER = 5;
 
 		private int mLayoutResId;
 		private int mExternalLayoutResId;
-		private int mAltLayoutResId;
-		private int mAltLayout2ResId;
-		private int mDividerLayoutResId;
-		private int mDefaultHeight;
+		private int mMoreResId;
 		private LayoutInflater mLayoutInflater;
 		private BitmapDrawable mFolderIcon;
 		private BitmapDrawable mExternalFolderIcon;
+		private List<StickerEffectPack> mObjects;
 
-		public StickerPacksAdapter( Context context, int mainResId, int externalResId, int dividerResId, int altResId, int altResId2, List<StickerEffectPack> objects ) {
-			super( context, mainResId, objects );
+		public StickerPacksAdapter ( Context context, int mainResId, int externalResId, int moreResId,
+				List<StickerEffectPack> objects ) {
+			super();
+			mObjects = objects;
 			mLayoutResId = mainResId;
 			mExternalLayoutResId = externalResId;
-			mAltLayoutResId = altResId;
-			mAltLayout2ResId = altResId2;
-			mDividerLayoutResId = dividerResId;
+			mMoreResId = moreResId;
+
 			mLayoutInflater = LayoutInflater.from( context );
-			mFolderIcon = (BitmapDrawable) context.getResources().getDrawable( R.drawable.feather_sticker_pack_background );
-			mExternalFolderIcon = (BitmapDrawable) context.getResources().getDrawable( R.drawable.feather_sticker_pack_background );
-			mDefaultHeight = getOptionView().findViewById( R.id.background ).getHeight() - getOptionView().findViewById( R.id.bottom_background_overlay ).getHeight();
+			mFolderIcon = (BitmapDrawable) context.getResources().getDrawable( R.drawable.aviary_sticker_pack_background );
+			mExternalFolderIcon = (BitmapDrawable) context.getResources().getDrawable( R.drawable.aviary_sticker_pack_background );
+		}
+
+		@Override
+		public int getCount() {
+			return mObjects.size();
 		}
 
 		@Override
 		public int getViewTypeCount() {
-			return 5;
+			return 6;
+		}
+
+		@Override
+		public StickerEffectPack getItem( int position ) {
+			return mObjects.get( position );
+		}
+
+		@Override
+		public long getItemId( int position ) {
+			return position;
+		}
+
+		@Override
+		public boolean hasStableIds() {
+			return false;
 		}
 
 		@Override
@@ -1467,124 +1468,114 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 
 			if ( !mExternalPacksEnabled ) return TYPE_NORMAL;
 
-			StickerEffectPack item = getItem( position );
-			if ( null == item ) {
-				if ( position == 0 )
-					return TYPE_GET_MORE_FIRST;
-				else
-					return TYPE_GET_MORE_LAST;
+			if ( position < 0 || position >= getCount() ) {
+				return TYPE_INVALID;
 			}
+			
+			StickerEffectPack item = getItem( position );
 
-			if ( item.isDivider ) return TYPE_DIVIDER;
-			if ( item.isExternal ) return TYPE_EXTERNAL;
-			return TYPE_NORMAL;
+			switch( item.mType ) {
+				case EXTERNAL: return TYPE_EXTERNAL;
+				case LEFT_DIVIDER: return TYPE_LEFT_DIVIDER;
+				case RIGHT_DIVIDER: return TYPE_RIGHT_DIVIDER;
+				case GET_MORE_FIRST: return TYPE_GETMORE_FIRST;
+				case GET_MORE_LAST: return TYPE_GETMORE_LAST;
+				case INTERNAL:
+				default:
+					return TYPE_NORMAL;
+			}
 		}
 
 		@Override
-		public View getView( final int position, final View convertView, final ViewGroup parent ) {
+		public View getView( final int position, View convertView, final ViewGroup parent ) {
 
-			mLogger.log( "getView: " + position );
-
-			View view;
 			ViewHolder holder = null;
+
 			int type = getItemViewType( position );
-			int layoutWidth = mPacksCellWidth;
+			int layoutWidth = mPackCellWidth;
 			int layoutHeight = LayoutParams.MATCH_PARENT;
 
 			if ( convertView == null ) {
-				holder = new ViewHolder();
-				if ( type == TYPE_GET_MORE_FIRST ) {
-					view = mLayoutInflater.inflate( mAltLayoutResId, parent, false );
-					layoutHeight = mDefaultHeight;
-				} else if ( type == TYPE_GET_MORE_LAST ) {
-					view = mLayoutInflater.inflate( mAltLayout2ResId, parent, false );
-					layoutHeight = mDefaultHeight;
 
-					// hide the last "get more" button if there's no need
-					View lastChild = parent.getChildAt( parent.getChildCount() - 1 );
-					if ( null != lastChild ) {
-						if ( lastChild.getRight() < parent.getRight() ) {
-							layoutWidth = 0;
+				holder = new ViewHolder();
+
+				if ( type == TYPE_GETMORE_FIRST || type == TYPE_GETMORE_LAST ) {
+					convertView = mLayoutInflater.inflate( mMoreResId, parent, false );
+					layoutWidth = mPackCellWidth;
+					
+					holder.image = (ImageView) convertView.findViewById( R.id.aviary_image );
+					
+					LayoutParams params = holder.image.getLayoutParams();
+					params.width = params.height = mPackThumbSize;
+					holder.image.setLayoutParams( params );		
+					
+					if ( type == TYPE_GETMORE_LAST ) {
+						// hide the last "get more" button if there's no need
+						
+						View lastChild = parent.getChildAt( parent.getChildCount() - 1 );
+						if ( null != lastChild ) {
+							
+							if ( lastChild.getRight() < parent.getRight() ) {
+								layoutWidth = 0;
+							}
 						}
 					}
-				} else if ( type == TYPE_NORMAL ) {
-					// INSTALLED packs
-					view = mLayoutInflater.inflate( mLayoutResId, parent, false );
-					holder.text = (TextView) view.findViewById( R.id.text );
-					holder.image = (ImageView) view.findViewById( R.id.image );
-					
-					LayoutParams params = holder.image.getLayoutParams();
-					params.width = params.height = mPacksCellWidth;
-					holder.image.setLayoutParams( params );	
-					holder.image.requestLayout();
-					
-					view.setTag( holder );
-					layoutHeight = LayoutParams.WRAP_CONTENT;
-					layoutWidth = mPacksCellWidth + mItemsGapPixelSize;
-					
-				} else if ( type == TYPE_EXTERNAL ) {
-					// EXTERNAL PACKS
-					view = mLayoutInflater.inflate( mExternalLayoutResId, parent, false );
-					holder.text = (TextView) view.findViewById( R.id.text );
-					holder.image = (ImageView) view.findViewById( R.id.image );
-					view.setTag( holder );
-					
-					LayoutParams params = holder.image.getLayoutParams();
-					params.width = params.height = mPacksCellWidth;
-					holder.image.setLayoutParams( params );	
-					holder.image.requestLayout();
-					
-					layoutWidth = mPacksCellWidth + mItemsGapPixelSize;
-					layoutHeight = LayoutParams.WRAP_CONTENT;
-				} else {
-					// TYPE_DIVIDER
-					view = mLayoutInflater.inflate( mDividerLayoutResId, parent, false );
-					
-					ImageView image = (ImageView) view.findViewById( R.id.image );
-					Drawable drawable = image.getDrawable();
 
-					if( null != drawable ) {
-						PluginDividerDrawable d = new PluginDividerDrawable( drawable, mFeaturedDefaultTitle );
-						image.setImageDrawable( d );
-					}
+
+				} else if ( type == TYPE_NORMAL || type == TYPE_EXTERNAL ) {
+					convertView = mLayoutInflater.inflate( type == TYPE_NORMAL ? mLayoutResId : mExternalLayoutResId, parent, false );
+
+					holder.text = (TextView) convertView.findViewById( R.id.aviary_text );
+					holder.image = (ImageView) convertView.findViewById( R.id.aviary_image );
+					holder.image.setImageResource( R.drawable.aviary_sticker_pack_background );
+
+					LayoutParams params = holder.image.getLayoutParams();
+					params.width = params.height = mPackThumbSize;
+					holder.image.setLayoutParams( params );
+
+					layoutWidth = mPackCellWidth;
 					
-					layoutWidth = EffectThumbLayout.LayoutParams.WRAP_CONTENT;
-					layoutHeight = mDefaultHeight;
+				} else if( type == TYPE_LEFT_DIVIDER ) {
+					convertView = mLayoutInflater.inflate( R.layout.aviary_thumb_divider_left, parent, false );
+					layoutWidth = LayoutParams.WRAP_CONTENT;
+				} else if( type == TYPE_RIGHT_DIVIDER ) {
+					convertView = mLayoutInflater.inflate( R.layout.aviary_thumb_divider_right, parent, false );
+					layoutWidth = LayoutParams.WRAP_CONTENT;
 				}
-				view.setLayoutParams( new EffectThumbLayout.LayoutParams( layoutWidth, layoutHeight ) );
+
+				convertView.setTag( holder );
+				convertView.setLayoutParams( new EffectThumbLayout.LayoutParams( layoutWidth, layoutHeight ) );
 			} else {
-				view = convertView;
-				holder = (ViewHolder) view.getTag();
+				holder = (ViewHolder) convertView.getTag();
 			}
 
 			if ( type == TYPE_NORMAL ) {
 				StickerEffectPack item = getItem( position );
+
 				holder.text.setText( item.mTitle );
 
 				InternalPlugin plugin = (InternalPlugin) item.mPluginRef;
 				StickerPackThumbnailCallable executor = new StickerPackThumbnailCallable( plugin, mFolderIcon );
-				mImageManager.execute( executor, plugin.getPackageName(), holder.image, STATUS_PACKS );
+				mImageManager.execute( executor, plugin.getPackageName(), holder.image, STATUS_PACKS, Priority.HIGH );
 
 			} else if ( type == TYPE_EXTERNAL ) {
+
 				StickerEffectPack item = getItem( position );
-				holder.text.setText( item.mTitle );
+
 				ExternalPlugin plugin = (ExternalPlugin) item.mPluginRef;
 
-				mLogger.log( item.mTitle + " is free? " + plugin.isFree() );
+				holder.image.setImageDrawable( mExternalFolderIcon );
+				holder.text.setText( item.mTitle );
 
-				ExternalThumbnailCallable executor = new ExternalThumbnailCallable( plugin.getIconUrl(), mCacheService, mExternalFolderIcon, this.getContext().getResources(), R.drawable.feather_iap_dialog_image_na );
-				mImageManager.execute( executor, plugin.getPackageName(), holder.image, STATUS_PACKS );
-
-			} else if ( type == TYPE_DIVIDER ) {
-				// do nothing...
-			} else {
-				// get more
-				if ( mShowIapNotificationAndValue ) {
-					TextView totalText = (TextView) view.findViewById( R.id.text01 );
-					totalText.setText( String.valueOf( mAvailablePacks ) );
+				if ( null != plugin ) {
+					ExternalThumbnailCallable executor = new ExternalThumbnailCallable( plugin.getIconUrl(), mCacheService,
+							mExternalFolderIcon, getContext().getBaseContext().getResources(), R.drawable.aviary_ic_na );
+					
+					mImageManager.execute( executor, plugin.getPackageName(), holder.image, STATUS_PACKS, Priority.LOW );
 				}
 			}
-			return view;
+
+			return convertView;
 		}
 	}
 
@@ -1592,14 +1583,13 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 	 * Retrieve and draw the internal plugin Icon
 	 * 
 	 * @author alessandro
-	 * 
 	 */
 	static class StickerPackThumbnailCallable implements Callable<Bitmap> {
 
 		InternalPlugin mPlugin;
 		BitmapDrawable mFolder;
 
-		public StickerPackThumbnailCallable( InternalPlugin plugin, BitmapDrawable drawable ) {
+		public StickerPackThumbnailCallable ( InternalPlugin plugin, BitmapDrawable drawable ) {
 			mPlugin = plugin;
 			mFolder = drawable;
 		}
@@ -1608,7 +1598,7 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 		public Bitmap call() throws Exception {
 			Drawable icon = mPlugin.getPackageIcon();
 			if ( null != icon ) {
-				return ( (BitmapDrawable) UIUtils.drawFolderIcon( mFolder, icon, 1.7f ) ).getBitmap();
+				return BitmapUtils.flattenDrawables( mFolder, icon, 1.7f, 0.05f );
 			} else {
 				return mFolder.getBitmap();
 			}
@@ -1619,7 +1609,6 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 	 * Download the remote icon or re-use the one from the current cache
 	 * 
 	 * @author alessandro
-	 * 
 	 */
 	static class ExternalThumbnailCallable implements Callable<Bitmap> {
 
@@ -1628,8 +1617,11 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 		SoftReference<ImageCacheService> cacheServiceRef;
 		SoftReference<Resources> resourcesRef;
 		int mDefaultIconResId;
+		
+		static final String LOG_TAG = "external-thumbnail-callable";
 
-		public ExternalThumbnailCallable( final String uri, ImageCacheService cacheService, final BitmapDrawable folderBackground, Resources resources, int defaultIconResId ) {
+		public ExternalThumbnailCallable ( final String uri, ImageCacheService cacheService, final BitmapDrawable folderBackground,
+				Resources resources, int defaultIconResId ) {
 			mUri = uri;
 			mFolder = folderBackground;
 			cacheServiceRef = new SoftReference<ImageCacheService>( cacheService );
@@ -1637,44 +1629,47 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 			mDefaultIconResId = defaultIconResId;
 		}
 
-		@SuppressWarnings("deprecation")
+		@SuppressWarnings ( "deprecation" )
 		@Override
 		public Bitmap call() throws Exception {
-			
-			if( null == mUri || mUri.length() < 1 ) {
+
+			if ( null == mUri || mUri.length() < 1 ) {
 				return mFolder.getBitmap();
 			}
 			
+			Log.d( LOG_TAG, "download: " + mUri );
+
 			BitmapFactory.Options options = new BitmapFactory.Options();
 			options.inPreferredConfig = Config.RGB_565;
-			
+
 			Bitmap bitmap = null;
 			ImageCacheService cache = cacheServiceRef.get();
-			
-			if( null == cache ) {
+
+			if ( null == cache ) {
 				return mFolder.getBitmap();
 			}
-			
+
 			SimpleCachedRemoteBitmap request;
-			
+
 			try {
 				request = cache.requestRemoteBitmap( PluginService.CONTENT_DEFAULT_URL + "/" + mUri );
 				bitmap = request.getBitmap( options );
-			} catch( Exception e ){}
-
+			} catch ( Exception e ) {
+			}
 
 			// fallback icon
-			if( null == bitmap ) {
-				if( null != resourcesRef.get() ) {
+			if ( null == bitmap ) {
+				if ( null != resourcesRef.get() ) {
 					try {
 						bitmap = BitmapFactory.decodeResource( resourcesRef.get(), mDefaultIconResId );
-					} catch( Throwable t ) {}
+					} catch ( Throwable t ) {
+					}
 				}
 			}
-			
+
 			if ( null != bitmap ) {
 				try {
-					Bitmap result = UIUtils.drawFolderBitmap( mFolder, new BitmapDrawable( bitmap ), 1.7f );
+					Bitmap result = BitmapUtils.flattenDrawables( mFolder, new BitmapDrawable( bitmap ), 1.7f, 0.05f );
 					bitmap.recycle();
 					bitmap = null;
 					return result;
@@ -1691,30 +1686,29 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 	 * Sticker pack element
 	 * 
 	 * @author alessandro
-	 * 
 	 */
 	static class StickerEffectPack {
+		
+		static enum StickerEffectPackType {
+			GET_MORE_FIRST, GET_MORE_LAST, EXTERNAL, INTERNAL, LEFT_DIVIDER, RIGHT_DIVIDER
+		}
 
 		CharSequence mPackageName;
 		CharSequence mTitle;
 		int mPluginStatus;
 		IPlugin mPluginRef;
-		boolean isExternal;
-		boolean isDivider;
-
-		public StickerEffectPack( final String label ) {
-			isDivider = true;
-			mPluginStatus = PluginService.ERROR_NONE;
-			mTitle = label;
+		StickerEffectPackType mType;
+		
+		public StickerEffectPack ( StickerEffectPackType type ) {
+			mType = type;
 		}
 
-		public StickerEffectPack( CharSequence packageName, CharSequence title, int status, IPlugin plugin, boolean external ) {
+		public StickerEffectPack ( StickerEffectPackType type, CharSequence packageName, CharSequence title, int status, IPlugin plugin ) {
+			this( type );
 			mPackageName = packageName;
 			mPluginStatus = status;
 			mPluginRef = plugin;
 			mTitle = title;
-			isExternal = external;
-			isDivider = false;
 		}
 
 		@Override
@@ -1732,30 +1726,14 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 
 		private LayoutInflater mLayoutInflater;
 		private int mStickerResourceId;
-		private int mDefaultHeight;
 
-		/**
-		 * Instantiates a new stickers adapter.
-		 * 
-		 * @param context
-		 *           the context
-		 * @param textViewResourceId
-		 *           the text view resource id
-		 * @param objects
-		 *           the objects
-		 */
-		public StickersAdapter( Context context, int textViewResourceId, String[] objects ) {
+		public StickersAdapter ( Context context, int textViewResourceId, String[] objects ) {
 			super( context, textViewResourceId, objects );
 
 			mLogger.info( "StickersAdapter. size: " + objects.length );
 
 			mStickerResourceId = textViewResourceId;
 			mLayoutInflater = LayoutInflater.from( context );
-			mDefaultHeight = getOptionView().findViewById( R.id.background ).getHeight() - getOptionView().findViewById( R.id.bottom_background_overlay ).getHeight();
-			mThumbSize = mDefaultHeight - ( THUMBNAIL_INSET * 2 );
-
-			mLogger.log( "default height: " + mDefaultHeight );
-			mLogger.log( "thumb size: " + mThumbSize );
 		}
 
 		@Override
@@ -1765,10 +1743,12 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 
 			if ( null == convertView ) {
 				view = mLayoutInflater.inflate( mStickerResourceId, null );
-				LayoutParams params = new LayoutParams( mDefaultHeight, mDefaultHeight );
-				LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams( mThumbSize, mThumbSize );
+				LayoutParams params = new LayoutParams( mStickerCellWidth, LayoutParams.MATCH_PARENT );
 
-				view.findViewById( R.id.image ).setLayoutParams( params2 );
+				// LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(
+				// mThumbSize, mThumbSize );
+				// view.findViewById( R.id.image ).setLayoutParams( params2 );
+
 				view.setLayoutParams( params );
 			} else {
 				view = convertView;
@@ -1778,8 +1758,8 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 
 			final String sticker = getItem( position );
 
-			StickerThumbnailCallable executor = new StickerThumbnailCallable( (InternalPlugin) mPlugin, sticker, mThumbSize );
-			mImageManager.execute( executor, sticker, image, STATUS_STICKERS );
+			StickerThumbnailCallable executor = new StickerThumbnailCallable( (InternalPlugin) mPlugin, sticker, mStickerThumbSize );
+			mImageManager.execute( executor, sticker, image, STATUS_STICKERS, Priority.HIGH );
 
 			return view;
 		}
@@ -1789,7 +1769,6 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 	 * Downloads and renders the sticker thumbnail
 	 * 
 	 * @author alessandro
-	 * 
 	 */
 	static class StickerThumbnailCallable implements Callable<Bitmap> {
 
@@ -1797,7 +1776,7 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 		int mFinalSize;
 		String mUrl;
 
-		public StickerThumbnailCallable( final InternalPlugin plugin, final String srcUrl, final int size ) {
+		public StickerThumbnailCallable ( final InternalPlugin plugin, final String srcUrl, final int size ) {
 			mPlugin = plugin;
 			mFinalSize = size;
 			mUrl = srcUrl;
@@ -1825,7 +1804,7 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 
 		String[] mlist;
 
-		LoadStickersRunner( String[] list ) {
+		LoadStickersRunner ( String[] list ) {
 			mlist = list;
 		}
 
@@ -1839,23 +1818,18 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 				return;
 			}
 
-			StickersAdapter adapter = new StickersAdapter( getContext().getBaseContext(), R.layout.feather_sticker_thumb, mlist );
+			StickersAdapter adapter = new StickersAdapter( getContext().getBaseContext(), R.layout.aviary_sticker_item_single, mlist );
 			mListStickers.setAdapter( adapter );
+			mListStickers.setDragTolerance( mStickerThumbSize / 2 );
 
-			// setting the drag tolerance to the list view height
-			mListStickers.setDragTolerance( mListStickers.getHeight() );
+			mListStickers.setDragScrollEnabled( true );
+			mListStickers.setOnItemDragListener( new OnItemDragListener() {
 
-			// activate drag and drop only for android 2.3+
-			if ( android.os.Build.VERSION.SDK_INT > 8 ) {
-				mListStickers.setDragScrollEnabled( true );
-				mListStickers.setOnItemDragListener( new OnItemDragListener() {
-
-					@Override
-					public boolean onItemStartDrag( AdapterView<?> parent, View view, int position, long id ) {
-						return startDrag( parent, view, position, id, false );
-					}
-				} );
-			}
+				@Override
+				public boolean onItemStartDrag( AdapterView<?> parent, View view, int position, long id ) {
+					return startDrag( parent, view, position, id, false );
+				}
+			} );
 			mListStickers.setLongClickable( false );
 
 			mListStickers.setOnItemClickedListener( new OnItemClickedListener() {
@@ -1873,4 +1847,5 @@ public class StickersPanel extends AbstractContentPanel implements OnUpdateListe
 			mlist = null;
 		}
 	}
+
 }

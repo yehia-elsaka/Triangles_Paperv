@@ -1,13 +1,11 @@
 package com.paperv.tabs_fragments;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 
 import android.app.ProgressDialog;
-import android.content.ContentResolver;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -40,9 +38,9 @@ import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.Toast;
 
+import com.paperv.core.CacheManager;
 import com.paperv.lazy_adapter_utils.ImageLoader;
 import com.paperv.network.DataConnector;
-import com.paperv.tabs_utils.GlobalState;
 import com.paperv.www.AviaryActivity;
 import com.paperv.www.MainActivity;
 import com.paperv.www.R;
@@ -68,7 +66,7 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 
 	ArrayList<File> imagesArray = new ArrayList<File>();
 
-	GlobalState globalState = GlobalState.getInstance();
+	CacheManager globalState = CacheManager.getInstance();
 	DataConnector dataConnector = DataConnector.getInstance();
 
 	LinearLayout next_image, previous_image;
@@ -586,7 +584,7 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 
 	private void getNextImage() {
 
-		if (current_index + 1 < GlobalState.getInstance().images.size()) {
+		if (current_index + 1 < CacheManager.getInstance().images.size()) {
 			current_index++;
 
 			Uri image_uri = globalState.images.get(current_index);

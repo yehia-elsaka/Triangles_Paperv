@@ -3,23 +3,7 @@ package com.paperv.tabs_fragments;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
-
-import com.paperv.www.R;
-import com.paperv.lazy_adapter_utils.ImageLoader;
-import com.paperv.models.Story;
-import com.paperv.network.DataConnector;
-import com.paperv.tabs_adapters.ExploreAdapter;
-import com.paperv.tabs_adapters.ImageAdapter;
-import com.paperv.tabs_utils.DepthPageTransformer;
-import com.paperv.tabs_utils.FixedSpeedScroller;
-import com.paperv.tabs_utils.GlobalState;
-import com.paperv.tabs_utils.Utils;
-import com.paperv.www.MainActivity;
-
-
 import android.app.ProgressDialog;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -42,6 +26,18 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.paperv.core.CacheManager;
+import com.paperv.lazy_adapter_utils.ImageLoader;
+import com.paperv.models.Story;
+import com.paperv.network.DataConnector;
+import com.paperv.tabs_adapters.ExploreAdapter;
+import com.paperv.tabs_adapters.ImageAdapter;
+import com.paperv.tabs_utils.DepthPageTransformer;
+import com.paperv.tabs_utils.FixedSpeedScroller;
+import com.paperv.tabs_utils.Utils;
+import com.paperv.www.MainActivity;
+import com.paperv.www.R;
 
 
 public class ExploreActivity extends Fragment implements
@@ -89,7 +85,7 @@ public class ExploreActivity extends Fragment implements
 	int current_story_index;
 	String current_video_url;
 	
-	GlobalState globalState = GlobalState.getInstance();
+	CacheManager globalState = CacheManager.getInstance();
 	DataConnector dataConnector = DataConnector.getInstance();
 	
 	public ImageLoader userImageLoader; 

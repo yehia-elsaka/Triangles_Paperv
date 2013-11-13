@@ -2,20 +2,6 @@ package com.paperv.www;
 
 import java.util.ArrayList;
 
-import com.paperv.www.R;
-import com.paperv.models.MenuItem;
-import com.paperv.network.DataConnector;
-import com.paperv.tabs_adapters.MenuAdapter;
-import com.paperv.tabs_fragments.About;
-import com.paperv.tabs_fragments.Contact;
-import com.paperv.tabs_fragments.Notification;
-import com.paperv.tabs_fragments.Privacy;
-import com.paperv.tabs_fragments.SearchList;
-import com.paperv.tabs_fragments.Terms;
-import com.paperv.tabs_utils.GlobalState;
-import com.paperv.tabs_utils.Utils;
-
-
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -40,6 +26,18 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.paperv.core.CacheManager;
+import com.paperv.models.MenuItem;
+import com.paperv.network.DataConnector;
+import com.paperv.tabs_adapters.MenuAdapter;
+import com.paperv.tabs_fragments.About;
+import com.paperv.tabs_fragments.Contact;
+import com.paperv.tabs_fragments.Notification;
+import com.paperv.tabs_fragments.Privacy;
+import com.paperv.tabs_fragments.SearchList;
+import com.paperv.tabs_fragments.Terms;
+import com.paperv.tabs_utils.Utils;
+
 
 public class MenuFragment extends Fragment implements OnItemClickListener {
 
@@ -53,7 +51,7 @@ public class MenuFragment extends Fragment implements OnItemClickListener {
 	
 	ImageView user_image;
 	TextView user_name;
-	GlobalState globalState = GlobalState.getInstance();
+	CacheManager globalState = CacheManager.getInstance();
 	DataConnector dataConnector = DataConnector.getInstance();
 	
 	

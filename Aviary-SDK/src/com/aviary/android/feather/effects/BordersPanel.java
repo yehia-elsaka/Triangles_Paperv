@@ -2,6 +2,9 @@ package com.aviary.android.feather.effects;
 
 import it.sephiroth.android.library.imagezoom.ImageViewTouch;
 import it.sephiroth.android.library.imagezoom.ImageViewTouchBase.DisplayType;
+import it.sephiroth.android.library.widget.BaseAdapterExtended;
+import it.sephiroth.android.library.widget.HorizontalVariableListView;
+import it.sephiroth.android.library.widget.HorizontalVariableListView.OnItemClickedListener;
 
 import java.lang.ref.SoftReference;
 import java.util.ArrayList;
@@ -32,39 +35,37 @@ import android.graphics.drawable.Drawable;
 import android.media.ThumbnailUtils;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.Pair;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
-import android.view.ViewTreeObserver.OnScrollChangedListener;
+import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
-import android.view.animation.Animation.AnimationListener;
-import android.view.animation.ScaleAnimation;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.ViewFlipper;
 import android.widget.ViewSwitcher.ViewFactory;
 
-import com.aviary.android.feather.Constants;
-import com.aviary.android.feather.FilterManager.FeatherContext;
+import com.aviary.android.feather.AviaryMainController.FeatherContext;
 import com.aviary.android.feather.R;
 import com.aviary.android.feather.async_tasks.AsyncImageManager;
 import com.aviary.android.feather.async_tasks.AsyncImageManager.OnImageLoadListener;
+import com.aviary.android.feather.async_tasks.AsyncImageManager.Priority;
 import com.aviary.android.feather.graphics.PluginDividerDrawable;
-import com.aviary.android.feather.graphics.RepeatableHorizontalDrawable;
 import com.aviary.android.feather.headless.filters.INativeFilter;
-import com.aviary.android.feather.headless.filters.NativeFilter;
+import com.aviary.android.feather.headless.filters.NativeFilterProxy;
 import com.aviary.android.feather.headless.moa.Moa;
 import com.aviary.android.feather.headless.moa.MoaAction;
 import com.aviary.android.feather.headless.moa.MoaActionFactory;
 import com.aviary.android.feather.headless.moa.MoaActionList;
 import com.aviary.android.feather.headless.moa.MoaResult;
+import com.aviary.android.feather.library.Constants;
 import com.aviary.android.feather.library.content.FeatherIntent;
+import com.aviary.android.feather.library.content.ToolEntry;
 import com.aviary.android.feather.library.filters.BorderFilter;
 import com.aviary.android.feather.library.filters.FilterLoaderFactory;
 import com.aviary.android.feather.library.filters.FilterLoaderFactory.Filters;
@@ -81,10 +82,12 @@ import com.aviary.android.feather.library.plugins.PluginFactory.InternalPlugin;
 import com.aviary.android.feather.library.plugins.UpdateType;
 import com.aviary.android.feather.library.services.CDSService;
 import com.aviary.android.feather.library.services.ConfigService;
-import com.aviary.android.feather.library.services.EffectContext;
+import com.aviary.android.feather.library.services.IAviaryController;
 import com.aviary.android.feather.library.services.ImageCacheService;
 import com.aviary.android.feather.library.services.ImageCacheService.SimpleCachedRemoteBitmap;
+import com.aviary.android.feather.library.services.LocalDataService;
 import com.aviary.android.feather.library.services.PluginService;
+import com.aviary.android.feather.library.services.PluginService.OnExternalUpdateListener;
 import com.aviary.android.feather.library.services.PluginService.OnUpdateListener;
 import com.aviary.android.feather.library.services.PluginService.PluginException;
 import com.aviary.android.feather.library.services.PreferenceService;
@@ -93,63 +96,59 @@ import com.aviary.android.feather.library.utils.BitmapUtils;
 import com.aviary.android.feather.library.utils.ImageLoader;
 import com.aviary.android.feather.library.utils.SystemUtils;
 import com.aviary.android.feather.library.utils.UserTask;
-import com.aviary.android.feather.widget.ArrayAdapterExtended;
-import com.aviary.android.feather.widget.EffectThumbLayout;
-import com.aviary.android.feather.widget.HorizontalVariableListView;
-import com.aviary.android.feather.widget.HorizontalVariableListView.OnItemClickedListener;
-import com.aviary.android.feather.widget.IapDialog;
-import com.aviary.android.feather.widget.IapDialog.OnCloseListener;
-import com.aviary.android.feather.widget.ImageSwitcher;
+import com.aviary.android.feather.widget.AviaryImageSwitcher;
+import com.aviary.android.feather.widget.IAPDialog;
+import com.aviary.android.feather.widget.IAPDialog.IAPUpdater;
+import com.aviary.android.feather.widget.IAPDialog.OnCloseListener;
 
-public class BordersPanel extends AbstractContentPanel implements ViewFactory, OnUpdateListener, OnImageLoadListener, OnScrollChangedListener, OnItemClickedListener, OnItemSelectedListener {
+public class BordersPanel extends AbstractContentPanel implements ViewFactory, OnUpdateListener, OnImageLoadListener,
+		OnItemSelectedListener, OnExternalUpdateListener, OnItemClickedListener {
 
 	private static final int TAG_EXTERNAL_VIEW = 4000;
-	
+	private static final int TAG_INTERNAL_VIEW = 1000;
+
 	private final int mPluginType;
 
-	/** view flipper for switching between lists */
-	private ViewFlipper mViewFlipper;
-
-	/** thumbnail horizontal listview */
 	protected HorizontalVariableListView mHList;
 
-	/** Panel is rendering. */
+	protected View mLoader;
+
 	protected volatile Boolean mIsRendering = false;
 
-	/** Panel is animating */
 	private volatile boolean mIsAnimating;
 
-	/** The current rendering task. */
 	private RenderTask mCurrentTask;
 
 	protected PluginService mPluginService;
 	
+	protected ConfigService mConfigService;
+
 	protected CDSService mCDSService;
 
 	protected ImageCacheService mCacheService;
 
 	private PreferenceService mPreferenceService;
 
-	/** The main image switcher. */
-	protected ImageSwitcher mImageSwitcher;
+	protected AviaryImageSwitcher mImageSwitcher;
 
-	/** external plugins enabled */
 	private boolean mExternalPacksEnabled = true;
 
-	/** A reference to the effect applied */
 	protected MoaActionList mActions = null;
 
 	protected String mRenderedEffect;
 
 	protected String mRenderedPackName;
 
-	/** create a reference to the update alert dialog. This to prevent multiple alert messages */
+	/**
+	 * create a reference to the update alert dialog. This to prevent multiple alert
+	 * messages
+	 */
 	private AlertDialog mUpdateDialog;
 
 	/** default width of each effect thumbnail */
-	private int mFilterCellWidth = 80;
+	private int mCellWidth = 80;
 
-	private int mThumbBitmapSize;
+	private int mThumbSize;
 
 	private List<String> mInstalledPackages;
 
@@ -161,38 +160,14 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 
 	/** current selected position */
 	protected int mSelectedPosition = -1;
+	
+	/* the first valid position of the list */
+	protected int mListFirstValidPosition = 0;
 
-	/** first position allowed in selection */
-	private static int FIRST_POSITION = -1;
-
-	/** total number of available plugins */
-	private int mAvailablePacks = 0;
-
-	/** show the first get more button */
-	private boolean mShowFirstGetMore = true;
-
-	private boolean mEnableEffectAnimation = false;
+	// display the "get more" view
+	private boolean mShowGetMoreView = true;
 
 	protected Bitmap updateArrowBitmap;
-
-	/** hlist scrolled */
-	private boolean mScrollChanged;
-
-	private boolean mConfigurationChanged;
-
-	private boolean mShowIapNotificationAndValue;
-
-	// thumbnail properties
-	private static int mRoundedBordersPixelSize = 16;
-	private static int mShadowRadiusPixelSize = 4;
-	private static int mShadowOffsetPixelSize = 2;
-	private static int mRoundedBordersPaddingPixelSize = 5;
-	private static int mRoundedBordersStrokePixelSize = 3;
-	private static int mItemsGapPixelsSize = 2;
-	private int mExternalThumbPadding = 0;
-
-	/** default title for featured divider */
-	private String mFeaturedDefaultTitle;
 
 	/** max number of featured elements to display */
 	private int mFeaturedCount;
@@ -204,91 +179,76 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 
 	/** options used to decode cached images */
 	private static BitmapFactory.Options mThumbnailOptions;
+	
+	protected boolean mEnableFastPreview = false;
 
-	public BordersPanel( EffectContext context ) {
-		this( context, FeatherIntent.PluginType.TYPE_BORDER );
+	public BordersPanel ( IAviaryController context, ToolEntry entry ) {
+		this( context, entry, FeatherIntent.PluginType.TYPE_BORDER );
 	}
 
-	protected BordersPanel( EffectContext context, int type ) {
-		super( context );
+	protected BordersPanel ( IAviaryController context, ToolEntry entry, int type ) {
+		super( context, entry );
 		mPluginType = type;
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
-	public void onCreate( Bitmap bitmap ) {
-		super.onCreate( bitmap );
+	public void onCreate( Bitmap bitmap, Bundle options ) {
+		super.onCreate( bitmap, options );
 
-		mImageManager = new AsyncImageManager( 1 );
+		mImageManager = new AsyncImageManager();
 
 		mThumbnailOptions = new Options();
 		mThumbnailOptions.inPreferredConfig = Config.RGB_565;
 
+		mConfigService = getContext().getService( ConfigService.class );
 		mPluginService = getContext().getService( PluginService.class );
 		mCDSService = getContext().getService( CDSService.class );
 		mCacheService = getContext().getService( ImageCacheService.class );
 		mPreferenceService = getContext().getService( PreferenceService.class );
+		
+		LocalDataService dataService = getContext().getService( LocalDataService.class );
+		
+		mEnableFastPreview = dataService.getFastPreviewEnabled();
 
-		if ( mPluginType == FeatherIntent.PluginType.TYPE_FILTER )
-			mExternalPacksEnabled = Constants.getExternalEffectsEnabled();
-		else
-			mExternalPacksEnabled = Constants.getExternalFramesEnabled();
+		mExternalPacksEnabled = dataService.getExternalPacksEnabled( mPluginType );
 
-		mViewFlipper = (ViewFlipper) getOptionView().findViewById( R.id.flipper );
-		mHList = (HorizontalVariableListView) getOptionView().findViewById( R.id.list );
+		mHList = (HorizontalVariableListView) getOptionView().findViewById( R.id.aviary_list );
+		mLoader = getOptionView().findViewById( R.id.aviary_loader );
 
 		mPreview = BitmapUtils.copy( mBitmap, Bitmap.Config.ARGB_8888 );
 
 		// ImageView Switcher setup
-		mImageSwitcher = (ImageSwitcher) getContentView().findViewById( R.id.switcher );
+		mImageSwitcher = (AviaryImageSwitcher) getContentView().findViewById( R.id.aviary_switcher );
 		initContentImage( mImageSwitcher );
 
-		// Horizontal list setup
-		mHList.setOnScrollListener( this );
-
-		View content = getOptionView().findViewById( R.id.background );
-		content.setBackgroundDrawable( RepeatableHorizontalDrawable.createFromView( content ) );
-
 		try {
-			updateArrowBitmap = BitmapFactory.decodeResource( getContext().getBaseContext().getResources(), R.drawable.feather_update_arrow );
+			updateArrowBitmap = BitmapFactory.decodeResource( getContext().getBaseContext().getResources(), R.drawable.aviary_update_arrow );
 		} catch ( Throwable t ) {}
-
-		mEnableEffectAnimation = Constants.ANDROID_SDK > android.os.Build.VERSION_CODES.GINGERBREAD && SystemUtils.getCpuMhz() >= Constants.MHZ_CPU_FAST;
-		// mSelectedPosition = 0;
 	}
 
-	@SuppressLint("NewApi")
+	@SuppressLint ( "NewApi" )
 	@Override
 	public void onActivate() {
 		super.onActivate();
 
-		ConfigService config = getContext().getService( ConfigService.class );
-
 		// new method, using the panel height dinamically
-		mFilterCellWidth = (int) ( ( getOptionView().findViewById( R.id.background ).getHeight() - getOptionView().findViewById( R.id.bottom_background_overlay ).getHeight() ) * 0.9 );
-		mThumbBitmapSize = (int) ( mFilterCellWidth * 0.85 );
+		// mCellWidth = (int) ( getOptionView().findViewById( R.id.aviary_panel ).getHeight() * 0.68 );
+		// mThumbSize = (int) ( mCellWidth * 0.859 );
+		
+		mCellWidth = mConfigService.getDimensionPixelSize( R.dimen.aviary_frame_item_width );
+		mThumbSize = mConfigService.getDimensionPixelSize( R.dimen.aviary_frame_item_image_width );
+		
+		mLogger.log( "cell width: " + mCellWidth );
+		mLogger.log( "thumb size: " + mThumbSize );
 
-		// mFilterCellWidth = config.getDimensionPixelSize( R.dimen.feather_effects_cell_width );
-		// mFilterCellWidth = (int) ( ( Constants.SCREEN_WIDTH / UIUtils.getScreenOptimalColumnsPixels( mFilterCellWidth ) ) );
-
-		mThumbBitmap = generateThumbnail( mBitmap, mThumbBitmapSize, mThumbBitmapSize );
+		mThumbBitmap = generateThumbnail( mBitmap, mThumbSize, mThumbSize );
 
 		mInstalledPackages = Collections.synchronizedList( new ArrayList<String>() );
 
-		mRoundedBordersPixelSize = config.getDimensionPixelSize( R.dimen.feather_effects_panel_thumb_rounded_border );
-		mRoundedBordersPaddingPixelSize = config.getDimensionPixelSize( R.dimen.feather_effects_panel_thumb_padding );
-		mShadowOffsetPixelSize = config.getDimensionPixelSize( R.dimen.feather_effects_panel_thumb_shadow_offset );
-		mShadowRadiusPixelSize = config.getDimensionPixelSize( R.dimen.feather_effects_panel_thumb_shadow_radius );
-		mRoundedBordersStrokePixelSize = config.getDimensionPixelSize( R.dimen.feather_effects_panel_thumb_stroke_size );
-		mItemsGapPixelsSize = config.getDimensionPixelSize( R.dimen.feather_effects_panel_items_gap );
-		mExternalThumbPadding = config.getDimensionPixelSize( R.dimen.feather_effects_external_thumb_padding );
-
-		mFeaturedDefaultTitle = config.getString( R.string.feather_featured );
-		mFeaturedCount = config.getInteger( R.integer.feather_featured_count );
+		mFeaturedCount = mConfigService.getInteger( R.integer.aviary_featured_packs_count );
 
 		mHList.setGravity( Gravity.BOTTOM );
 		mHList.setOverScrollMode( HorizontalVariableListView.OVER_SCROLL_ALWAYS );
-		mHList.setEdgeGravityY( Gravity.BOTTOM );
 		mHList.setOnItemSelectedListener( this );
 		mHList.setOnItemClickedListener( this );
 
@@ -298,11 +258,12 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 		onPostActivate();
 	}
 
-	protected void initContentImage( ImageSwitcher imageView ) {
+	protected void initContentImage( AviaryImageSwitcher imageView ) {
 		if ( null != imageView ) {
 			imageView.setFactory( this );
-			
-			@SuppressWarnings ( "unused" ) Matrix matrix = getContext().getCurrentImageViewMatrix();
+
+			@SuppressWarnings ( "unused" )
+			Matrix matrix = getContext().getCurrentImageViewMatrix();
 			imageView.setImageBitmap( mBitmap, null );
 			imageView.setAnimateFirstView( false );
 		}
@@ -312,22 +273,24 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 		return mPluginType;
 	}
 
-	private void showUpdateAlert( final CharSequence packageName, final CharSequence label, final int error, String exceptionMessage, boolean fromUseClick ) {
+	private void showUpdateAlert( final CharSequence packageName, final CharSequence label, final int error,
+			String exceptionMessage, boolean fromUseClick ) {
 		if ( error != PluginService.ERROR_NONE ) {
 
 			String errorString = getError( error, exceptionMessage );
 
-			if ( error == PluginService.ERROR_PLUGIN_TOO_OLD || error == PluginService.ERROR_PLUGIN_CORRUPTED || error == PluginService.ERROR_DOWNLOAD ) {
+			if ( error == PluginService.ERROR_PLUGIN_TOO_OLD || error == PluginService.ERROR_PLUGIN_CORRUPTED
+					|| error == PluginService.ERROR_DOWNLOAD ) {
 
 				OnClickListener yesListener = new OnClickListener() {
 
 					@Override
 					public void onClick( DialogInterface dialog, int which ) {
-						Tracker.recordTag( "PluginNeedsUpdate: " + label );
+						Tracker.recordTag( "PluginNeedsUpdate: " + packageName );
 						getContext().downloadPlugin( (String) packageName, mPluginType );
 					}
 				};
-				
+
 				onGenericMessage( label, errorString, R.string.feather_update, yesListener, android.R.string.cancel, null );
 
 			} else if ( error == PluginService.ERROR_PLUGIN_TOO_NEW ) {
@@ -336,7 +299,7 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 					@Override
 					public void onClick( DialogInterface dialog, int which ) {
 						String pname = getContext().getBaseContext().getPackageName();
-						Tracker.recordTag( "EditorNeedsUpdate" );
+						Tracker.recordTag( "EditorNeedsUpdate: " + packageName );
 						getContext().downloadPlugin( pname, mPluginType );
 					}
 				};
@@ -358,7 +321,8 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 		if ( error != PluginService.ERROR_NONE ) {
 			final String errorString = getError( error, null );
 
-			if ( error == PluginService.ERROR_PLUGIN_TOO_OLD  || error == PluginService.ERROR_PLUGIN_CORRUPTED || error == PluginService.ERROR_DOWNLOAD ) {
+			if ( error == PluginService.ERROR_PLUGIN_TOO_OLD || error == PluginService.ERROR_PLUGIN_CORRUPTED
+					|| error == PluginService.ERROR_DOWNLOAD ) {
 				OnClickListener yesListener = new OnClickListener() {
 
 					@Override
@@ -386,12 +350,14 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 
 	/**
 	 * Multiple items and different errors
+	 * 
 	 * @param pkgname
 	 * @param set
 	 */
 	private void showUpdateAlertMultipleItems( final String pkgname, Set<Integer> set ) {
 		if ( null != set ) {
-			final String errorString = getContext().getBaseContext().getResources().getString( R.string.feather_effects_error_update_multiple );
+			final String errorString = getContext().getBaseContext().getResources()
+					.getString( R.string.feather_effects_error_update_multiple );
 
 			OnClickListener yesListener = new OnClickListener() {
 
@@ -407,7 +373,7 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 	protected String getError( int error, String message ) {
 
 		mLogger.info( "getError for " + error );
-		
+
 		int resId = R.string.feather_effects_error_loading_packs;
 
 		switch ( error ) {
@@ -422,21 +388,21 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 			case PluginService.ERROR_PLUGIN_TOO_NEW:
 				resId = R.string.feather_effects_error_update_editors;
 				break;
-				
+
 			case PluginService.ERROR_DOWNLOAD:
 				resId = R.string.feather_plugin_error_download;
 				break;
-				
+
 			case PluginService.ERROR_PLUGIN_CORRUPTED:
 				resId = R.string.feather_plugin_error_corrupted;
 				break;
-				
+
 			case PluginService.ERROR_STORAGE_NOT_AVAILABLE:
 				resId = R.string.feather_plugin_error_storage_not_available;
 				break;
-				
+
 			default:
-				if( null != message ) {
+				if ( null != message ) {
 					return message;
 				}
 				resId = R.string.feather_effects_unknown_errors;
@@ -449,6 +415,7 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 	protected void onPostActivate() {
 		// register for plugins updates
 		mPluginService.registerOnUpdateListener( this );
+		mPluginService.registerOnExternalUpdateListener( this );
 		updateInstalledPacks( true );
 		contentReady();
 	}
@@ -459,6 +426,7 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 		mCDSService = null;
 		mCacheService = null;
 		mPreferenceService = null;
+		mConfigService = null;
 		super.onDestroy();
 	}
 
@@ -466,11 +434,16 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 	public void onDeactivate() {
 		onProgressEnd();
 		mPluginService.removeOnUpdateListener( this );
+		mPluginService.removeOnExternalUpdateListener( this );
 		mImageManager.setOnLoadCompleteListener( null );
 
-		mHList.setOnScrollListener( null );
 		mHList.setOnItemSelectedListener( null );
 		mHList.setOnItemClickedListener( null );
+
+		if ( null != mIapDialog ) {
+			mIapDialog.dismiss( false );
+			mIapDialog = null;
+		}
 
 		super.onDeactivate();
 	}
@@ -481,36 +454,14 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 		// TODO: we really need this?
 		// mImageManager.clearCache();
 
-		mConfigurationChanged = true;
-
 		if ( mIapDialog != null ) {
-
-			ViewGroup parent = (ViewGroup) mIapDialog.getParent();
-
-			if ( null != parent ) {
-				ExternalPlugin currentPlugin = mIapDialog.getPlugin();
-
-				int index = parent.indexOfChild( mIapDialog );
-				parent.removeView( mIapDialog );
-				mIapDialog = (IapDialog) LayoutInflater.from( getContext().getBaseContext() ).inflate( R.layout.feather_iap_dialog, parent, false );
-				mIapDialog.setLayoutAnimation( null );
-				parent.addView( mIapDialog, index );
-				updateIapDialog( currentPlugin );
-				setApplyEnabled( false );
-			}
+			mIapDialog.onConfigurationChanged( newConfig );
 		}
 
 		// TODO: we don't really need to update everything...
 		// updateInstalledPacks( false );
 
 		super.onConfigurationChanged( newConfig, oldConfig );
-	}
-
-	@Override
-	public void onScrollChanged() {
-		mHList.setOnScrollListener( null );
-		mScrollChanged = true;
-		mEnableEffectAnimation = false;
 	}
 
 	@Override
@@ -551,8 +502,9 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 	protected void onComplete( Bitmap bitmap, MoaActionList actions ) {
 
 		if ( null != mRenderedEffect ) {
-			Tracker.recordTag( mRenderedEffect + ": Applied" );
-			mTrackingAttributes.put( "filterName", mRenderedEffect );
+			Tracker.recordTag( mRenderedEffect + ": applied" );
+			
+			mTrackingAttributes.put( "Effect", mRenderedEffect );
 		}
 
 		if ( null != mRenderedPackName ) {
@@ -560,9 +512,16 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 				if ( mRenderedPackName.equals( getContext().getBaseContext().getPackageName() ) ) {
 					mRenderedPackName = "com.aviary.android.feather";
 				}
-			} catch ( Throwable t ) {}
+			} catch ( Throwable t ) {
+			}
+			
+			
+			HashMap<String, String> attrs = new HashMap<String, String>();
+			attrs.put( "Effects", mRenderedEffect );
+			Tracker.recordTag( mRenderedPackName + ": applied", attrs );
+			
 
-			mTrackingAttributes.put( "packName", mRenderedPackName );
+			mTrackingAttributes.put( "Pack", mRenderedPackName );
 		}
 
 		super.onComplete( bitmap, actions );
@@ -587,7 +546,9 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 	}
 
 	@Override
-	public void onUpdate( Bundle delta ) {
+	public void onUpdate( PluginService service, Bundle delta ) {
+		mLogger.info( "onUpdate" );
+
 		if ( isActive() && mExternalPacksEnabled ) {
 			if ( mUpdateDialog != null && mUpdateDialog.isShowing() ) {
 				// another update alert is showing, skip new alerts
@@ -604,7 +565,8 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 					}
 				};
 
-				mUpdateDialog = new AlertDialog.Builder( getContext().getBaseContext() ).setMessage( R.string.filter_pack_updated ).setNeutralButton( android.R.string.ok, listener ).setCancelable( false ).create();
+				mUpdateDialog = new AlertDialog.Builder( getContext().getBaseContext() ).setMessage( R.string.feather_filter_pack_updated )
+						.setNeutralButton( android.R.string.ok, listener ).setCancelable( false ).create();
 
 				mUpdateDialog.show();
 
@@ -612,77 +574,58 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
-	public void onLoadComplete( final ImageView view, Bitmap bitmap, int tag ) {
+	public void onExternalUpdate( PluginService service ) {
+		mLogger.info( "onExternalUpdated" );
+
+		// TODO: update the list adapter without resetting the view completely
+
+		/*
+		 * FramesListAdapter adapter = (FramesListAdapter) mHList.getAdapter();
+		 * 
+		 * FeatherExternalPack[] available = mPluginService.getAvailable( mPluginType );
+		 * IPlugin plugin = PluginFactory.create( getContext().getBaseContext(),
+		 * available[0], mPluginType );
+		 * 
+		 * final EffectPack effectPack = new EffectPack( "test", "Test", null, null,
+		 * PluginService.ERROR_NONE, null, plugin, true );
+		 * adapter.add( effectPack );
+		 */
+	}
+
+	@Override
+	public void onLoadComplete( final ImageView view, final Bitmap bitmap, int tag ) {
 
 		if ( !isActive() ) return;
 
-		View parent = (View) view.getParent();
-
 		if ( null != bitmap ) {
-			view.setImageDrawable( new BitmapDrawable( bitmap ) );
-		} else {
-			view.setImageResource( R.drawable.feather_iap_dialog_image_na );
-		}
-
-		if ( parent != null && parent.findViewById( R.id.progress ) != null ) {
-			parent.findViewById( R.id.progress ).setVisibility( View.GONE );
-		}
-
-		if ( !mEnableEffectAnimation || mConfigurationChanged || tag == TAG_EXTERNAL_VIEW ) {
-			view.setVisibility( View.VISIBLE );
-			return;
-		}
-
-		if ( null != view && parent != null ) {
-
-			if ( !mScrollChanged ) {
-				if ( parent.getLeft() < mHList.getRight() ) {
-					
-					Animation anim;
-					
-					// anim = new AlphaAnimation( 0.0f, 1.0f );
-					anim = new ScaleAnimation( 0, 1, 0, 1, Animation.RELATIVE_TO_SELF, (float) 0.5, Animation.RELATIVE_TO_SELF, (float) 0.5 );
-					
-					anim.setAnimationListener( new AnimationListener() {
-
-						@Override
-						public void onAnimationStart( Animation animation ) {
-							view.setVisibility( View.VISIBLE );
-						}
-
-						@Override
-						public void onAnimationRepeat( Animation animation ) {}
-
-						@Override
-						public void onAnimationEnd( Animation animation ) {}
-					} );
-
-					anim.setDuration( 100 );
-					anim.setStartOffset( mHList.getScreenPositionForView( view ) * 100 );
-					view.startAnimation( anim );
-					view.setVisibility( View.INVISIBLE );
-					return;
+			// view.setImageBitmap( bitmap );
+			view.post( new Runnable() {
+				
+				@Override
+				public void run() {
+					view.setImageBitmap( bitmap );
 				}
-			}
-
-			view.setVisibility( View.VISIBLE );
+			} );
+		} else {
+			view.setImageResource( R.drawable.aviary_ic_na );
 		}
+		//view.setVisibility( View.VISIBLE );
 	}
 
 	/**
-	 * bundle contains a list of all updates applications. if one meets the criteria ( is a filter apk ) then return true
+	 * bundle contains a list of all updates applications. if one meets the criteria ( is
+	 * a filter apk ) then return true
 	 * 
 	 * @param bundle
-	 *           the bundle
+	 *            the bundle
 	 * @return true if bundle contains a valid filter package
 	 */
 	private boolean validDelta( Bundle bundle ) {
 		if ( null != bundle ) {
 			if ( bundle.containsKey( "delta" ) ) {
 				try {
-					@SuppressWarnings("unchecked")
+					@SuppressWarnings ( "unchecked" )
 					ArrayList<UpdateType> updates = (ArrayList<UpdateType>) bundle.getSerializable( "delta" );
 					if ( null != updates ) {
 						for ( UpdateType update : updates ) {
@@ -715,23 +658,18 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 		view.setScaleEnabled( false );
 		view.setScrollEnabled( false );
 		view.setDisplayType( DisplayType.FIT_IF_BIGGER );
-		view.setLayoutParams( new ImageSwitcher.LayoutParams( LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT ) );
+		view.setLayoutParams( new AviaryImageSwitcher.LayoutParams( LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT ) );
 		return view;
 	}
 
 	@Override
 	protected View generateContentView( LayoutInflater inflater ) {
-		return inflater.inflate( R.layout.feather_native_effects_content, null );
+		return inflater.inflate( R.layout.aviary_content_effects, null );
 	}
 
 	@Override
 	protected ViewGroup generateOptionView( LayoutInflater inflater, ViewGroup parent ) {
-		return (ViewGroup) inflater.inflate( R.layout.feather_effects_panel, parent, false );
-	}
-
-	@Override
-	public Matrix getContentDisplayMatrix() {
-		return ( (ImageViewTouch) mImageSwitcher.getCurrentView() ).getDisplayMatrix();
+		return (ViewGroup) inflater.inflate( R.layout.aviary_panel_frames, parent, false );
 	}
 
 	protected Bitmap generateThumbnail( Bitmap input, final int width, final int height ) {
@@ -745,9 +683,8 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 
 		mIsAnimating = true;
 
-		if ( mViewFlipper.getDisplayedChild() != 0 ) {
-			mViewFlipper.setDisplayedChild( 0 );
-		}
+		mLoader.setVisibility( View.VISIBLE );
+		mHList.setVisibility( View.INVISIBLE );
 
 		// now try to install every plugin...
 		if ( firstTime ) {
@@ -763,46 +700,91 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 	 * @param result
 	 * @return
 	 */
-	protected FramesListAdapter createListAdapter( Context context, List<EffectPack> result ) {
-		return new FramesListAdapter( context, R.layout.feather_effect_thumb, R.layout.feather_effect_external_thumb, R.layout.feather_stickers_pack_divider_empty, R.layout.feather_getmore_stickers_thumb,
-				R.layout.feather_getmore_stickers_thumb_inverted, result );
+	protected BaseAdapter createListAdapter( Context context, List<EffectPack> result ) {
+		
+		return new ListAdapter( context, 
+				R.layout.aviary_frame_item, 
+				R.layout.aviary_frame_item_more, 
+				R.layout.aviary_frame_item_external, 
+				R.layout.aviary_frame_item_divider, result );
 	}
 
 	/**
-	 * Called after the {@link PluginInstallTask} completed
-	 * 
-	 * @param result
-	 *           - list of installed packs
-	 * @param errors
-	 *           - list of errors
+	 * @param result		containing all the {@link EffectPack} items ( external, internal, dividers... )
+	 * @param errors		contains all the error items
+	 * @param totalCount	installed count
+	 * @param externalCount	external items count ( get more and featured )
+	 * @param firstValidIndex	the index of the first valid element
 	 */
-	private void onEffectListUpdated( List<EffectPack> result, List<EffectPackError> errors, int totalCount ) {
+	private void onEffectListUpdated( List<EffectPack> result, List<EffectPackError> errors, int totalCount, int externalCount, int firstValidIndex ) {
+
+		String iapPackageName = null;
+
+		// check if the incoming options bundle has some instructions
+		if( hasOptions() ) {
+			Bundle options = getOptions();
+			if( options.containsKey( FeatherIntent.OptionBundle.SHOW_IAP_DIALOG ) ) {
+				iapPackageName = options.getString( FeatherIntent.OptionBundle.SHOW_IAP_DIALOG );
+			}
+			// ok, we display the IAP dialog only the first time
+			options.remove( FeatherIntent.OptionBundle.SHOW_IAP_DIALOG );
+		}
+		
+		final boolean willShowIapDialog = null != iapPackageName;
 
 		// we had errors during installation
-		if ( null != errors && errors.size() > 0 ) {
+		if ( null != errors && errors.size() > 0 && !willShowIapDialog ) {
+			mLogger.error( "errors: " + errors.size() );
 			if ( !mUpdateErrorHandled ) {
 				handleErrors( errors );
 			}
 		}
 
-		FIRST_POSITION = ( mExternalPacksEnabled && mShowFirstGetMore ) ? 1 : 0;
-
-		FramesListAdapter adapter = createListAdapter( getContext().getBaseContext(), result );
+		mListFirstValidPosition = firstValidIndex > 0 ? firstValidIndex : 0;
+		
+		BaseAdapter adapter = createListAdapter( getContext().getBaseContext(), result );
 		mHList.setAdapter( adapter );
 
-		if ( mViewFlipper.getDisplayedChild() != 1 ) {
-			mViewFlipper.setDisplayedChild( 1 );
-		}
-
+		mLoader.setVisibility( View.INVISIBLE );
+		
+		Animation animation = new AlphaAnimation( 0, 1 );
+		animation.setFillAfter( true );
+		animation.setDuration( getContext().getBaseContext().getResources().getInteger( android.R.integer.config_longAnimTime ) );
+		mHList.startAnimation( animation );
+		mHList.setVisibility( View.VISIBLE );
+		
 		if ( mFirstTimeRenderer ) {
 			mHList.setSelectedPosition( mSelectedPosition, false );
-		} else if ( mSelectedPosition != FIRST_POSITION ) {
-			mHList.setSelectedPosition( FIRST_POSITION, false );
+		} else if ( mSelectedPosition != mListFirstValidPosition && mListFirstValidPosition >= 0 ) {
+			mHList.setSelectedPosition( mListFirstValidPosition, false );
 		}
 
+		// panel already rendered once, select the already selected item
 		if ( mFirstTimeRenderer ) {
 			onItemSelected( mHList, null, mSelectedPosition, -1 );
 		}
+		
+		// scroll the list to 'n' position
+		
+		if( mExternalPacksEnabled && !mFirstTimeRenderer && externalCount > 0 ) {
+
+			if( firstValidIndex > 2 ) {
+				final int delta = (int) ( mCellWidth * ( firstValidIndex - 2.5 ) );
+				mHList.post( new Runnable() {
+					
+					@Override
+					public void run() {
+						int clamped = mHList.computeScroll( delta );
+						if( clamped != 0 ) {
+							mHList.smoothScrollBy( delta, 500 );
+						} else {
+							mHList.scrollTo( delta );
+						}
+					}
+				} );
+			}
+		}
+		
 		mFirstTimeRenderer = true;
 
 		// show the alert only the first time!!
@@ -819,7 +801,8 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 					}
 				};
 
-				AlertDialog dialog = new AlertDialog.Builder( getContext().getBaseContext() ).setMessage( R.string.feather_borders_dialog_first_time ).setPositiveButton( android.R.string.ok, listener )
+				AlertDialog dialog = new AlertDialog.Builder( getContext().getBaseContext() )
+						.setMessage( R.string.feather_borders_dialog_first_time ).setPositiveButton( android.R.string.ok, listener )
 						.setNegativeButton( android.R.string.cancel, null ).create();
 
 				mPreferenceService.putBoolean( this.getClass().getSimpleName() + "-install-first-time", true );
@@ -827,52 +810,58 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 				dialog.show();
 			}
 		}
+
+		// show the iap-dialog by default if the passed option Bundle
+		// contains a valid package name to be shown and the current list
+		// of errors is empty
+		if( null != iapPackageName ) {
+			displayIAPDialog( new IAPUpdater.Builder().setPlugin( iapPackageName, mPluginType ).build() );
+		}
 	}
 
 	// ///////////////
 	// IAP - Dialog //
 	// ///////////////
 
-	protected IapDialog mIapDialog;
+	protected IAPDialog mIapDialog;
 
-	protected final IapDialog createIapDialog( final ExternalPlugin plugin ) {
+	private final void displayIAPDialog( IAPUpdater data ) {
+		if ( null != mIapDialog ) {
+			if ( mIapDialog.valid() ) {
+				mIapDialog.update( data );
+				setApplyEnabled( false );
+				return;
+			} else {
+				mIapDialog.dismiss( false );
+				mIapDialog = null;
+			}
+		}
+
 		ViewGroup container = ( (FeatherContext) getContext().getBaseContext() ).activatePopupContainer();
-		IapDialog dialog = (IapDialog) container.findViewById( R.id.main_iap_dialog );
-		if ( dialog == null ) {
-			LayoutInflater.from( getContext().getBaseContext() ).inflate( R.layout.feather_iap_dialog, container, true );
-			dialog = (IapDialog) container.findViewById( R.id.main_iap_dialog );
-			dialog.setFocusable( true );
-			dialog.setPlugin( plugin, mPluginType, getContext().getBaseContext() );
+		IAPDialog dialog = IAPDialog.create( container, data );
+		if ( dialog != null ) {
 			dialog.setOnCloseListener( new OnCloseListener() {
-
 				@Override
 				public void onClose() {
 					removeIapDialog();
 				}
 			} );
 		}
+		mIapDialog = dialog;
 		setApplyEnabled( false );
-		return dialog;
-	}
-
-	private void updateIapDialog( ExternalPlugin plugin ) {
-		if ( null != mIapDialog && null != plugin ) {
-			mIapDialog.setPlugin( plugin, mPluginType, getContext().getBaseContext() );
-		}
 	}
 
 	private boolean removeIapDialog() {
 		setApplyEnabled( true );
 		if ( null != mIapDialog ) {
-			mIapDialog.setOnCloseListener( null );
-			mIapDialog.hide();
+			mIapDialog.dismiss( true );
 			mIapDialog = null;
 			return true;
 		}
 		return false;
 	}
 
-	@SuppressLint("UseSparseArrays")
+	@SuppressLint ( "UseSparseArrays" )
 	private void handleErrors( List<EffectPackError> mErrors ) {
 
 		if ( mErrors == null || mErrors.size() < 1 ) return;
@@ -913,11 +902,6 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 		killCurrentTask();
 		mCurrentTask = createRenderTask( position );
 		mCurrentTask.execute( item );
-
-		if ( null != item ) {
-			Tracker.recordTag( item.getItemAt( position ) + ": Selected" );
-		}
-
 	}
 
 	protected RenderTask createRenderTask( int position ) {
@@ -966,56 +950,63 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 	}
 
 	static class ViewHolder {
-
 		TextView text;
 		ImageView image;
 	}
-
-	class FramesListAdapter extends ArrayAdapterExtended<EffectPack> {
-
-		private int mLayoutResId;
-		private int mExternalLayoutResId;
-		private int mAltLayoutResId;
-		private int mAltLayout2ResId;
-		private int mDividerLayoutResId;
-		private int mCount = -1;
-		private List<EffectPack> mData;
-		private LayoutInflater mLayoutInflater;
-		private int mDefaultHeight;
-		protected BitmapDrawable mExternalFolderIcon;
-
-		static final int TYPE_GET_MORE_FIRST = 0;
-		static final int TYPE_GET_MORE_LAST = 1;
-		static final int TYPE_NORMAL = 2;
-		static final int TYPE_EXTERNAL = 3;
-		static final int TYPE_DIVIDER = 4;
-
-		public FramesListAdapter( Context context, int mainResId, int externalResId, int dividerResId, int altResId, int altResId2, List<EffectPack> objects ) {
-			super( context, mainResId, objects );
-			mLayoutResId = mainResId;
-			mExternalLayoutResId = externalResId;
-			mAltLayoutResId = altResId;
-			mAltLayout2ResId = altResId2;
-			mDividerLayoutResId = dividerResId;
-			mData = objects;
-			mLayoutInflater = LayoutInflater.from( context );
+	
+	class ListAdapter extends BaseAdapterExtended<EffectPack> {
+		
+		static final int TYPE_INVALID = -1;
+		static final int TYPE_NORMAL = 0;
+		static final int TYPE_GETMORE = 1;
+		static final int TYPE_EXTERNAL = 2;
+		static final int TYPE_DIVIDER = 3;
+		static final int TYPE_LEFT_DIVIDER = 4;
+		static final int TYPE_RIGHT_DIVIDER = 5;
+		
+		Object mLock = new Object();
+		LayoutInflater mInflater;
+		List<EffectPack> mObjects;
+		int mDefaultResId;
+		int mMoreResId;
+		int mExternalResId;
+		int mDividerResId;
+		int mCount = -1;
+		BitmapDrawable mExternalFolderIcon;
+		
+		public ListAdapter ( Context context, int defaultResId, int moreResId, int externalResId, int dividerResId, List<EffectPack> items ) {
+			super();
+			mInflater = LayoutInflater.from( context );
+			mObjects = items;
+			mDefaultResId = defaultResId;
+			mMoreResId = moreResId;
+			mExternalResId = externalResId;
+			mDividerResId = dividerResId;
 			mExternalFolderIcon = getExternalBackgroundDrawable( context );
-			mDefaultHeight = getOptionView().findViewById( R.id.background ).getHeight() - getOptionView().findViewById( R.id.bottom_background_overlay ).getHeight();
 		}
-
+		
 		protected BitmapDrawable getExternalBackgroundDrawable( Context context ) {
-			return (BitmapDrawable) context.getResources().getDrawable( R.drawable.feather_frames_pack_background );
+			return (BitmapDrawable) context.getResources().getDrawable( R.drawable.aviary_frames_pack_background );
 		}
+		
+		@Override
+		public EffectPack getItem( int position ) {
+			for ( int i = 0; i < mObjects.size(); i++ ) {
+				EffectPack pack = mObjects.get( i );
+				if ( null == pack ) continue;
 
-		protected void finalize() throws Throwable {
-			Log.i( "effects-adapter", "finalize" );
-		};
-
+				if ( position >= pack.index && position < pack.index + pack.size ) {
+					return pack;
+				}
+			}
+			return null;
+		}
+		
 		@Override
 		public int getCount() {
 			if ( mCount == -1 ) {
 				int total = 0; // first get more
-				for ( EffectPack pack : mData ) {
+				for ( EffectPack pack : mObjects ) {
 					if ( null == pack ) {
 						total++;
 						continue;
@@ -1026,223 +1017,139 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 				// return total;
 				mCount = total;
 			}
+			
 			return mCount;
 		}
-
+		
 		@Override
-		public void notifyDataSetChanged() {
-			mCount = -1;
-			super.notifyDataSetChanged();
+		public long getItemId( int position ) {
+			return position;
 		}
-
-		@Override
-		public void notifyDataSetAdded() {
-			mCount = -1;
-			super.notifyDataSetAdded();
-		}
-
-		@Override
-		public void notifyDataSetRemoved() {
-			mCount = -1;
-			super.notifyDataSetRemoved();
-		}
-
-		@Override
-		public void notifyDataSetInvalidated() {
-			mCount = -1;
-			super.notifyDataSetInvalidated();
-		}
-
+		
 		@Override
 		public int getViewTypeCount() {
-			return 5;
+			return 6;
 		}
-
+		
 		@Override
 		public int getItemViewType( int position ) {
 
 			if ( !mExternalPacksEnabled ) return TYPE_NORMAL;
+			
+			if( position < 0 || position >= getCount() ) {
+				return TYPE_INVALID;
+			}
 
 			EffectPack item = getItem( position );
-			if ( null == item ) {
-				if ( position == 0 )
-					return TYPE_GET_MORE_FIRST;
-				else
-					return TYPE_GET_MORE_LAST;
+			
+			switch( item.mType ) {
+				case EXTERNAL: return TYPE_EXTERNAL;
+				case GET_MORE: return TYPE_GETMORE;
+				case LEFT_DIVIDER: return TYPE_LEFT_DIVIDER;
+				case RIGHT_DIVIDER: return TYPE_RIGHT_DIVIDER;
+				case PACK_DIVIDER: return TYPE_DIVIDER;
+				case INTERNAL:
+				default:
+					return TYPE_NORMAL;
 			}
-
-			if ( item.isDivider ) return TYPE_DIVIDER;
-			if ( item.isExternal ) return TYPE_EXTERNAL;
-			return TYPE_NORMAL;
 		}
-
+		
 		@Override
-		public EffectPack getItem( int position ) {
-			for ( int i = 0; i < mData.size(); i++ ) {
-				EffectPack pack = mData.get( i );
-				if ( null == pack ) continue;
-
-				if ( position >= pack.index && position < pack.index + pack.size ) {
-					return pack;
+		public View getView( int position, View convertView, ViewGroup parent ) {
+			
+			ViewHolder holder;
+			EffectPack item = getItem( position );
+			final int type = getItemViewType( position );
+			
+			int layoutWidth = LayoutParams.WRAP_CONTENT;
+			
+			if( null == convertView ) {
+				
+				if( type == TYPE_NORMAL ) {
+					convertView = mInflater.inflate( mDefaultResId, parent, false );
+					layoutWidth = mCellWidth;
+				} else if( type == TYPE_GETMORE ) {
+					convertView = mInflater.inflate( mMoreResId, parent, false );
+					layoutWidth = mCellWidth;
+				} else if( type == TYPE_EXTERNAL ) {
+					convertView = mInflater.inflate( mExternalResId, parent, false );
+					layoutWidth = mCellWidth;					
+				} else if( type == TYPE_DIVIDER ) {
+					convertView = mInflater.inflate( mDividerResId, parent, false );
+					layoutWidth = LayoutParams.WRAP_CONTENT;
+				} else if( type == TYPE_LEFT_DIVIDER ) {
+					convertView = mInflater.inflate( R.layout.aviary_thumb_divider_left, parent, false );
+					layoutWidth = LayoutParams.WRAP_CONTENT;
+				} else if( type == TYPE_RIGHT_DIVIDER ) {
+					convertView = mInflater.inflate( R.layout.aviary_thumb_divider_right, parent, false );
+					layoutWidth = LayoutParams.WRAP_CONTENT;
 				}
-			}
-			return null;
-		}
-
-		@SuppressWarnings("deprecation")
-		@Override
-		public View getView( final int position, final View convertView, final ViewGroup parent ) {
-
-			View view;
-			ViewHolder holder = null;
-			int type = getItemViewType( position );
-			final EffectPack item = getItem( position );
-
-			int layoutWidth;
-			int layoutHeight = LayoutParams.MATCH_PARENT;
-
-			if ( convertView == null ) {
+				
+				convertView.setLayoutParams( new LayoutParams( layoutWidth, LayoutParams.MATCH_PARENT ) );
 				holder = new ViewHolder();
-				if ( type == TYPE_GET_MORE_FIRST ) {
-					view = mLayoutInflater.inflate( mAltLayoutResId, parent, false );
-					layoutHeight = mDefaultHeight;
-					layoutWidth = mFilterCellWidth;
-
-				} else if ( type == TYPE_GET_MORE_LAST ) {
-					view = mLayoutInflater.inflate( mAltLayout2ResId, parent, false );
-					layoutHeight = mDefaultHeight;
-					layoutWidth = mFilterCellWidth;
-
-					// hide the last "get more" button if there's no need
-					View lastChild = parent.getChildAt( parent.getChildCount() - 1 );
-					if ( null != lastChild ) {
-						if ( lastChild.getRight() < parent.getRight() ) {
-							layoutWidth = 0;
-						}
-					}
-
-				} else if ( type == TYPE_NORMAL ) {
-					view = mLayoutInflater.inflate( mLayoutResId, parent, false );
-					holder.text = (TextView) view.findViewById( R.id.text );
-					holder.image = (ImageView) view.findViewById( R.id.image );
-					holder.image.setImageDrawable( new BitmapDrawable( mThumbBitmap ) );
-					view.setTag( holder );
-
+				
+				holder.image = (ImageView) convertView.findViewById( R.id.aviary_image );
+				holder.text = (TextView) convertView.findViewById( R.id.aviary_text );
+				
+				if( type != TYPE_DIVIDER && holder.image != null ) {
 					LayoutParams params = holder.image.getLayoutParams();
-					params.width = params.height = mThumbBitmapSize;
+					params.height = mThumbSize;
+					params.width = mThumbSize;
 					holder.image.setLayoutParams( params );
-					holder.image.requestLayout();
-
-					layoutHeight = LayoutParams.WRAP_CONTENT;
-					layoutWidth = mThumbBitmapSize + mItemsGapPixelsSize;
-
-				} else if ( type == TYPE_EXTERNAL ) {
-					view = mLayoutInflater.inflate( mExternalLayoutResId, parent, false );
-					holder.text = (TextView) view.findViewById( R.id.text );
-					holder.image = (ImageView) view.findViewById( R.id.image );
-					view.setTag( holder );
-
-					LayoutParams params = holder.image.getLayoutParams();
-					params.width = mThumbBitmapSize + ( mExternalThumbPadding * 2 );
-					params.height = mThumbBitmapSize + mExternalThumbPadding;
-					holder.image.setImageDrawable( mExternalFolderIcon );
-					holder.image.setLayoutParams( params );
-					holder.image.requestLayout();
-
-					layoutHeight = LayoutParams.WRAP_CONTENT;
-					layoutWidth = mThumbBitmapSize + mItemsGapPixelsSize + ( mExternalThumbPadding * 2 );
-
-				} else {
-					// TYPE_DIVIDER
-					view = mLayoutInflater.inflate( mDividerLayoutResId, parent, false );
-					holder.image = (ImageView) view.findViewById( R.id.image );
-					view.setTag( holder );
-
-					layoutWidth = EffectThumbLayout.LayoutParams.WRAP_CONTENT;
-					layoutHeight = mDefaultHeight;
 				}
-				view.setLayoutParams( new EffectThumbLayout.LayoutParams( layoutWidth, layoutHeight ) );
+				
+				convertView.setTag( holder );
 			} else {
-				view = convertView;
-				holder = (ViewHolder) view.getTag();
+				holder = (ViewHolder) convertView.getTag();
 			}
-
+			
 			Callable<Bitmap> executor;
 
-			if ( type == TYPE_NORMAL ) {
+			if ( type == TYPE_NORMAL && null != item ) {
 				holder.text.setText( item.getLabelAt( position ) );
 
 				final String effectName = (String) item.getItemAt( position );
 				executor = createContentCallable( item, position, effectName );
+
+				mImageManager.execute( executor, position + "/" + effectName, holder.image, TAG_INTERNAL_VIEW, Priority.HIGH );
 				
-				mImageManager.execute( executor, position + "/" + effectName, holder.image );
-
-			} else if ( type == TYPE_EXTERNAL ) {
-				holder.text.setText( item.mTitle );
-
-				ExternalPlugin plugin = (ExternalPlugin) item.mPluginRef;
-				if ( null != plugin ) {
-					executor = createExternalContentCallable( plugin.getIconUrl() );
-					mImageManager.execute( executor, plugin.getIconUrl(), holder.image, TAG_EXTERNAL_VIEW );
+			} else if( type == TYPE_GETMORE || type == TYPE_EXTERNAL ) {
+				
+				if( type == TYPE_EXTERNAL ) {
+					ExternalPlugin plugin = (ExternalPlugin) item.mPluginRef;
+					
+					holder.image.setImageDrawable( mExternalFolderIcon );
+					holder.text.setText( item.mTitle );
+					
+					if ( null != plugin ) {
+						executor = createExternalContentCallable( plugin.getIconUrl() );
+						mImageManager.execute( executor, plugin.getIconUrl(), holder.image, TAG_EXTERNAL_VIEW, Priority.LOW );
+					}				
 				}
-
-			} else if ( type == TYPE_DIVIDER ) {
-
+				
+			} else if( type == TYPE_DIVIDER ) {
 				Drawable drawable = holder.image.getDrawable();
 
 				if ( drawable instanceof PluginDividerDrawable ) {
 					( (PluginDividerDrawable) drawable ).setTitle( item.mTitle.toString() );
 				} else {
-					PluginDividerDrawable d = new PluginDividerDrawable( drawable, item.mTitle.toString() );
+					PluginDividerDrawable d = new PluginDividerDrawable( getContext().getBaseContext(), R.attr.aviaryEffectThumbDividerTextStyle, item.mTitle.toString() );
 					holder.image.setImageDrawable( d );
-				}
-
-			} else {
-				// get more
-				if ( mShowIapNotificationAndValue ) {
-					TextView totalText = (TextView) view.findViewById( R.id.text01 );
-					totalText.setText( String.valueOf( mAvailablePacks ) );
-				}
+				}				
 			}
-
-			return view;
+			
+			return convertView;
 		}
-
+		
 		protected Callable<Bitmap> createContentCallable( final EffectPack item, int position, final String effectName ) {
-			return new BorderThumbnailCallable( mCacheService, (InternalPlugin) item.mPluginRef, effectName, mFilterCellWidth );
+			return new BorderThumbnailCallable( mCacheService, (InternalPlugin) item.mPluginRef, effectName, mThumbBitmap, mThumbSize );
 		}
-
+		
 		protected Callable<Bitmap> createExternalContentCallable( final String iconUrl ) {
-			return new ExternalFramesThumbnailCallable( iconUrl, mCacheService, mExternalFolderIcon, this.getContext().getResources(), R.drawable.feather_iap_dialog_image_na );
-		}
+			return new ExternalFramesThumbnailCallable( iconUrl, mCacheService, mExternalFolderIcon, getContext().getBaseContext().getResources(), R.drawable.aviary_ic_na );
+		}		
 	}
 
-	static MoaActionList actionsForRoundedThumbnail( final boolean isValid, INativeFilter filter ) {
-
-		MoaActionList actions = MoaActionFactory.actionList();
-		if( null != filter ) actions.addAll( filter.getActions() );
-		
-		MoaAction action = MoaActionFactory.action( "ext-roundedborders" );
-		action.setValue( "padding", mRoundedBordersPaddingPixelSize );
-		action.setValue( "roundPx", mRoundedBordersPixelSize );
-		action.setValue( "strokeColor", 0xffa6a6a6 );
-		action.setValue( "strokeWeight", mRoundedBordersStrokePixelSize );
-
-		if ( !isValid ) action.setValue( "overlaycolor", 0x99000000 );
-		actions.add( action );
-
-		// shadow
-		action = MoaActionFactory.action( "ext-roundedshadow" );
-		action.setValue( "color", 0x99000000 );
-		action.setValue( "radius", mShadowRadiusPixelSize );
-		action.setValue( "roundPx", mRoundedBordersPixelSize );
-		action.setValue( "offsetx", mShadowOffsetPixelSize );
-		action.setValue( "offsety", mShadowOffsetPixelSize );
-		action.setValue( "padding", mRoundedBordersPaddingPixelSize );
-		
-		actions.add( action );
-		return actions;
-	}
 
 	// ////////////////////////
 	// OnItemClickedListener //
@@ -1257,7 +1164,7 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 			if ( mHList.getAdapter() == null ) return false;
 			int viewType = mHList.getAdapter().getItemViewType( position );
 
-			if ( viewType == FramesListAdapter.TYPE_NORMAL ) {
+			if ( viewType == ListAdapter.TYPE_NORMAL ) {
 
 				EffectPack item = (EffectPack) mHList.getAdapter().getItem( position );
 
@@ -1268,7 +1175,7 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 					return false;
 				}
 
-			} else if ( viewType == FramesListAdapter.TYPE_GET_MORE_FIRST || viewType == FramesListAdapter.TYPE_GET_MORE_LAST ) {
+			} else if ( viewType == ListAdapter.TYPE_GETMORE ) {
 
 				if ( position == 0 ) {
 					Tracker.recordTag( "LeftGetMoreEffects : Selected" );
@@ -1278,22 +1185,19 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 				getContext().searchPlugin( mPluginType );
 				return false;
 
-			} else if ( viewType == FramesListAdapter.TYPE_EXTERNAL ) {
+			} else if ( viewType == ListAdapter.TYPE_EXTERNAL ) {
 				EffectPack item = (EffectPack) mHList.getAdapter().getItem( position );
 				if ( null != item ) {
 
-					if ( android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.FROYO && SystemUtils.getApplicationTotalMemory() >= Constants.APP_MEMORY_SMALL ) {
+					if ( android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.FROYO
+							&& SystemUtils.getApplicationTotalMemory() >= Constants.APP_MEMORY_SMALL ) {
 						ExternalPlugin externalPlugin = (ExternalPlugin) item.mPluginRef;
 
 						if ( externalPlugin == null ) return false;
+						displayIAPDialog( new IAPUpdater.Builder().setPlugin( externalPlugin ).build() );
 
-						if ( null == mIapDialog ) {
-							mIapDialog = createIapDialog( externalPlugin );
-						} else {
-							updateIapDialog( externalPlugin );
-						}
 					} else {
-						Tracker.recordTag( "Unpurchased(" + item.mTitle + ") : StoreButtonClicked" );
+						Tracker.recordTag( "Unpurchased(" + item.mPackageName + ") : StoreButtonClicked" );
 						getContext().downloadPlugin( item.mPackageName.toString(), mPluginType );
 					}
 				}
@@ -1317,15 +1221,16 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 			if ( mHList.getAdapter() == null ) return;
 			int viewType = mHList.getAdapter().getItemViewType( position );
 
-			if ( viewType == FramesListAdapter.TYPE_NORMAL ) {
+			if ( viewType == ListAdapter.TYPE_NORMAL ) {
 
 				EffectPack item = (EffectPack) mHList.getAdapter().getItem( position );
 
 				if ( item == null ) return;
 
 				if ( item.mStatus == PluginService.ERROR_NONE ) {
-					// so we assume the view is already selected and so let's selected the "original" effect by default
-					if ( !item.isExternal ) {
+					// so we assume the view is already selected and so let's selected the
+					// "original" effect by default
+					if ( item.mType == EffectPack.EffectPackType.INTERNAL ) {
 						renderEffect( item, position );
 					}
 				}
@@ -1338,9 +1243,9 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 		mLogger.info( "onNothingSelected" );
 
 		if ( parent.getAdapter() != null ) {
-			EffectPack item = ( (FramesListAdapter) parent.getAdapter() ).getItem( FIRST_POSITION );
+			EffectPack item = (EffectPack) parent.getAdapter().getItem( mListFirstValidPosition );
 			if ( null != item && item.size > 0 ) {
-				renderEffect( item, FIRST_POSITION );
+				renderEffect( item, mListFirstValidPosition );
 			} else {
 				return;
 			}
@@ -1350,10 +1255,9 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 
 					@Override
 					public void run() {
-						mHList.setSelectedPosition( FIRST_POSITION, false );
-
+						mHList.setSelectedPosition( mListFirstValidPosition, false );
 					}
-				}, 200 );
+				}, 100 );
 			}
 		}
 	}
@@ -1366,7 +1270,8 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 		SoftReference<ImageCacheService> cacheServiceRef;
 		SoftReference<Resources> resourcesRef;
 
-		public ExternalFramesThumbnailCallable( final String uri, ImageCacheService cacheService, final BitmapDrawable folderBackground, Resources resources, final int fallbackResId ) {
+		public ExternalFramesThumbnailCallable ( final String uri, ImageCacheService cacheService,
+				final BitmapDrawable folderBackground, Resources resources, final int fallbackResId ) {
 			mUri = uri;
 			mFallbackResId = fallbackResId;
 			cacheServiceRef = new SoftReference<ImageCacheService>( cacheService );
@@ -1404,7 +1309,8 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 				if ( null != resourcesRef.get() ) {
 					try {
 						bitmap = BitmapFactory.decodeResource( resourcesRef.get(), mFallbackResId );
-					} catch ( Throwable t ) {}
+					} catch ( Throwable t ) {
+					}
 				}
 			}
 
@@ -1426,37 +1332,34 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 		}
 	}
 
-	/**
-	 * Downloads and renders the sticker thumbnail
-	 * 
-	 * @author alessandro
-	 * 
-	 */
 	static class BorderThumbnailCallable implements Callable<Bitmap> {
 
 		InternalPlugin mPlugin;
+		Bitmap mBitmap;
 		int mFinalSize;
 		String mUrl;
 		SoftReference<ImageCacheService> cacheRef;
 
-		public BorderThumbnailCallable( ImageCacheService cacheService, final InternalPlugin plugin, final String srcUrl, final int size ) {
-			mPlugin = plugin;
+		public BorderThumbnailCallable ( ImageCacheService cacheService, final InternalPlugin plugin, final String srcUrl, final Bitmap bitmap,
+				final int size ) {
 			mFinalSize = size;
 			mUrl = srcUrl;
+			mPlugin = plugin;
 			cacheRef = new SoftReference<ImageCacheService>( cacheService );
+			mBitmap = bitmap;
 		}
 
 		@Override
 		public Bitmap call() throws Exception {
 
 			ImageCacheService cache = cacheRef.get();
-			Bitmap bitmap;
+			Bitmap bitmap = mBitmap;
 
 			if ( null != cache ) {
 				bitmap = cache.getBitmap( mPlugin.getType() + "-" + mUrl, mThumbnailOptions );
 				if ( null != bitmap ) return bitmap;
 			}
-
+			
 			try {
 				bitmap = ImageLoader.getPluginItemBitmap( mPlugin, mUrl, null, mFinalSize, mFinalSize );
 			} catch ( Exception e ) {
@@ -1464,21 +1367,43 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 			}
 
 			if ( null != bitmap ) {
-				NativeFilter filter = new NativeFilter( "undefined" );
-				actionsForRoundedThumbnail( true, filter );
-				Bitmap result = filter.execute( bitmap, null, 1, 1 );
-
-				bitmap.recycle();
-				bitmap = result;
+				MoaActionList actions = actionsForRoundedThumbnail( true, null );
+				
+				MoaResult mResult = NativeFilterProxy.prepareActions( actions, bitmap, null, 1, 1 );
+				mResult.execute();
+				bitmap = mResult.outputBitmap;
+				
+				//bitmap.recycle();
 
 				if ( null != bitmap && null != cache ) {
-					cache.putBitmap( mPlugin.getType() + "-" + mUrl, bitmap );
+					cache.putBitmap( FeatherIntent.PluginType.TYPE_BORDER + "-" + mUrl, bitmap );
 				}
 				return bitmap;
 			}
 
 			return null;
 		}
+		
+		MoaActionList actionsForRoundedThumbnail( final boolean isValid, INativeFilter filter ) {
+			
+			MoaActionList actions = MoaActionFactory.actionList();
+			if ( null != filter ) {
+				actions.addAll( filter.getActions() );
+			}
+
+			MoaAction action = MoaActionFactory.action( "ext-roundedborders" );
+			action.setValue( "padding", 0 );
+			action.setValue( "roundPx", 0 );
+			action.setValue( "strokeColor", 0xff000000 );
+			action.setValue( "strokeWeight", 1 );
+
+			if ( !isValid ) {
+				action.setValue( "overlaycolor", 0x99000000 );
+			}
+			
+			actions.add( action );
+			return actions;
+		}		
 	}
 
 	protected CharSequence[] getOptionalEffectsValues() {
@@ -1486,24 +1411,24 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 	}
 
 	protected CharSequence[] getOptionalEffectsLabels() {
-		return new CharSequence[] { "Original" };
+		return new CharSequence[] { mConfigService.getString( R.string.feather_original ) };
 	}
 
 	/**
 	 * Install all the
 	 * 
 	 * @author alessandro
-	 * 
 	 */
 	class PluginInstallTask extends AsyncTask<Integer, Void, List<EffectPack>> {
 
 		List<EffectPackError> mErrors;
 		private int mInstalledCount = 0;
+		private int mExternalCount = 0;
+		private int mFirstValidIndex = -1;
 
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
-
 			mErrors = Collections.synchronizedList( new ArrayList<EffectPackError>() );
 			mImageManager.clearCache();
 		}
@@ -1513,11 +1438,11 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 
 			// List of installed plugins available on the device
 			final int pluginType = params[0];
-			long sharedUpdateTime = 0, lastUpdateTime = 0;
 			FeatherInternalPack installedPacks[];
 			FeatherPack availablePacks[];
 
 			if ( mExternalPacksEnabled ) {
+				int count = 0;
 
 				while ( !mPluginService.isUpdated() ) {
 					try {
@@ -1525,41 +1450,82 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 					} catch ( InterruptedException e ) {
 						e.printStackTrace();
 					}
-					mLogger.log( "waiting for plugin service..." );
+					mLogger.log( "waiting for plugin service" );
 				}
 
+				// if the external packs are not available
+				// then wait for maximum 500ms
+				count = 0;
+				while ( !mPluginService.isExternalUpdated() ) {
+					count++;
+					SystemUtils.trySleep( 10 );
+					if ( count > 50 ) {
+						break;
+					}
+				}
 				installedPacks = mPluginService.getInstalled( getContext().getBaseContext(), pluginType );
 				availablePacks = mPluginService.getAvailable( pluginType );
 			} else {
-				if ( pluginType == FeatherIntent.PluginType.TYPE_FILTER )
+				// external packs are not enabled, so just return the default ones
+				if ( pluginType == FeatherIntent.PluginType.TYPE_FILTER ) {
 					installedPacks = new FeatherInternalPack[] { FeatherInternalPack.getDefault( getContext().getBaseContext() ) };
-				else
+				} else {
 					installedPacks = new FeatherInternalPack[] {};
+				}
 				availablePacks = new FeatherExternalPack[] {};
 			}
 
+			// number of installed packs
 			mInstalledCount = 0;
-
-			if ( null != mPreferenceService && mExternalPacksEnabled ) sharedUpdateTime = mPreferenceService.getLong( this.getClass().getName() + "-plugins-update-date", 0 );
-
-			if ( null != mPluginService ) lastUpdateTime = mPluginService.getLastUpdateTime();
-
-			// List of the available plugins online
-			mAvailablePacks = availablePacks.length;
+			
+			// number of external available items ( get more included )
+			mExternalCount = 0;
 
 			List<EffectPack> result = Collections.synchronizedList( new ArrayList<EffectPack>() );
 			mInstalledPackages.clear();
 
+			// left "get more"
 			if ( mExternalPacksEnabled ) {
 				if ( mPluginType == FeatherIntent.PluginType.TYPE_BORDER ) {
-					mShowFirstGetMore = !( ( installedPacks.length == 0 && availablePacks.length == 1 ) || ( installedPacks.length == 1 && availablePacks.length == 0 ) );
+					mShowGetMoreView = !( ( installedPacks.length == 0 && availablePacks.length == 1 ) || ( installedPacks.length == 1 && availablePacks.length == 0 ) );
 				}
-				if ( mShowFirstGetMore ) 
-					result.add( null );
+				
+				if ( mShowGetMoreView ) {
+					mExternalCount++;
+					result.add( new EffectPack( EffectPack.EffectPackType.GET_MORE ) );
+				}
 			}
-
-			int index = 0;
 			
+			int index = 0;
+			int pack_index = 0;
+			
+			// featured external packs
+			if ( mExternalPacksEnabled ) {
+				int size = Math.min( mFeaturedCount, availablePacks.length );
+				if( size > 0 ) {
+					for( int i = size - 1; i >= 0; i-- ) {
+						FeatherPack pack = availablePacks[i];
+						ExternalPlugin plugin = (ExternalPlugin) PluginFactory.create( getContext().getBaseContext(), pack, mPluginType );
+						final CharSequence packagename = plugin.getPackageName();
+						final CharSequence label = plugin.getPackageLabel();
+						final EffectPack effectPack = new EffectPack( EffectPack.EffectPackType.EXTERNAL, packagename, label, null, null, PluginService.ERROR_NONE, null, plugin );
+						result.add( effectPack );
+						mExternalCount++;
+						index++;
+						
+					}
+				}
+			}
+			
+			if( mExternalCount > 0 ) {
+				result.add( new EffectPack( EffectPack.EffectPackType.RIGHT_DIVIDER ) );
+			}
+			
+			if( !isActive() ) return result;
+
+			index = 0;
+			
+			// device installed packs
 			for ( FeatherPack pack : installedPacks ) {
 				if ( pack instanceof FeatherInternalPack ) {
 					InternalPlugin plugin = (InternalPlugin) PluginFactory.create( getContext().getBaseContext(), pack, mPluginType );
@@ -1568,25 +1534,25 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 
 					int status = PluginService.ERROR_NONE;
 					String errorMessage = null;
-					
+
 					List<Pair<String, String>> pluginItems = null;
 					List<Long> pluginIds = null;
-					
+
 					// install process
 					if ( plugin.installed() ) { // ok, the plugin is on the device
 						mLogger.info( "**** " + packagename + " ****" );
-						if( plugin instanceof ICDSPlugin ) {
+						if ( plugin instanceof ICDSPlugin ) {
 							try {
-								if( !( (ICDSPlugin) plugin ).installAndLoad( getContext().getBaseContext(), mPluginService ) ) {
+								if ( !( (ICDSPlugin) plugin ).installAndLoad( getContext().getBaseContext(), mPluginService ) ) {
 									status = PluginService.ERROR_INSTALL;
 								} else {
 									status = PluginService.ERROR_NONE;
 								}
-							} catch( PluginException e ) {
+							} catch ( PluginException e ) {
 								e.printStackTrace();
 								status = e.getErrorCode();
 								errorMessage = e.getMessage();
-							} catch( Throwable t ) {
+							} catch ( Throwable t ) {
 								t.printStackTrace();
 								status = PluginService.ERROR_UNKNOWN;
 								errorMessage = t.getMessage();
@@ -1597,16 +1563,16 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 						errorMessage = "Plugin not installed";
 					}
 
+					// Some errors loading the plugin!
 					if ( status != PluginService.ERROR_NONE ) {
-						// Some errors loading the plugin!
 
 						// if the plugin is not the default one then display the error
-						if( !getContext().getBaseContext().getPackageName().equals( plugin.getPackageName() ) ) {
-							pluginItems = new ArrayList<Pair<String,String>>();
+						if ( !getContext().getBaseContext().getPackageName().equals( plugin.getPackageName() ) ) {
+							pluginItems = new ArrayList<Pair<String, String>>();
 							pluginItems.add( Pair.create( "-1", (String) plugin.getPackageLabel() ) );
 							pluginIds = new ArrayList<Long>();
 							pluginIds.add( -1L );
-							
+
 							EffectPackError error = new EffectPackError( packagename, label, status, errorMessage );
 							mErrors.add( error );
 						}
@@ -1618,75 +1584,47 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 							CharSequence[] f = getOptionalEffectsValues();
 							CharSequence[] n = getOptionalEffectsLabels();
 							if ( null != f && null != n && f.length == n.length ) {
-								
-								for( int i = 0; i < f.length; i++ ) {
+
+								for ( int i = 0; i < f.length; i++ ) {
 									pluginItems.add( 0, Pair.create( (String) f[i], (String) n[i] ) );
-									if( null != pluginIds ) pluginIds.add( 0, -1L );
+									if ( null != pluginIds ) pluginIds.add( 0, -1L );
 								}
 							}
 						}
 						mInstalledCount++;
 					}
 
-					if( null != pluginItems && null != pluginIds ) {
-						final EffectPack effectPack = new EffectPack( packagename, label, pluginItems, pluginIds, status, errorMessage, plugin, false );
+					if ( null != pluginItems && null != pluginIds ) {
+						final EffectPack effectPack = new EffectPack( EffectPack.EffectPackType.INTERNAL, packagename, label, pluginItems, pluginIds, status, errorMessage, plugin );
 						mInstalledPackages.add( packagename.toString() );
-						
-						if( result.size() > 0 && result.get( result.size() - 1 ) != null ) {
+
+						if ( pack_index > 0 ) {
 							// first add the label item
-							result.add( new EffectPack( label.toString() ) );
+							result.add( new EffectPack( EffectPack.EffectPackType.PACK_DIVIDER, label.toString() ) );
 						}
-						
+
 						// then add the item pack
 						result.add( effectPack );
-					}
-
-					index++;
-				}
-			}
-
-			if ( mExternalPacksEnabled ) {
-
-				if ( availablePacks.length > 0 && mInstalledCount > 0 ) {
-					// "featured" divider
-					result.add( new EffectPack( mFeaturedDefaultTitle ) );
-				}
-
-				index = 0;
-				for ( FeatherPack pack : availablePacks ) {
-					if ( index >= mFeaturedCount ) break;
-					ExternalPlugin plugin = (ExternalPlugin) PluginFactory.create( getContext().getBaseContext(), pack, mPluginType );
-					final CharSequence packagename = plugin.getPackageName();
-					final CharSequence label = plugin.getPackageLabel();
-
-					final EffectPack effectPack = new EffectPack( packagename, label, null, null, PluginService.ERROR_NONE, null, plugin, true );
-
-					if ( isActive() ) {
-						result.add( effectPack );
+						
+						if( status == PluginService.ERROR_NONE && mFirstValidIndex == -1 ) {
+							mFirstValidIndex = result.size() - 1;
+						}
+						pack_index++;
 					}
 					index++;
 				}
+				
+				// just a check...
+				if( !isActive() ) break;
 			}
 
+
+			// right "get more"
 			if ( mInstalledPackages != null && mInstalledCount > 0 ) {
-
-				if ( mExternalPacksEnabled && mShowFirstGetMore ) {
-					result.add( null );
+				if ( mExternalPacksEnabled && mShowGetMoreView ) {
+					result.add( new EffectPack( EffectPack.EffectPackType.LEFT_DIVIDER ) );
+					result.add( new EffectPack( EffectPack.EffectPackType.GET_MORE ) );
 				}
-			}
-
-			if ( mExternalPacksEnabled ) {
-				if ( sharedUpdateTime != lastUpdateTime ) {
-					mLogger.log( "lastUpdateTime: " + lastUpdateTime + " != sharedUpdateTime: " + sharedUpdateTime );
-					if ( mPreferenceService != null ) mPreferenceService.putLong( this.getClass().getName() + "-plugins-update-date", lastUpdateTime );
-					mShowIapNotificationAndValue = mAvailablePacks > 0;
-				} else {
-					mShowIapNotificationAndValue = false;
-				}
-			}
-			
-			if ( mInstalledCount == 0 ) {
-				mEnableEffectAnimation = false;
 			}
 
 			return result;
@@ -1696,26 +1634,30 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 		protected void onPostExecute( List<EffectPack> result ) {
 			super.onPostExecute( result );
 
-			onEffectListUpdated( result, mErrors, mInstalledCount );
+			onEffectListUpdated( result, mErrors, mInstalledCount, mExternalCount, mFirstValidIndex );
 			mIsAnimating = false;
 		}
 	}
-	
+
 	protected List<Pair<String, String>> loadPluginItems( InternalPlugin plugin ) {
-		List<Pair<String, String>> result = new ArrayList<Pair<String,String>>();
-		if( plugin instanceof FramePlugin ) {
-			String[] items = ((FramePlugin) plugin).listBorders();
-			for( int i = 0; i < items.length; i++ ) {
+		List<Pair<String, String>> result = new ArrayList<Pair<String, String>>();
+		if ( plugin instanceof FramePlugin ) {
+			String[] items = ( (FramePlugin) plugin ).listBorders();
+			for ( int i = 0; i < items.length; i++ ) {
 				String label = (String) plugin.getResourceLabel( items[i] );
 				result.add( Pair.create( items[i], label ) );
 			}
 		}
 		return result;
 	}
-	
+
 	protected List<Long> loadPluginIds( InternalPlugin plugin ) {
-		if( plugin instanceof FramePlugin ) {
-			return new ArrayList<Long>( ((FramePlugin)plugin).size() );
+		if ( plugin instanceof FramePlugin ) {
+			int size = ( (FramePlugin) plugin ).size();
+			List<Long> result = new ArrayList<Long>( size );
+			for( int i = 0; i < size; i++ ) {
+				result.add( (long) i );
+			}
 		}
 		return new ArrayList<Long>();
 	}
@@ -1727,7 +1669,7 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 		int mError;
 		String mErrorMessage;
 
-		public EffectPackError( CharSequence packagename, CharSequence label, int error, String errorString ) {
+		public EffectPackError ( CharSequence packagename, CharSequence label, int error, String errorString ) {
 			mPackageName = packagename;
 			mLabel = label;
 			mError = error;
@@ -1736,6 +1678,10 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 	}
 
 	static class EffectPack {
+		
+		static enum EffectPackType {
+			INTERNAL, EXTERNAL, PACK_DIVIDER, LEFT_DIVIDER, RIGHT_DIVIDER, GET_MORE
+		};
 
 		CharSequence mPackageName;
 		List<Pair<String, String>> mValues;
@@ -1746,23 +1692,26 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 		IPlugin mPluginRef;
 		int size = 0;
 		int index = 0;
-		boolean isExternal;
-		boolean isDivider;
-
-		public EffectPack( final String label ) {
-			isDivider = true;
+		EffectPackType mType;
+		
+		public EffectPack( EffectPackType type ) {
+			mType = type;
 			size = 1;
 			mStatus = PluginService.ERROR_NONE;
+		}
+
+		public EffectPack ( EffectPackType type, final String label ) {
+			this( type );
 			mTitle = label;
 		}
 
-		public EffectPack( CharSequence packageName, CharSequence pakageTitle, List<Pair<String, String>> values, List<Long> ids, int status, String errorMsg, IPlugin plugin, boolean external ) {
+		public EffectPack ( EffectPackType type, CharSequence packageName, CharSequence pakageTitle, List<Pair<String, String>> values, List<Long> ids,
+				int status, String errorMsg, IPlugin plugin ) {
+			this( type );
 			mPackageName = packageName;
 			mStatus = status;
 			mTitle = pakageTitle;
 			mPluginRef = plugin;
-			isExternal = external;
-			isDivider = false;
 			mValues = values;
 			mIds = ids;
 			mError = errorMsg;
@@ -1787,12 +1736,11 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 		}
 
 		public CharSequence getItemAt( int position ) {
-			return mValues.get(position - index).first;
+			return mValues.get( position - index ).first;
 		}
-		
+
 		public long getItemIdAt( int position ) {
-			if( null != mIds )
-				return mIds.get( position - index );
+			if ( null != mIds ) return mIds.get( position - index );
 			return -1;
 		}
 
@@ -1826,7 +1774,7 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 		 * 
 		 * @param tag
 		 */
-		public RenderTask( final int position ) {
+		public RenderTask ( final int position ) {
 			mPosition = position;
 		}
 
@@ -1838,10 +1786,10 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 
 		private INativeFilter initFilter( EffectPack pack, int position, String label ) {
 			final INativeFilter filter;
-			
+
 			try {
 				filter = loadNativeFilter( pack, position, label, true );
-			} catch( Throwable t ) {
+			} catch ( Throwable t ) {
 				t.printStackTrace();
 				return null;
 			}
@@ -1889,9 +1837,10 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 			if ( isCancelled() ) return null;
 
 			final EffectPack pack = params[0];
-			mRenderedEffect = (String) pack.getLabelAt( mPosition );
+			// mRenderedEffect = (String) pack.getLabelAt( mPosition );
+			mRenderedEffect = (String) pack.getItemAt( mPosition );
 			mRenderedPackName = (String) pack.mPackageName;
-			
+
 			final String mEffect = (String) pack.getItemAt( mPosition );
 			INativeFilter filter = initFilter( pack, mPosition, mEffect );
 			if ( null != filter ) {
@@ -1915,8 +1864,6 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 				exception.printStackTrace();
 				return null;
 			}
-
-			mLogger.log( "	complete. isCancelled? " + isCancelled(), mEffect );
 
 			if ( !isCancelled() ) {
 				return mMoaMainExecutor.outputBitmap;
@@ -1960,6 +1907,13 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 			} else {
 				onApplyNewBitmap( result );
 				setIsChanged( true );
+				
+				if( null != mRenderedEffect && null != mRenderedPackName ) {
+					HashMap<String, String> attrs = new HashMap<String, String>();
+					attrs.put( "Pack", mRenderedPackName );
+					attrs.put( "Effect", mRenderedEffect );
+					Tracker.recordTag( "EffectPreview: selected", attrs );
+				}
 			}
 
 			onProgressEnd();
@@ -2002,7 +1956,8 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 	}
 
 	/**
-	 * Used to generate the Bitmap result. If user clicks on the "Apply" button when an effect is still rendering, then starts this
+	 * Used to generate the Bitmap result. If user clicks on the "Apply" button when an
+	 * effect is still rendering, then starts this
 	 * task.
 	 */
 	class GenerateResultTask extends AsyncTask<Void, Void, Void> {
@@ -2013,7 +1968,7 @@ public class BordersPanel extends AbstractContentPanel implements ViewFactory, O
 		protected void onPreExecute() {
 			super.onPreExecute();
 			mProgress.setTitle( getContext().getBaseContext().getString( R.string.feather_loading_title ) );
-			mProgress.setMessage( getContext().getBaseContext().getString( R.string.effect_loading_message ) );
+			mProgress.setMessage( getContext().getBaseContext().getString( R.string.feather_effect_loading_message ) );
 			mProgress.setIndeterminate( true );
 			mProgress.setCancelable( false );
 			mProgress.show();

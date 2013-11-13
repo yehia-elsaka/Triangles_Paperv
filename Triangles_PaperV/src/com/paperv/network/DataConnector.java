@@ -26,17 +26,17 @@ import org.apache.http.protocol.HttpContext;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Log;
+
+import com.paperv.core.CacheManager;
 import com.paperv.models.Comment;
 import com.paperv.models.Friend;
 import com.paperv.models.LikeStory;
 import com.paperv.models.NotificationItem;
 import com.paperv.models.PhotoItem;
 import com.paperv.models.Story;
-import com.paperv.tabs_utils.GlobalState;
-
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.util.Log;
 
 public class DataConnector {
 
@@ -46,7 +46,7 @@ public class DataConnector {
 	private static DataConnector instance = new DataConnector();
 	private String API_URL = "http://paperv.com/webservice/";
 
-	GlobalState globalState = GlobalState.getInstance();
+	CacheManager globalState = CacheManager.getInstance();
 
 	public static DataConnector getInstance() {
 		return instance;

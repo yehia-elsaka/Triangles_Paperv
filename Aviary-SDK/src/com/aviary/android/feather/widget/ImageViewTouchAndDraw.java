@@ -11,44 +11,20 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 
-// TODO: Auto-generated Javadoc
-/**
- * The Class ImageViewTouchAndDraw.
- */
 public class ImageViewTouchAndDraw extends ImageViewTouch {
 
-	/**
-	 * The Enum TouchMode.
-	 */
 	public static enum TouchMode {
-
-		/** The IMAGE. */
-		IMAGE,
-		/** The DRAW. */
-		DRAW
+		IMAGE, DRAW
 	};
 
-	/**
-	 * The listener interface for receiving onDrawStart events. The class that is interested in processing a onDrawStart event
-	 * implements this interface, and the object created with that class is registered with a component using the component's
-	 * <code>addOnDrawStartListener<code> method. When
-	 * the onDrawStart event occurs, that object's appropriate
-	 * method is invoked.
-	 * 
-	 * @see OnDrawStartEvent
-	 */
 	public static interface OnDrawStartListener {
-
-		/**
-		 * On draw start.
-		 */
 		void onDrawStart();
 	};
 
 	public static interface OnDrawPathListener {
-
 		void onStart();
 
 		void onMoveTo( float x, float y );
@@ -60,56 +36,36 @@ public class ImageViewTouchAndDraw extends ImageViewTouch {
 		void onEnd();
 	}
 
-	/** The m paint. */
 	protected Paint mPaint;
 
-	/** The tmp path. */
 	protected Path tmpPath = new Path();
 
-	/** The m canvas. */
 	protected Canvas mCanvas;
 
-	/** The m touch mode. */
 	protected TouchMode mTouchMode = TouchMode.DRAW;
 
-	/** The m y. */
 	protected float mX, mY;
 
-	/** The m identity matrix. */
 	protected Matrix mIdentityMatrix = new Matrix();
 
-	/** The m inverted matrix. */
 	protected Matrix mInvertedMatrix = new Matrix();
 
-	/** The m copy. */
 	protected Bitmap mCopy;
 
-	/** The Constant TOUCH_TOLERANCE. */
 	protected static final float TOUCH_TOLERANCE = 4;
 
-	/** The m draw listener. */
 	private OnDrawStartListener mDrawListener;
 
 	private OnDrawPathListener mDrawPathListener;
 
-	/**
-	 * Instantiates a new image view touch and draw.
-	 * 
-	 * @param context
-	 *           the context
-	 * @param attrs
-	 *           the attrs
-	 */
-	public ImageViewTouchAndDraw( Context context, AttributeSet attrs ) {
-		super( context, attrs );
+	public ImageViewTouchAndDraw ( Context context, AttributeSet attrs ) {
+		this( context, attrs, 0 );
 	}
 
-	/**
-	 * Sets the on draw start listener.
-	 * 
-	 * @param listener
-	 *           the new on draw start listener
-	 */
+	public ImageViewTouchAndDraw ( Context context, AttributeSet attrs, int defStyle ) {
+		super( context, attrs, defStyle );
+	}
+
 	public void setOnDrawStartListener( OnDrawStartListener listener ) {
 		mDrawListener = listener;
 	}
@@ -118,16 +74,13 @@ public class ImageViewTouchAndDraw extends ImageViewTouch {
 		mDrawPathListener = listener;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see it.sephiroth.android.library.imagezoom.ImageViewTouch#init()
-	 */
 	@Override
-	protected void init() {
-		super.init();
-		mPaint = new Paint( Paint.ANTI_ALIAS_FLAG );
-		mPaint.setDither( true );
+	protected void init( Context context, AttributeSet attrs, int defStyle ) {
+		super.init( context, attrs, defStyle );
+
+		Log.i( LOG_TAG, "init, paint: " + mPaint );
+
+		mPaint = new Paint( Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG );
 		mPaint.setFilterBitmap( false );
 		mPaint.setColor( 0xFFFF0000 );
 		mPaint.setStyle( Paint.Style.STROKE );
@@ -138,21 +91,10 @@ public class ImageViewTouchAndDraw extends ImageViewTouch {
 		tmpPath = new Path();
 	}
 
-	/**
-	 * Gets the draw mode.
-	 * 
-	 * @return the draw mode
-	 */
 	public TouchMode getDrawMode() {
 		return mTouchMode;
 	}
 
-	/**
-	 * Sets the draw mode.
-	 * 
-	 * @param mode
-	 *           the new draw mode
-	 */
 	public void setDrawMode( TouchMode mode ) {
 		if ( mode != mTouchMode ) {
 			mTouchMode = mode;
@@ -160,9 +102,6 @@ public class ImageViewTouchAndDraw extends ImageViewTouch {
 		}
 	}
 
-	/**
-	 * On draw mode changed.
-	 */
 	protected void onDrawModeChanged() {
 		if ( mTouchMode == TouchMode.DRAW ) {
 
@@ -176,39 +115,29 @@ public class ImageViewTouchAndDraw extends ImageViewTouch {
 			mInvertedMatrix.postTranslate( -v1[Matrix.MTRANS_X], -v1[Matrix.MTRANS_Y] );
 			mInvertedMatrix.postScale( v2[Matrix.MSCALE_X], v2[Matrix.MSCALE_Y] );
 			mCanvas.setMatrix( mInvertedMatrix );
+
+			Log.d( LOG_TAG, "scale: " + getScale( mInvertedMatrix ) );
 		}
 	}
-	
+
+	public float getDrawingScale() {
+		return getScale( mInvertedMatrix );
+	}
+
 	@Override
 	protected void onLayoutChanged( int left, int top, int right, int bottom ) {
 		super.onLayoutChanged( left, top, right, bottom );
 		onDrawModeChanged();
 	}
 
-	/**
-	 * Gets the paint.
-	 * 
-	 * @return the paint
-	 */
 	public Paint getPaint() {
 		return mPaint;
 	}
 
-	/**
-	 * Sets the paint.
-	 * 
-	 * @param paint
-	 *           the new paint
-	 */
 	public void setPaint( Paint paint ) {
 		mPaint.set( paint );
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see android.widget.ImageView#onDraw(android.graphics.Canvas)
-	 */
 	@Override
 	protected void onDraw( Canvas canvas ) {
 		super.onDraw( canvas );
@@ -224,15 +153,15 @@ public class ImageViewTouchAndDraw extends ImageViewTouch {
 	}
 
 	/**
-	 * Commit the changes.
+	 * Commit the current changes to the passed {@link Bitmap}.<br />
+	 * Call this method when you want to save the current status of the drawing operations
+	 * to an output bitmap.
 	 * 
-	 * @param canvas the canvas used to draw the final bitmap
+	 * @param canvas
 	 */
 	public void commit( Canvas canvas ) {
-		
 		Drawable drawable = getDrawable();
-		
-		if( null != drawable && drawable instanceof IBitmapDrawable ) {
+		if ( null != drawable && drawable instanceof IBitmapDrawable ) {
 			canvas.drawBitmap( ( (IBitmapDrawable) drawable ).getBitmap(), new Matrix(), null );
 			canvas.drawBitmap( mCopy, new Matrix(), null );
 		}
@@ -302,33 +231,18 @@ public class ImageViewTouchAndDraw extends ImageViewTouch {
 
 	private void touch_up() {
 
-		// mCanvas.drawPath( tmpPath, mPaint );
-
 		tmpPath.reset();
-
 		if ( mDrawPathListener != null ) {
 			mDrawPathListener.onEnd();
 		}
 	}
 
-	/**
-	 * Gets the matrix values.
-	 * 
-	 * @param m
-	 *           the m
-	 * @return the matrix values
-	 */
 	public static float[] getMatrixValues( Matrix m ) {
 		float[] values = new float[9];
 		m.getValues( values );
 		return values;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see it.sephiroth.android.library.imagezoom.ImageViewTouch#onTouchEvent(android.view.MotionEvent)
-	 */
 	@Override
 	public boolean onTouchEvent( MotionEvent event ) {
 		if ( mTouchMode == TouchMode.DRAW && event.getPointerCount() == 1 ) {
@@ -351,20 +265,12 @@ public class ImageViewTouchAndDraw extends ImageViewTouch {
 			}
 			return true;
 		} else {
-			if ( mTouchMode == TouchMode.IMAGE )
-				return super.onTouchEvent( event );
-			else
-				return false;
+			if ( mTouchMode == TouchMode.IMAGE ) return super.onTouchEvent( event );
+			else return false;
 		}
 	}
 
-	/**
-	 * Gets the overlay bitmap.
-	 * 
-	 * @return the overlay bitmap
-	 */
 	public Bitmap getOverlayBitmap() {
 		return mCopy;
 	}
-
 }

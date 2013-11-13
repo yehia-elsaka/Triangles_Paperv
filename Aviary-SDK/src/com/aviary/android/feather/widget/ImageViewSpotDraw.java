@@ -15,119 +15,51 @@ import android.view.MotionEvent;
 
 public class ImageViewSpotDraw extends ImageViewTouch {
 
-	/**
-	 * The Enum TouchMode.
-	 */
 	public static enum TouchMode {
-
-		/** The IMAGE. */
+		// mode for pan and zoom
 		IMAGE,
-		/** The DRAW. */
+		// mode for drawing
 		DRAW
 	};
 
-	/**
-	 * The listener interface for receiving onDraw events. The class that is interested in processing a onDraw event implements this
-	 * interface, and the object created with that class is registered with a component using the component's
-	 * <code>addOnDrawListener<code> method. When
-	 * the onDraw event occurs, that object's appropriate
-	 * method is invoked.
-	 * 
-	 * @see OnDrawEvent
-	 */
 	public static interface OnDrawListener {
-
-		/**
-		 * On draw start.
-		 * 
-		 * @param points
-		 *           the points
-		 * @param radius
-		 *           the radius
-		 */
 		void onDrawStart( float points[], int radius );
 
-		/**
-		 * On drawing.
-		 * 
-		 * @param points
-		 *           the points
-		 * @param radius
-		 *           the radius
-		 */
 		void onDrawing( float points[], int radius );
 
-		/**
-		 * On draw end.
-		 */
 		void onDrawEnd();
 	};
-	
+
 	protected boolean mPaintEnabled = true;
-
-	/** The m paint. */
 	protected Paint mPaint;
-
-	/** The m current scale. */
 	protected float mCurrentScale = 1;
-
-	/** The m brush size. */
 	protected float mBrushSize = 30;
-
-	/** The tmp path. */
 	protected Path tmpPath = new Path();
-
-	/** The m canvas. */
 	protected Canvas mCanvas;
-
-	/** The m touch mode. */
 	protected TouchMode mTouchMode = TouchMode.DRAW;
-
-	/** The m y. */
 	protected float mX, mY;
-
 	protected float mStartX, mStartY;
-
-	/** The m identity matrix. */
 	protected Matrix mIdentityMatrix = new Matrix();
-
-	/** The m inverted matrix. */
 	protected Matrix mInvertedMatrix = new Matrix();
-
-	/** The Constant TOUCH_TOLERANCE. */
 	protected static final float TOUCH_TOLERANCE = 2;
-
-	/** The m draw listener. */
 	private OnDrawListener mDrawListener;
-
-	/** draw restriction **/
 	private double mRestiction = 0;
 
-	/**
-	 * Instantiates a new image view spot draw.
-	 * 
-	 * @param context
-	 *           the context
-	 * @param attrs
-	 *           the attrs
-	 */
-	public ImageViewSpotDraw( Context context, AttributeSet attrs ) {
-		super( context, attrs );
+	public ImageViewSpotDraw ( Context context, AttributeSet attrs ) {
+		this( context, attrs, 0 );
 	}
 
-	/**
-	 * Sets the on draw start listener.
-	 * 
-	 * @param listener
-	 *           the new on draw start listener
-	 */
+	public ImageViewSpotDraw ( Context context, AttributeSet attrs, int defStyle ) {
+		super( context, attrs, defStyle );
+	}
+
 	public void setOnDrawStartListener( OnDrawListener listener ) {
 		mDrawListener = listener;
 	}
 
 	@Override
-	protected void init() {
-		super.init();
+	protected void init( Context context, AttributeSet attrs, int defStyle ) {
+		super.init( context, attrs, defStyle );
 		mPaint = new Paint( Paint.ANTI_ALIAS_FLAG );
 		mPaint.setFilterBitmap( false );
 		mPaint.setDither( true );
@@ -141,12 +73,6 @@ public class ImageViewSpotDraw extends ImageViewTouch {
 		mRestiction = value;
 	}
 
-	/**
-	 * Sets the brush size.
-	 * 
-	 * @param value
-	 *           the new brush size
-	 */
 	public void setBrushSize( float value ) {
 		mBrushSize = value;
 
@@ -155,21 +81,10 @@ public class ImageViewSpotDraw extends ImageViewTouch {
 		}
 	}
 
-	/**
-	 * Gets the draw mode.
-	 * 
-	 * @return the draw mode
-	 */
 	public TouchMode getDrawMode() {
 		return mTouchMode;
 	}
 
-	/**
-	 * Sets the draw mode.
-	 * 
-	 * @param mode
-	 *           the new draw mode
-	 */
 	public void setDrawMode( TouchMode mode ) {
 		if ( mode != mTouchMode ) {
 			mTouchMode = mode;
@@ -177,9 +92,6 @@ public class ImageViewSpotDraw extends ImageViewTouch {
 		}
 	}
 
-	/**
-	 * On draw mode changed.
-	 */
 	protected void onDrawModeChanged() {
 		if ( mTouchMode == TouchMode.DRAW ) {
 			Log.i( LOG_TAG, "onDrawModeChanged" );
@@ -201,29 +113,14 @@ public class ImageViewSpotDraw extends ImageViewTouch {
 		}
 	}
 
-	/**
-	 * Gets the paint.
-	 * 
-	 * @return the paint
-	 */
 	public Paint getPaint() {
 		return mPaint;
 	}
 
-	/**
-	 * Sets the paint.
-	 * 
-	 * @param paint
-	 *           the new paint
-	 */
 	public void setPaint( Paint paint ) {
 		mPaint.set( paint );
 	}
-	
-	/**
-	 * Toggle the paint visibility
-	 * @param enabled
-	 */
+
 	public void setPaintEnabled( boolean enabled ) {
 		mPaintEnabled = enabled;
 	}
@@ -231,9 +128,8 @@ public class ImageViewSpotDraw extends ImageViewTouch {
 	@Override
 	protected void onDraw( Canvas canvas ) {
 		super.onDraw( canvas );
-		
-		if( mPaintEnabled )
-			canvas.drawPath( tmpPath, mPaint );
+
+		if ( mPaintEnabled ) canvas.drawPath( tmpPath, mPaint );
 	}
 
 	public RectF getImageRect() {
@@ -254,12 +150,12 @@ public class ImageViewSpotDraw extends ImageViewTouch {
 			onDrawModeChanged();
 		}
 	}
-	
+
 	@Override
 	protected void onLayoutChanged( int left, int top, int right, int bottom ) {
 		super.onLayoutChanged( left, top, right, bottom );
-		
-		if( null != getDrawable() ) {
+
+		if ( null != getDrawable() ) {
 			onDrawModeChanged();
 		}
 	}
@@ -338,9 +234,6 @@ public class ImageViewSpotDraw extends ImageViewTouch {
 		}
 	}
 
-	/**
-	 * Extract the matrix values
-	 */
 	public static float[] getMatrixValues( Matrix m ) {
 		float[] values = new float[9];
 		m.getValues( values );
@@ -369,10 +262,8 @@ public class ImageViewSpotDraw extends ImageViewTouch {
 			}
 			return true;
 		} else {
-			if ( mTouchMode == TouchMode.IMAGE )
-				return super.onTouchEvent( event );
-			else
-				return false;
+			if ( mTouchMode == TouchMode.IMAGE ) return super.onTouchEvent( event );
+			else return false;
 		}
 	}
 }

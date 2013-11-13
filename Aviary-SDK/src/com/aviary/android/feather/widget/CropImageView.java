@@ -5,6 +5,8 @@ import it.sephiroth.android.library.imagezoom.ImageViewTouchBase;
 import it.sephiroth.android.library.imagezoom.graphics.IBitmapDrawable;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.content.res.Resources.Theme;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
@@ -19,79 +21,40 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.ScaleGestureDetector.SimpleOnScaleGestureListener;
 
+import com.aviary.android.feather.R;
 import com.aviary.android.feather.library.graphics.RectD;
 import com.aviary.android.feather.library.utils.UIConfiguration;
 
 public class CropImageView extends ImageViewTouch {
 
-	/**
-	 * The listener interface for receiving onHighlightSingleTapUpConfirmed events. The class that is interested in processing a
-	 * onHighlightSingleTapUpConfirmed event implements this interface, and the object created with that class is registered with a
-	 * component using the component's <code>addOnHighlightSingleTapUpConfirmedListener<code> method. When
-	 * the onHighlightSingleTapUpConfirmed event occurs, that object's appropriate
-	 * method is invoked.
-	 * 
-	 * @see OnHighlightSingleTapUpConfirmedEvent
-	 */
 	public interface OnHighlightSingleTapUpConfirmedListener {
-
-		/**
-		 * On single tap up confirmed.
-		 */
 		void onSingleTapUpConfirmed();
 	}
 
-	/** The Constant GROW. */
 	public static final int GROW = 0;
-
-	/** The Constant SHRINK. */
 	public static final int SHRINK = 1;
-
-	/** The m motion edge. */
 	private int mMotionEdge = HighlightView.GROW_NONE;
-
-	/** The m highlight view. */
 	private HighlightView mHighlightView;
-
-	/** The m highlight single tap up listener. */
 	private OnHighlightSingleTapUpConfirmedListener mHighlightSingleTapUpListener;
-
-	/** The m motion highlight view. */
 	private HighlightView mMotionHighlightView;
-
-	/** The m crop min size. */
 	private int mCropMinSize = 10;
 
 	protected Handler mHandler = new Handler();
+	private int mHighlighStyle;
 
-	/**
-	 * Instantiates a new crop image view.
-	 * 
-	 * @param context
-	 *           the context
-	 * @param attrs
-	 *           the attrs
-	 */
-	public CropImageView( Context context, AttributeSet attrs ) {
-		super( context, attrs );
+	public CropImageView ( Context context, AttributeSet attrs ) {
+		this( context, attrs, R.attr.aviaryCropImageViewStyle );
 	}
 
-	/**
-	 * Sets the on highlight single tap up confirmed listener.
-	 * 
-	 * @param listener
-	 *           the new on highlight single tap up confirmed listener
-	 */
+	public CropImageView ( Context context, AttributeSet attrs, int defStyle ) {
+		super( context, attrs, defStyle );
+	}
+
 	public void setOnHighlightSingleTapUpConfirmedListener( OnHighlightSingleTapUpConfirmedListener listener ) {
 		mHighlightSingleTapUpListener = listener;
 	}
 
-	/**
-	 * Sets the min crop size.
-	 * 
-	 * @param value
-	 *           the new min crop size
-	 */
+	@Deprecated
 	public void setMinCropSize( int value ) {
 		mCropMinSize = value;
 		if ( mHighlightView != null ) {
@@ -100,22 +63,26 @@ public class CropImageView extends ImageViewTouch {
 	}
 
 	@Override
-	protected void init() {
-		super.init();
+	protected void init( Context context, AttributeSet attrs, int defStyle ) {
+		super.init( context, attrs, defStyle );
 		mGestureDetector = null;
 		mGestureListener = null;
 		mScaleListener = null;
-
-		// mScaleDetector = null;
-		// mScaleDetector = new ScaleGestureDetector( getContext(), new CropScaleListener() );
 		mGestureDetector = new GestureDetector( getContext(), new CropGestureListener(), null, true );
 		mGestureDetector.setIsLongpressEnabled( false );
-
-		// mTouchSlop = 20 * 20;
+		
+		Theme theme = context.getTheme();
+		
+		TypedArray array = theme.obtainStyledAttributes( attrs, R.styleable.AviaryCropImageView, defStyle, 0 );
+		mCropMinSize = array.getDimensionPixelSize( R.styleable.AviaryCropImageView_aviary_minCropSize, 50 );
+		mHighlighStyle = array.getResourceId( R.styleable.AviaryCropImageView_aviary_highlightStyle, -1 );
+		
+		array.recycle();
+		
 	}
 
 	@Override
-	public void setImageDrawable(Drawable drawable, Matrix initial_matrix, float min_zoom, float max_zoom) {
+	public void setImageDrawable( Drawable drawable, Matrix initial_matrix, float min_zoom, float max_zoom ) {
 		mMotionHighlightView = null;
 		super.setImageDrawable( drawable, initial_matrix, min_zoom, max_zoom );
 	}
@@ -200,13 +167,7 @@ public class CropImageView extends ImageViewTouch {
 		}
 	}
 
-	/**
-	 * Ensure visible.
-	 * 
-	 * @param hv
-	 *           the hv
-	 */
-	private void ensureVisible( HighlightView hv ) {
+	private boolean ensureVisible( HighlightView hv ) {
 		Rect r = hv.getDrawRect();
 		int panDeltaX1 = Math.max( 0, getLeft() - r.left );
 		int panDeltaX2 = Math.min( 0, getRight() - r.right );
@@ -217,21 +178,28 @@ public class CropImageView extends ImageViewTouch {
 
 		if ( panDeltaX != 0 || panDeltaY != 0 ) {
 			panBy( panDeltaX, panDeltaY );
+			return true;
 		}
+		return false;
 	}
 
 	@Override
 	protected void onDraw( Canvas canvas ) {
 		super.onDraw( canvas );
-		if ( mHighlightView != null ) mHighlightView.draw( canvas );
+		if ( mHighlightView != null ) {
+			mHighlightView.draw( canvas );
+		}
+	}
+	
+	@Override
+	protected void onSizeChanged( int w, int h, int oldw, int oldh ) {
+		super.onSizeChanged( w, h, oldw, oldh );
+		
+		if( null != mHighlightView ) {
+			mHighlightView.onSizeChanged( this, w, h, oldw, oldh );
+		}
 	}
 
-	/**
-	 * Sets the highlight view.
-	 * 
-	 * @param hv
-	 *           the new highlight view
-	 */
 	public void setHighlightView( HighlightView hv ) {
 		if ( mHighlightView != null ) {
 			mHighlightView.dispose();
@@ -242,11 +210,6 @@ public class CropImageView extends ImageViewTouch {
 		invalidate();
 	}
 
-	/**
-	 * Gets the highlight view.
-	 * 
-	 * @return the highlight view
-	 */
 	public HighlightView getHighlightView() {
 		return mHighlightView;
 	}
@@ -261,6 +224,7 @@ public class CropImageView extends ImageViewTouch {
 
 				if ( mHighlightView != null ) {
 					mHighlightView.setMode( HighlightView.Mode.None );
+					postInvalidate();
 				}
 
 				mMotionHighlightView = null;
@@ -272,16 +236,6 @@ public class CropImageView extends ImageViewTouch {
 		return true;
 	}
 
-
-	/**
-	 * The listener interface for receiving cropGesture events. The class that is interested in processing a cropGesture event
-	 * implements this interface, and the object created with that class is registered with a component using the component's
-	 * <code>addCropGestureListener<code> method. When
-	 * the cropGesture event occurs, that object's appropriate
-	 * method is invoked.
-	 * 
-	 * @see CropGestureEvent
-	 */
 	class CropGestureListener extends GestureDetector.SimpleOnGestureListener {
 
 		@Override
@@ -295,7 +249,9 @@ public class CropImageView extends ImageViewTouch {
 				if ( edge != HighlightView.GROW_NONE ) {
 					mMotionEdge = edge;
 					mMotionHighlightView = hv;
-					mMotionHighlightView.setMode( ( edge == HighlightView.MOVE ) ? HighlightView.Mode.Move : HighlightView.Mode.Grow );
+					mMotionHighlightView.setMode( ( edge == HighlightView.MOVE ) ? HighlightView.Mode.Move
+							: HighlightView.Mode.Grow );
+					postInvalidate();
 				}
 			}
 			return super.onDown( e );
@@ -344,6 +300,13 @@ public class CropImageView extends ImageViewTouch {
 
 			if ( mMotionHighlightView != null && mMotionEdge != HighlightView.GROW_NONE ) {
 				mMotionHighlightView.handleMotion( mMotionEdge, -distanceX, -distanceY );
+				
+				if( mMotionEdge == HighlightView.MOVE ) {
+					invalidate( mMotionHighlightView.getInvalidateRect() );
+				} else {
+					postInvalidate();
+				}
+				
 				ensureVisible( mMotionHighlightView );
 				return true;
 			} else {
@@ -370,15 +333,6 @@ public class CropImageView extends ImageViewTouch {
 		}
 	}
 
-	/**
-	 * The listener interface for receiving cropScale events. The class that is interested in processing a cropScale event implements
-	 * this interface, and the object created with that class is registered with a component using the component's
-	 * <code>addCropScaleListener<code> method. When
-	 * the cropScale event occurs, that object's appropriate
-	 * method is invoked.
-	 * 
-	 * @see CropScaleEvent
-	 */
 	class CropScaleListener extends SimpleOnScaleGestureListener {
 
 		@Override
@@ -405,35 +359,16 @@ public class CropImageView extends ImageViewTouch {
 		}
 	}
 
-	/** The m aspect ratio. */
 	protected double mAspectRatio = 0;
 
-	/** The m aspect ratio fixed. */
 	private boolean mAspectRatioFixed;
 
-	/**
-	 * Set the new image display and crop view. If both aspect
-	 * 
-	 * @param bitmap
-	 *           Bitmap to display
-	 * @param aspectRatio
-	 *           aspect ratio for the crop view. If 0 is passed, then the crop rectangle can be free transformed by the user,
-	 *           otherwise the width/height are fixed according to the aspect ratio passed.
-	 */
 	public void setImageBitmap( Bitmap bitmap, double aspectRatio, boolean isFixed ) {
 		mAspectRatio = aspectRatio;
 		mAspectRatioFixed = isFixed;
 		setImageBitmap( bitmap, null, ImageViewTouchBase.ZOOM_INVALID, UIConfiguration.IMAGE_VIEW_MAX_ZOOM );
 	}
 
-	/**
-	 * Sets the aspect ratio.
-	 * 
-	 * @param value
-	 *           the value
-	 * @param isFixed
-	 *           the is fixed
-	 */
 	public void setAspectRatio( double value, boolean isFixed ) {
 
 		if ( getDrawable() != null ) {
@@ -446,7 +381,7 @@ public class CropImageView extends ImageViewTouch {
 	@Override
 	protected void onDrawableChanged( Drawable drawable ) {
 		super.onDrawableChanged( drawable );
-		
+
 		if ( null != getHandler() ) {
 			getHandler().post( new Runnable() {
 
@@ -458,9 +393,6 @@ public class CropImageView extends ImageViewTouch {
 		}
 	}
 
-	/**
-	 * Update crop view.
-	 */
 	public void updateCropView( boolean bitmapChanged ) {
 
 		if ( bitmapChanged ) {
@@ -476,7 +408,7 @@ public class CropImageView extends ImageViewTouch {
 		if ( getHighlightView() != null ) {
 			updateAspectRatio( mAspectRatio, getHighlightView(), true );
 		} else {
-			HighlightView hv = new HighlightView( this );
+			HighlightView hv = new HighlightView( this, mHighlighStyle );
 			hv.setMinSize( mCropMinSize );
 			updateAspectRatio( mAspectRatio, hv, false );
 			setHighlightView( hv );
@@ -484,14 +416,6 @@ public class CropImageView extends ImageViewTouch {
 		invalidate();
 	}
 
-	/**
-	 * Update aspect ratio.
-	 * 
-	 * @param aspectRatio
-	 *           the aspect ratio
-	 * @param hv
-	 *           the hv
-	 */
 	private void updateAspectRatio( double aspectRatio, HighlightView hv, boolean animate ) {
 		Log.d( LOG_TAG, "updateAspectRatio: " + aspectRatio );
 
@@ -502,9 +426,10 @@ public class CropImageView extends ImageViewTouch {
 		RectD cropRect = computeFinalCropRect( aspectRatio );
 
 		if ( animate ) {
-			hv.animateTo( mImageMatrix, imageRect, cropRect, mAspectRatioFixed );
+			hv.animateTo( this, mImageMatrix, imageRect, cropRect, mAspectRatioFixed );
 		} else {
 			hv.setup( mImageMatrix, imageRect, cropRect, mAspectRatioFixed );
+			postInvalidate();
 		}
 	}
 
@@ -523,32 +448,20 @@ public class CropImageView extends ImageViewTouch {
 	}
 
 	private RectD computeFinalCropRect( double aspectRatio ) {
-		Log.i( LOG_TAG, "computeCropRect: " + aspectRatio );
-		
+
 		float scale = getScale();
-		
-		Log.d( LOG_TAG, "scale: " + scale );
 
 		float width = getDrawable().getIntrinsicWidth();
 		float height = getDrawable().getIntrinsicHeight();
-		
-		Log.d( LOG_TAG, "width: " + width + ", height: " + height );
-		
+
 		RectF viewRect = new RectF( 0, 0, getWidth(), getHeight() );
 		RectF bitmapRect = getBitmapRect();
-		
-		RectF rect = new RectF( Math.max( viewRect.left, bitmapRect.left ), Math.max( viewRect.top, bitmapRect.top ), Math.min( viewRect.right, bitmapRect.right ), Math.min( viewRect.bottom, bitmapRect.bottom ) );
-		
-		
-		Log.d( LOG_TAG, "view: " + rect );
-		
-		
-		Log.d( LOG_TAG, "bitmap.rect: " + bitmapRect );
+
+		RectF rect = new RectF( Math.max( viewRect.left, bitmapRect.left ), Math.max( viewRect.top, bitmapRect.top ), Math.min(
+				viewRect.right, bitmapRect.right ), Math.min( viewRect.bottom, bitmapRect.bottom ) );
 
 		double cropWidth = Math.min( Math.min( width / scale, rect.width() ), Math.min( height / scale, rect.height() ) ) * 0.8f;
 		double cropHeight = cropWidth;
-		
-		Log.d( LOG_TAG, "cropWidth: " + cropWidth + ", cropHeight: " + cropHeight );
 
 		if ( aspectRatio != 0 ) {
 			if ( aspectRatio > 1 ) {
@@ -557,33 +470,23 @@ public class CropImageView extends ImageViewTouch {
 				cropWidth = cropWidth * (double) aspectRatio;
 			}
 		}
-		
-		Log.d( LOG_TAG, "cropWidth: " + cropWidth + ", cropHeight: " + cropHeight );
-		
+
 		Matrix mImageMatrix = getImageMatrix();
-		
 		Matrix tmpMatrix = new Matrix();
 
-		if( !mImageMatrix.invert( tmpMatrix ) ){
+		if ( !mImageMatrix.invert( tmpMatrix ) ) {
 			Log.e( LOG_TAG, "cannot invert matrix" );
 		}
-		
+
 		tmpMatrix.mapRect( viewRect );
 
 		double x = viewRect.centerX() - cropWidth / 2;
 		double y = viewRect.centerY() - cropHeight / 2;
-		RectD cropRect = new RectD( x, y, (x + cropWidth), (y + cropHeight) );
-		
-		Log.d( LOG_TAG, "cropRect: " + cropRect );
-		
+		RectD cropRect = new RectD( x, y, ( x + cropWidth ), ( y + cropHeight ) );
+
 		return cropRect;
 	}
 
-	/**
-	 * Gets the aspect ratio.
-	 * 
-	 * @return the aspect ratio
-	 */
 	public double getAspectRatio() {
 		return mAspectRatio;
 	}

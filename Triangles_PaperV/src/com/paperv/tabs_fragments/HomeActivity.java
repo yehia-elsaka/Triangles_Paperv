@@ -27,7 +27,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.paperv.www.R;
+import com.paperv.core.CacheManager;
 import com.paperv.lazy_adapter_utils.ImageLoader;
 import com.paperv.models.Story;
 import com.paperv.network.DataConnector;
@@ -35,9 +35,9 @@ import com.paperv.tabs_adapters.HomeAdapter;
 import com.paperv.tabs_adapters.ImageAdapter;
 import com.paperv.tabs_utils.DepthPageTransformer;
 import com.paperv.tabs_utils.FixedSpeedScroller;
-import com.paperv.tabs_utils.GlobalState;
 import com.paperv.tabs_utils.Utils;
 import com.paperv.www.MainActivity;
+import com.paperv.www.R;
 
 
 public class HomeActivity extends Fragment implements
@@ -85,7 +85,7 @@ public class HomeActivity extends Fragment implements
 	int current_story_index;
 	String current_video_url;
 	
-	GlobalState globalState = GlobalState.getInstance();
+	CacheManager globalState = CacheManager.getInstance();
 	DataConnector dataConnector = DataConnector.getInstance();
 	
 	public ImageLoader userImageLoader; 

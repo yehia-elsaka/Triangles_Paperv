@@ -2,14 +2,6 @@ package com.paperv.tabs_fragments;
 
 import java.util.ArrayList;
 
-
-import com.paperv.www.R;
-import com.paperv.lazy_adapter_utils.ImageLoader;
-import com.paperv.models.Friend;
-import com.paperv.network.DataConnector;
-import com.paperv.tabs_utils.GlobalState;
-import com.paperv.www.MainActivity;
-
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -23,10 +15,17 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.paperv.core.CacheManager;
+import com.paperv.lazy_adapter_utils.ImageLoader;
+import com.paperv.models.Friend;
+import com.paperv.network.DataConnector;
+import com.paperv.www.MainActivity;
+import com.paperv.www.R;
+
 public class SearchList extends Fragment{
 	
 	
-	GlobalState globalState = GlobalState.getInstance();
+	CacheManager globalState = CacheManager.getInstance();
 	DataConnector dataConnector = DataConnector.getInstance();
 	
 	Button follow_user;

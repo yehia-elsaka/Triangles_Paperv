@@ -6,18 +6,11 @@ import java.util.HashSet;
 
 import org.json.JSONException;
 
-import android.R.attr;
 import android.content.Context;
-import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Matrix;
-import android.graphics.Paint;
-import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.StateListDrawable;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,53 +18,44 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.aviary.android.feather.R;
-import com.aviary.android.feather.graphics.CropCheckboxDrawable;
-import com.aviary.android.feather.graphics.DefaultGalleryCheckboxDrawable;
 import com.aviary.android.feather.headless.filters.impl.CropFilter;
 import com.aviary.android.feather.headless.moa.MoaActionList;
 import com.aviary.android.feather.headless.moa.MoaPointParameter;
+import com.aviary.android.feather.library.content.ToolEntry;
 import com.aviary.android.feather.library.filters.FilterLoaderFactory;
 import com.aviary.android.feather.library.filters.FilterLoaderFactory.Filters;
 import com.aviary.android.feather.library.graphics.RectD;
 import com.aviary.android.feather.library.services.ConfigService;
-import com.aviary.android.feather.library.services.EffectContext;
-import com.aviary.android.feather.library.utils.ReflectionUtils;
-import com.aviary.android.feather.library.utils.ReflectionUtils.ReflectionException;
-import com.aviary.android.feather.library.utils.SystemUtils;
-import com.aviary.android.feather.widget.AdapterView;
+import com.aviary.android.feather.library.services.IAviaryController;
+import com.aviary.android.feather.library.utils.ScreenUtils;
+import com.aviary.android.feather.widget.AviaryAdapterView;
+import com.aviary.android.feather.widget.AviaryAdapterView.OnItemClickListener;
+import com.aviary.android.feather.widget.AviaryGallery;
+import com.aviary.android.feather.widget.AviaryHighlightImageButton;
 import com.aviary.android.feather.widget.CropImageView;
-import com.aviary.android.feather.widget.Gallery;
-import com.aviary.android.feather.widget.Gallery.OnItemsScrollListener;
 import com.aviary.android.feather.widget.HighlightView;
 
-// TODO: Auto-generated Javadoc
-/**
- * The Class CropPanel.
- */
-public class CropPanel extends AbstractContentPanel {
+public class CropPanel extends AbstractContentPanel implements com.aviary.android.feather.widget.AviaryGallery.OnItemsScrollListener, OnItemClickListener {
 
-	Gallery mGallery;
+	AviaryGallery mGallery;
 	String[] mCropNames, mCropValues;
-	View mSelected;
 	int mSelectedPosition = 0;
 	boolean mIsPortrait = true;
 	final static int noImage = 0;
-	HashSet<Integer> nonInvertOptions = new HashSet<Integer>();
+	HashSet<Integer> mNonInvertOptions = new HashSet<Integer>();
 
-	/* whether to use inversion and photo size detection */
-	boolean strict = false;
+	// whether to use inversion and photo size detection
+	boolean mStrictPolicy = false;
 
-	/** Whether or not the proportions are inverted */
+	// Whether or not the proportions are inverted
 	boolean isChecked = false;
+	
+	// gallery has scrolled
+	@SuppressWarnings ( "unused" )
+	private boolean mHasScrolled;
 
-	/**
-	 * Instantiates a new crop panel.
-	 * 
-	 * @param context
-	 *           the context
-	 */
-	public CropPanel( EffectContext context ) {
-		super( context );
+	public CropPanel( IAviaryController context, ToolEntry entry ) {
+		super( context, entry );
 	}
 
 	private void invertRatios( String[] names, String[] values ) {
@@ -108,17 +92,17 @@ public class CropPanel extends AbstractContentPanel {
 	}
 
 	@Override
-	public void onCreate( Bitmap bitmap ) {
-		super.onCreate( bitmap );
+	public void onCreate( Bitmap bitmap, Bundle options ) {
+		super.onCreate( bitmap, options );
 
 		ConfigService config = getContext().getService( ConfigService.class );
 		mFilter = FilterLoaderFactory.get( Filters.CROP );
 
-		mCropNames = config.getStringArray( R.array.feather_crop_names );
-		mCropValues = config.getStringArray( R.array.feather_crop_values );
-		strict = config.getBoolean( R.integer.feather_crop_invert_policy );
+		mCropNames = config.getStringArray( R.array.aviary_crop_labels );
+		mCropValues = config.getStringArray( R.array.aviary_crop_values );
+		mStrictPolicy = config.getBoolean( R.integer.aviary_crop_invert_policy );
 
-		if ( !strict ) {
+		if ( !mStrictPolicy ) {
 			if ( bitmap.getHeight() > bitmap.getWidth() ) {
 				mIsPortrait = true;
 			} else {
@@ -126,25 +110,27 @@ public class CropPanel extends AbstractContentPanel {
 			}
 
 			// configure options that will not invert
-			populateInvertOptions( nonInvertOptions, mCropValues );
+			populateInvertOptions( mNonInvertOptions, mCropValues );
 
 			if ( mIsPortrait ) {
 				invertRatios( mCropNames, mCropValues );
 			}
 		}
 
-		mSelectedPosition = config.getInteger( R.integer.feather_crop_selected_value );
+		mSelectedPosition = config.getInteger( R.integer.aviary_crop_selected_index );
 
-		mImageView = (CropImageView) getContentView().findViewById( R.id.crop_image_view );
+		mImageView = (CropImageView) getContentView().findViewById( R.id.aviary_crop_image );
 		mImageView.setDoubleTapEnabled( false );
+		mImageView.setScaleEnabled( false );
+		mImageView.setScrollEnabled( false );
 		mImageView.setDisplayType( DisplayType.FIT_IF_BIGGER );
 
-		int minAreaSize = config.getInteger( R.integer.feather_crop_min_size );
-		( (CropImageView) mImageView ).setMinCropSize( minAreaSize );
-
-		mGallery = (Gallery) getOptionView().findViewById( R.id.gallery );
+		mGallery = (AviaryGallery) getOptionView().findViewById( R.id.aviary_gallery );
+		
+		mGallery.setDefaultPosition( mSelectedPosition );
 		mGallery.setCallbackDuringFling( false );
-		mGallery.setSpacing( 0 );
+		mGallery.setAutoSelectChild( false );		
+
 		mGallery.setAdapter( new GalleryAdapter( getContext().getBaseContext(), mCropNames ) );
 		mGallery.setSelection( mSelectedPosition, false, true );
 	}
@@ -153,74 +139,19 @@ public class CropPanel extends AbstractContentPanel {
 	public void onActivate() {
 		super.onActivate();
 
-		int position = mGallery.getSelectedItemPosition();
-		final double ratio = calculateAspectRatio( position, false );
-
 		disableHapticIsNecessary( mGallery );
 
-		setIsChanged( true );
-		contentReady();
+		mGallery.setOnItemsScrollListener( this );
+		mGallery.setOnItemClickListener( this );
 		
-		mGallery.setOnItemsScrollListener( new OnItemsScrollListener() {
-
-			@Override
-			public void onScrollFinished( AdapterView<?> parent, View view, int position, long id ) {
-
-				if ( !isActive() ) return;
-
-				if ( position == mSelectedPosition ) {
-
-					if ( !strict && !nonInvertOptions.contains( position ) ) {
-						isChecked = !isChecked;
-						CropImageView cview = (CropImageView) mImageView;
-
-						double currentAspectRatio = cview.getAspectRatio();
-
-						HighlightView hv = cview.getHighlightView();
-						if ( !cview.getAspectRatioIsFixed() && hv != null ) {
-							currentAspectRatio = (double) hv.getDrawRect().width() / (double) hv.getDrawRect().height();
-						}
-
-						double invertedAspectRatio = 1 / currentAspectRatio;
-
-						cview.setAspectRatio( invertedAspectRatio, cview.getAspectRatioIsFixed() );
-						invertRatios( mCropNames, mCropValues );
-						mGallery.invalidateViews();
-					}
-				} else {
-					double ratio = calculateAspectRatio( position, false );
-					setCustomRatio( ratio, ratio != 0 );
-				}
-				updateSelection( view, position );
-
-			}
-
-			@Override
-			public void onScrollStarted( AdapterView<?> parent, View view, int position, long id ) {}
-
-			@Override
-			public void onScroll( AdapterView<?> parent, View view, int position, long id ) {}
-		} );
-
-		getOptionView().getHandler().post( new Runnable() {
-
-			@Override
-			public void run() {
-				createCropView( ratio, ratio != 0 );
-				updateSelection( (View) mGallery.getSelectedView(), mGallery.getSelectedItemPosition() );
-			}
-		} );
+		int position = mGallery.getSelectedItemPosition();
+		final double ratio = calculateAspectRatio( position, false );
+		
+		createCropView( ratio, ratio != 0 );
+		contentReady();
+		setIsChanged( true );
 	}
 
-	/**
-	 * Calculate aspect ratio.
-	 * 
-	 * @param position
-	 *           the position
-	 * @param inverted
-	 *           the inverted
-	 * @return the double
-	 */
 	private double calculateAspectRatio( int position, boolean inverted ) {
 
 		String value = mCropValues[position];
@@ -258,73 +189,16 @@ public class CropPanel extends AbstractContentPanel {
 	@Override
 	public void onDeactivate() {
 		super.onDeactivate();
+		mGallery.setOnItemsScrollListener( null );
+		mGallery.setOnItemClickListener( null );		
 	}
 
-	/**
-	 * Creates the crop view.
-	 * 
-	 * @param aspectRatio
-	 *           the aspect ratio
-	 */
 	private void createCropView( double aspectRatio, boolean isFixed ) {
 		( (CropImageView) mImageView ).setImageBitmap( mBitmap, aspectRatio, isFixed );
 	}
 
-	/**
-	 * Sets the custom ratio.
-	 * 
-	 * @param aspectRatio
-	 *           the aspect ratio
-	 * @param isFixed
-	 *           the is fixed
-	 */
 	private void setCustomRatio( double aspectRatio, boolean isFixed ) {
 		( (CropImageView) mImageView ).setAspectRatio( aspectRatio, isFixed );
-	}
-
-	/**
-	 * Update selection.
-	 * 
-	 * @param newSelection
-	 *           the new selection
-	 * @param position
-	 *           the position
-	 */
-	protected void updateSelection( View newSelection, int position ) {
-
-		if ( mSelected != null ) {
-
-			String label = (String) mSelected.getTag();
-			if ( label != null ) {
-				View textview = mSelected.findViewById( R.id.text );
-				if ( null != textview ) {
-					( (TextView) textview ).setText( getString( label ) );
-				}
-
-				View arrow = mSelected.findViewById( R.id.invertCropArrow );
-				if ( null != arrow ) {
-					arrow.setVisibility( View.INVISIBLE );
-				}
-			}
-
-			mSelected.setSelected( false );
-		}
-
-		mSelected = newSelection;
-		mSelectedPosition = position;
-
-		if ( mSelected != null ) {
-			mSelected = newSelection;
-			mSelected.setSelected( true );
-
-			View arrow = mSelected.findViewById( R.id.invertCropArrow );
-			if ( null != arrow && !nonInvertOptions.contains( position ) && !strict ) {
-				arrow.setVisibility( View.VISIBLE );
-				arrow.setSelected( isChecked );
-			} else {
-				arrow.setVisibility( View.INVISIBLE );
-			}
-		}
 	}
 
 	@Override
@@ -334,44 +208,11 @@ public class CropPanel extends AbstractContentPanel {
 		task.execute( mBitmap );
 	}
 
-	/**
-	 * Generate bitmap.
-	 * 
-	 * @param bitmap
-	 *           the bitmap
-	 * @param cropRect
-	 *           the crop rect
-	 * @return the bitmap
-	 */
-	@SuppressWarnings("unused")
-	private Bitmap generateBitmap( Bitmap bitmap, Rect cropRect ) {
-		Bitmap croppedImage;
-
-		int width = cropRect.width();
-		int height = cropRect.height();
-
-		croppedImage = Bitmap.createBitmap( width, height, Bitmap.Config.RGB_565 );
-		Canvas canvas = new Canvas( croppedImage );
-		Rect dstRect = new Rect( 0, 0, width, height );
-		canvas.drawBitmap( mBitmap, cropRect, dstRect, null );
-		return croppedImage;
-	}
-
-	/**
-	 * The Class GenerateResultTask.
-	 */
 	class GenerateResultTask extends AsyncTask<Bitmap, Void, Bitmap> {
 
-		/** The m crop rect. */
 		RectD mCropRect;
 		MoaActionList mActionList;
 
-		/**
-		 * Instantiates a new generate result task.
-		 * 
-		 * @param rect
-		 *           the rect
-		 */
 		public GenerateResultTask( RectD rect ) {
 			mCropRect = rect;
 		}
@@ -379,7 +220,7 @@ public class CropPanel extends AbstractContentPanel {
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
-			onProgressModalStart();
+			onProgressStart();
 		}
 
 		@Override
@@ -415,8 +256,7 @@ public class CropPanel extends AbstractContentPanel {
 		@Override
 		protected void onPostExecute( Bitmap result ) {
 			super.onPostExecute( result );
-
-			onProgressModalEnd();
+			onProgressEnd();
 
 			( (CropImageView) mImageView ).setImageBitmap( result, ( (CropImageView) mImageView ).getAspectRatio(),
 					( (CropImageView) mImageView ).getAspectRatioIsFixed() );
@@ -428,13 +268,15 @@ public class CropPanel extends AbstractContentPanel {
 
 	@Override
 	protected View generateContentView( LayoutInflater inflater ) {
-		View view = inflater.inflate( R.layout.feather_crop_content, null );
-
-		if ( SystemUtils.isHoneyComb() ) {
-			// Honeycomb bug with canvas clip
-			try {
-				ReflectionUtils.invokeMethod( view, "setLayerType", new Class[] { int.class, Paint.class }, 1, null );
-			} catch ( ReflectionException e ) {}
+		View view = inflater.inflate( R.layout.aviary_content_crop, null );
+		
+		if( ScreenUtils.isTablet( getContext().getBaseContext() )) {
+			//try {
+			//	mLogger.log( "device is tablet, set the layerType to software" );
+			//	ReflectionUtils.invokeMethod( view, "setLayerType", new Class[] { int.class, Paint.class }, 1, null );
+			//} catch ( ReflectionException e ) {
+			//	e.printStackTrace();
+			//}
 		}
 
 		return view;
@@ -442,63 +284,33 @@ public class CropPanel extends AbstractContentPanel {
 
 	@Override
 	protected ViewGroup generateOptionView( LayoutInflater inflater, ViewGroup parent ) {
-		return (ViewGroup) inflater.inflate( R.layout.feather_crop_panel, parent, false );
-	}
-
-	@Override
-	public Matrix getContentDisplayMatrix() {
-		return mImageView.getDisplayMatrix();
-	}
-
-	@Override
-	public void onConfigurationChanged( Configuration newConfig, Configuration oldConfig ) {
-		super.onConfigurationChanged( newConfig, oldConfig );
-	}
-
-	private String getString( String input ) {
-		int id = getContext().getBaseContext().getResources()
-				.getIdentifier( input, "string", getContext().getBaseContext().getPackageName() );
-		if ( id > 0 ) {
-			return getContext().getBaseContext().getResources().getString( id );
-		}
-		return input;
+		return (ViewGroup) inflater.inflate( R.layout.aviary_panel_crop, parent, false );
 	}
 
 	class GalleryAdapter extends BaseAdapter {
 
-		private String[] mStrings;
+		final int INVALID_POSITION = 0;
+		final int VALID_POSITION = 1;
+		final int VALID_POSITION_CUSTOM = 2;
+
+		private String[] mValues;
 		LayoutInflater mLayoutInflater;
 		Resources mRes;
-		
-		private static final int VALID_POSITION = 0;
-		private static final int INVALID_POSITION = 1;
 
-		/**
-		 * Instantiates a new gallery adapter.
-		 * 
-		 * @param context
-		 *           the context
-		 * @param values
-		 *           the values
-		 */
 		public GalleryAdapter( Context context, String[] values ) {
 			mLayoutInflater = LayoutInflater.from( context );
-			mStrings = values;
-			mRes = getContext().getBaseContext().getResources();
+			mValues = values;
+			mRes = context.getResources();
 		}
 
 		@Override
 		public int getCount() {
-			return mStrings.length;
-		}
-
-		public void updateStrings() {
-
+			return mValues.length;
 		}
 
 		@Override
 		public Object getItem( int position ) {
-			return mStrings[position];
+			return mValues[position];
 		}
 
 		@Override
@@ -508,77 +320,105 @@ public class CropPanel extends AbstractContentPanel {
 
 		@Override
 		public int getViewTypeCount() {
-			return 2;
+			return 3;
 		}
 
 		@Override
 		public int getItemViewType( int position ) {
 			final boolean valid = position >= 0 && position < getCount();
-			return valid ? VALID_POSITION : INVALID_POSITION;
+			return valid ? ( mNonInvertOptions.contains( position ) ? VALID_POSITION_CUSTOM : VALID_POSITION ) : INVALID_POSITION;
 		}
 
-		@SuppressWarnings("deprecation")
 		@Override
-		public View getView( final int position, View convertView, ViewGroup parent ) {
+		public View getView( int position, View convertView, ViewGroup parent ) {
 
-			int type = getItemViewType( position );
-			final View view;
+			final int type = getItemViewType( position );
+
+			AviaryHighlightImageButton image = null;
+			TextView text = null;
+
+			// PreviewFillColorDrawable drawable = null;
+
 			if ( convertView == null ) {
 				if ( type == VALID_POSITION ) {
-					// use the default crop checkbox view
-					view = mLayoutInflater.inflate( R.layout.feather_crop_button, mGallery, false );
-
-					StateListDrawable st = new StateListDrawable();
-					Drawable unselectedBackground = new CropCheckboxDrawable( mRes, false, null, 1.0f, 0, 0 );
-					Drawable selectedBackground = new CropCheckboxDrawable( mRes, true, null, 1.0f, 0, 0 );
-					st.addState( new int[] { -attr.state_selected }, unselectedBackground );
-					st.addState( new int[] { attr.state_selected }, selectedBackground );
-					view.setBackgroundDrawable( st );
-
+					convertView = mLayoutInflater.inflate( R.layout.aviary_gallery_crop_item_view, mGallery, false );
+				} else if( type == VALID_POSITION_CUSTOM ) {
+					convertView = mLayoutInflater.inflate( R.layout.aviary_gallery_crop_item_view_custom, mGallery, false );
 				} else {
-					// use the blank view
-					view = mLayoutInflater.inflate( R.layout.feather_checkbox_button, mGallery, false );
-					Drawable unselectedBackground = new DefaultGalleryCheckboxDrawable( mRes, false );
-					view.setBackgroundDrawable( unselectedBackground );
+					convertView = mLayoutInflater.inflate( R.layout.aviary_gallery_item_view, mGallery, false );
+					convertView.findViewById( R.id.image ).setVisibility( View.GONE );
 				}
-			} else {
-				view = convertView;
 			}
 
-			view.setSelected( mSelectedPosition == position );
+			if ( type != INVALID_POSITION ) {
 
-			if ( type == VALID_POSITION ) {
-				Object item = getItem( position );
-				view.setTag( item );
-				if ( null != item ) {
-
-					TextView text = (TextView) view.findViewById( R.id.text );
-					String textValue = "";
-					if ( position >= 0 && position < mStrings.length ) textValue = mStrings[position];
-
-					if ( null != text ) text.setText( getString( textValue ) );
-					View arrow = view.findViewById( R.id.invertCropArrow );
+				String label = (String) getItem( position );
+				text = (TextView) convertView.findViewById( R.id.text );
+				text.setText( label );
+				
+				if( type == VALID_POSITION ) {
+			
+					image = (AviaryHighlightImageButton) convertView.findViewById( R.id.image );
+	
 					int targetVisibility;
-
-					if ( mSelectedPosition == position && !strict ) {
-						mSelected = view;
-						if ( null != arrow && !nonInvertOptions.contains( position ) ) {
-							targetVisibility = View.VISIBLE;
-						} else {
-							targetVisibility = View.INVISIBLE;
-						}
+	
+					if ( !mStrictPolicy && !mNonInvertOptions.contains( position ) ) {
+						targetVisibility = View.VISIBLE;
 					} else {
-						targetVisibility = View.INVISIBLE;
+						targetVisibility = View.GONE;
 					}
-					
-					if( null != arrow ){
-						arrow.setVisibility( targetVisibility );
-						arrow.setSelected( isChecked );
+	
+					if ( null != image ) {
+						image.setVisibility( targetVisibility );
+						image.setChecked( isChecked );
 					}
 				}
-
+				// drawable.setColor( color );
 			}
-			return view;
+
+			// convertView.setSelected( mSelectedPosition == position );
+			convertView.setId( position );
+			return convertView;
 		}
+	}	
+
+	@Override
+	public void onItemClick( AviaryAdapterView<?> parent, View view, int position, long id ) {
+		
+		if ( !mStrictPolicy && !mNonInvertOptions.contains( position ) ) {
+			isChecked = !isChecked;
+			
+			CropImageView cview = (CropImageView) mImageView;
+			double currentAspectRatio = cview.getAspectRatio();
+
+			HighlightView hv = cview.getHighlightView();
+			if ( !cview.getAspectRatioIsFixed() && hv != null ) {
+				currentAspectRatio = (double) hv.getDrawRect().width() / (double) hv.getDrawRect().height();
+			}
+
+			double invertedAspectRatio = 1 / currentAspectRatio;
+
+			cview.setAspectRatio( invertedAspectRatio, cview.getAspectRatioIsFixed() );
+			invertRatios( mCropNames, mCropValues );
+			mGallery.invalidateViews();			
+		}		
+	}
+
+	@Override
+	public void onScrollStarted( AviaryAdapterView<?> parent, View view, int position, long id ) {
+		mHasScrolled = false;
+	}
+
+	@Override
+	public void onScroll( AviaryAdapterView<?> parent, View view, int position, long id ) {
+		mHasScrolled = true;
+	}
+
+	@Override
+	public void onScrollFinished( AviaryAdapterView<?> parent, View view, int position, long id ) {
+		mSelectedPosition = position;
+		
+		double ratio = calculateAspectRatio( position, false );
+		setCustomRatio( ratio, ratio != 0 );		
 	}
 }

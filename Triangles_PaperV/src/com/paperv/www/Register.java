@@ -1,60 +1,46 @@
 package com.paperv.www;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.bugsense.trace.BugSenseHandler;
-import com.paperv.www.R;
 import com.paperv.async.LoginTask;
+import com.paperv.core.CacheManager;
+import com.paperv.core.Constants;
+import com.paperv.core.PapervActivity;
 import com.paperv.network.DataConnector;
-import com.paperv.tabs_utils.GlobalState;
 
-public class Register extends Activity {
-	
-	Context myContext = this;
+public class Register extends PapervActivity {
 	
 	String fullname;
 	String username;
 	String password;
 	String email;
 	String image = "";
-	
 	EditText fullname_field;
 	EditText username_field;
 	EditText password_field;
 	EditText email_field;
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		BugSenseHandler.initAndStartSession(myContext, "0da77729");
+	public void onCreateUI(Bundle savedInstanceState) {
 		setContentView(R.layout.signup);
-		
 		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-		
 		TextView page_title = (TextView) findViewById(R.id.page_title);
 		page_title.setText("Sign Up");
-		
-		
 		fullname_field = (EditText)findViewById(R.id.full_name_field);
 		username_field = (EditText)findViewById(R.id.user_name_field);
         email_field = (EditText)findViewById(R.id.email_field);
         password_field = (EditText)findViewById(R.id.password_field);
-		
-        
-        
-        Button create = (Button)findViewById(R.id.register);
+		Button create = (Button)findViewById(R.id.register);
         create.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -62,16 +48,12 @@ public class Register extends Activity {
 				username = username_field.getEditableText().toString().replaceAll(" ", "%20");
 				email = email_field.getEditableText().toString().replaceAll(" ", "%20");
 				password = password_field.getEditableText().toString().replaceAll(" ", "%20");
-				
-				
-				try {
-					
+				try {		
 					RegTask task = new RegTask();
 					task.execute();
 					
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					Log.d(Constants.TAG, e.getMessage());
 				}
 				}
 			
@@ -82,9 +64,8 @@ public class Register extends Activity {
         TextView terms = (TextView) findViewById(R.id.terms);
         terms.setOnClickListener(new OnClickListener() {
 			@Override
-			public void onClick(View v) {
-				
-				Intent i = new Intent(myContext, AppTermsActivity.class);
+			public void onClick(View v) {	
+				Intent i = new Intent(mContext, AppTermsActivity.class);
 				startActivityForResult(i, 700);
 				overridePendingTransition(R.anim.slide_in_right,
 						R.anim.slide_out_left);
@@ -99,7 +80,7 @@ public class Register extends Activity {
 			@Override
 			public void onClick(View v) {
 				
-				Intent i = new Intent(myContext, AppPrivacyActivity.class);
+				Intent i = new Intent(mContext, AppPrivacyActivity.class);
 				startActivityForResult(i, 700);
 				overridePendingTransition(R.anim.slide_in_right,
 						R.anim.slide_out_left);
@@ -118,7 +99,7 @@ public class Register extends Activity {
 		
 		finish();
 		
-		Intent i = new Intent(myContext, StartActivity.class);
+		Intent i = new Intent(mContext, StartActivity.class);
 		startActivityForResult(i, 700);
 		overridePendingTransition(R.anim.slide_in_left,
 				R.anim.slide_out_right);
@@ -135,7 +116,7 @@ public class Register extends Activity {
 
 		@Override
 		protected void onPreExecute() {
-			dialog = new ProgressDialog(myContext);
+			dialog = new ProgressDialog(mContext);
 			dialog.setTitle("PaperV");
 			dialog.setIcon(R.drawable.ico_dialog);
 			dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -150,7 +131,7 @@ public class Register extends Activity {
 			try {
 				
 				DataConnector.getInstance().getFriends(username_field.getText().toString());
-				if (GlobalState.getInstance().friends_list.size() != 0)
+				if (CacheManager.getInstance().friends_list.size() != 0)
 					{
 						user_exist = true;
 						result = false;
@@ -176,26 +157,17 @@ public class Register extends Activity {
 				
 			}
 			if (this.result) {
-//				finish();
-//				Intent i = new Intent(myContext, StartActivity.class);
-//            	startActivityForResult(i, 700); 
-//        		overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
-        		
+				
 				LoginTask task = new LoginTask();
-				task.dialog = new ProgressDialog(myContext);
-				task.myContext = myContext;
-				task.remember_me = true;
-				task.user_name = username_field.getEditableText().toString().replaceAll(" ", "%20");
-				task.password = password_field.getEditableText().toString().replaceAll(" ", "%20");
+				task.dialog = new ProgressDialog(mContext);
+				task.appInstance = appInstance;
 				task.execute();
 				
 			} else {
 				if (user_exist)
-					Toast.makeText(myContext, "Registration Failed ... User Name Already Exist", 3000)
-							.show();
+					showLongToast("Registration Failed ... User Name Already Exist");
 				else
-					Toast.makeText(myContext, "Registration Failed ...", 3000)
-					.show();
+					showLongToast("Registration Failed ...");
 			}
 		}
 

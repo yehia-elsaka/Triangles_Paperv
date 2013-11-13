@@ -6,11 +6,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnClickListener;
@@ -42,7 +40,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.aviary.android.feather.Constants;
 import com.aviary.android.feather.FeatherActivity;
 import com.aviary.android.feather.headless.AviaryExecutionException;
 import com.aviary.android.feather.headless.AviaryInitializationException;
@@ -51,25 +48,21 @@ import com.aviary.android.feather.headless.media.ExifInterfaceWrapper;
 import com.aviary.android.feather.headless.moa.MoaHD;
 import com.aviary.android.feather.headless.utils.IOUtils;
 import com.aviary.android.feather.headless.utils.StringUtils;
+import com.aviary.android.feather.library.Constants;
 import com.aviary.android.feather.library.providers.FeatherContentProvider;
 import com.aviary.android.feather.library.providers.FeatherContentProvider.ActionsDbColumns.Action;
 import com.aviary.android.feather.library.utils.DecodeUtils;
 import com.aviary.android.feather.library.utils.ImageLoader.ImageSizes;
 import com.aviary.android.feather.library.utils.SystemUtils;
-import com.bugsense.trace.BugSenseHandler;
+import com.paperv.core.CacheManager;
+import com.paperv.core.PapervActivity;
 
-import com.paperv.www.R;
-import com.paperv.tabs_utils.GlobalState;
-
-public class AviaryActivity extends Activity {
-
-	Context myContext = this;
+public class AviaryActivity extends PapervActivity {
 
 	boolean change = true;
 	boolean feather_done = false;
 
 	boolean done = false;
-	Activity myActivity = this;
 
 	/**
 	 * ========== READ ME FIRST =========== In order to use the Aviary SDK
@@ -105,14 +98,11 @@ public class AviaryActivity extends Activity {
 	private String mSessionId;
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		Log.i(LOG_TAG, "onCreate");
-		super.onCreate(savedInstanceState);
-		BugSenseHandler.initAndStartSession(myContext, "0da77729");
+	public void onCreateUI(Bundle savedInstanceState) {
 		setContentView(R.layout.aviary_main);
 
-		GlobalState.getInstance().glide_image = null;
-		GlobalState.getInstance().profile_image = null;
+		cache.glide_image = null;
+		cache.profile_image = null;
 
 		TextView page_title = (TextView) findViewById(R.id.page_title);
 		page_title.setText("Gallery");
@@ -136,37 +126,6 @@ public class AviaryActivity extends Activity {
 				done = false;
 			}
 		});
-
-		// mEditButton.setOnClickListener( new View.OnClickListener() {
-		//
-		// @Override
-		// public void onClick( View v ) {
-		// if ( mImageUri != null ) {
-		// startFeather( mImageUri );
-		// }
-		// }
-		// } );
-
-		// Button apply = (Button) findViewById(R.id.button_apply);
-		// apply.setOnClickListener( new View.OnClickListener() {
-		//
-		// @Override
-		// public void onClick( View v ) {
-		//
-		// Toast.makeText(myContext, "apply", Toast.LENGTH_SHORT);
-		// }
-		// });
-
-		// Button ready = (Button) findViewById(R.id.button2);
-		// ready.setOnClickListener( new View.OnClickListener() {
-		//
-		// @Override
-		// public void onClick( View v ) {
-		//
-		// myActivity.finish();
-		//
-		// }
-		// });
 
 		mImageContainer.setOnClickListener(new View.OnClickListener() {
 
@@ -194,10 +153,6 @@ public class AviaryActivity extends Activity {
 			}
 		});
 
-		// Toast.makeText( this, "launcher: " + getLibraryVersion() + ", sdk: "
-		// + FeatherActivity.SDK_VERSION, Toast.LENGTH_SHORT )
-		// .show();
-
 		mGalleryFolder = createFolders();
 		registerForContextMenu(mImageContainer);
 	}
@@ -213,7 +168,7 @@ public class AviaryActivity extends Activity {
 		}
 
 		if (!change)
-			myActivity.finish();
+			finish();
 
 	}
 
@@ -1279,21 +1234,21 @@ public class AviaryActivity extends Activity {
 					imageHeight, sizes);
 
 			// ###
-			GlobalState.getInstance().glide_image = null;
-			GlobalState.getInstance().profile_image = null;
+			CacheManager.getInstance().glide_image = null;
+			CacheManager.getInstance().profile_image = null;
 
-			if (GlobalState.getInstance().is_glide)
-				GlobalState.getInstance().glide_image = mUri;
+			if (CacheManager.getInstance().is_glide)
+				CacheManager.getInstance().glide_image = mUri;
 
-			else if (GlobalState.getInstance().is_profile)
-				GlobalState.getInstance().profile_image = mUri;
+			else if (CacheManager.getInstance().is_profile)
+				CacheManager.getInstance().profile_image = mUri;
 
 			if (feather_done) {
 				if (mProgress.getWindow() != null) {
 					mProgress.dismiss();
 				}
 
-				myActivity.finish();
+				finish();
 			}
 
 			return bitmap;

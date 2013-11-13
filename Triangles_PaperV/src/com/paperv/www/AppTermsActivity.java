@@ -1,20 +1,16 @@
 package com.paperv.www;
 
-import com.paperv.www.R;
+import com.paperv.core.PapervActivity;
 
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.webkit.WebView;
 
-public class AppTermsActivity extends Activity {
-	
-	Context myContext = this;
+public class AppTermsActivity extends PapervActivity {
 	
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		
+	public void onCreateUI(Bundle savedInstanceState) {
 		setContentView(R.layout.about);
 		
 		WebView webview = (WebView) findViewById(R.id.webview);

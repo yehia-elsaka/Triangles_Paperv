@@ -2,20 +2,14 @@ package com.aviary.android.feather.effects;
 
 import it.sephiroth.android.library.imagezoom.ImageViewTouch;
 import it.sephiroth.android.library.imagezoom.ImageViewTouchBase.DisplayType;
-import android.R.attr;
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
-import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.LayerDrawable;
-import android.graphics.drawable.StateListDrawable;
+import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -32,69 +26,52 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
 import com.aviary.android.feather.R;
-import com.aviary.android.feather.graphics.DefaultGalleryCheckboxDrawable;
-import com.aviary.android.feather.graphics.OverlayGalleryCheckboxDrawable;
+import com.aviary.android.feather.graphics.PreviewFillColorDrawable;
 import com.aviary.android.feather.headless.moa.MoaActionFactory;
 import com.aviary.android.feather.headless.moa.MoaActionList;
+import com.aviary.android.feather.library.content.ToolEntry;
 import com.aviary.android.feather.library.filters.FilterLoaderFactory;
 import com.aviary.android.feather.library.filters.FilterLoaderFactory.Filters;
 import com.aviary.android.feather.library.filters.TextFilter;
+import com.aviary.android.feather.library.graphics.drawable.AviaryTextDrawable;
 import com.aviary.android.feather.library.graphics.drawable.EditableDrawable;
-import com.aviary.android.feather.library.graphics.drawable.TextDrawable;
+import com.aviary.android.feather.library.graphics.drawable.FeatherDrawable;
 import com.aviary.android.feather.library.services.ConfigService;
-import com.aviary.android.feather.library.services.EffectContext;
+import com.aviary.android.feather.library.services.IAviaryController;
 import com.aviary.android.feather.library.utils.BitmapUtils;
 import com.aviary.android.feather.library.utils.MatrixUtils;
 import com.aviary.android.feather.library.utils.UIConfiguration;
-import com.aviary.android.feather.widget.AdapterView;
+import com.aviary.android.feather.widget.AviaryAdapterView;
+import com.aviary.android.feather.widget.AviaryGallery;
+import com.aviary.android.feather.widget.AviaryGallery.OnItemsScrollListener;
 import com.aviary.android.feather.widget.DrawableHighlightView;
-import com.aviary.android.feather.widget.Gallery;
-import com.aviary.android.feather.widget.Gallery.OnItemsScrollListener;
 import com.aviary.android.feather.widget.ImageViewDrawableOverlay;
 import com.aviary.android.feather.widget.ImageViewDrawableOverlay.OnDrawableEventListener;
 
-public class TextPanel extends AbstractContentPanel implements OnDrawableEventListener, OnEditorActionListener {
+public class TextPanel extends AbstractContentPanel implements OnDrawableEventListener, OnEditorActionListener, OnItemsScrollListener, OnKeyListener {
 
 	abstract class MyTextWatcher implements TextWatcher {
-
 		public DrawableHighlightView view;
 	}
-
-	Gallery mGallery;
-	View mSelected;
-	int mSelectedPosition;
-
-	/** The available text colors. */
-	int[] mColors;
-
-	/** The current selected color. */
+	
+	// array of available colors
+	private int[] mColors;
+	// current selected color
 	private int mColor = 0;
 
-	/** The minimum text size. */
-	private int minTextSize = 16;
+	private AviaryGallery mGallery;
+	private int mSelectedPosition;
 
-	/** The default text size. */
-	private int defaultTextSize = 16;
-
-	/** The text padding. */
-	private int textPadding = 10;
-
-	/** The drawing canvas. */
+	// default text size in px
+	private int mDefaultTextSize;
+	
+	// canvas used to draw the text into
 	private Canvas mCanvas;
-
-	/** The android input manager. */
-	private InputMethodManager mInputManager;
-
-	/** The current edit text. */
+	
 	private EditText mEditText;
-
+	
 	private ConfigService config;
 
-	/** The m highlight stroke color down. */
-	private int mHighlightEllipse, mHighlightStrokeWidth;
-	private ColorStateList mHighlightFillColorStateList, mHighlightStrokeColorStateList;
-
-	/** The m edit text watcher. */
 	private final MyTextWatcher mEditTextWatcher = new MyTextWatcher() {
 
 		@Override
@@ -115,68 +92,46 @@ public class TextPanel extends AbstractContentPanel implements OnDrawableEventLi
 				if ( !editable.isEditing() ) return;
 
 				editable.setText( s.toString() );
-				view.forceUpdate();
+				
+				//if( view.forceUpdate() ){
+				//	mImageView.invalidate( view.getInvalidationRect() );
+				//}
 			}
 		}
 	};
 
-	/**
-	 * Instantiates a new text panel.
-	 * 
-	 * @param context
-	 *           the context
-	 */
-	public TextPanel( final EffectContext context ) {
-		super( context );
+	public TextPanel( final IAviaryController context, ToolEntry entry ) {
+		super( context, entry );
 	}
 
-	/**
-	 * Begin edit and open the android soft keyboard if available
-	 * 
-	 * @param view
-	 *           the view
-	 */
 	private void beginEdit( final DrawableHighlightView view ) {
 		
 		if( null != view ){
 			view.setFocused( true );
+			mImageView.postInvalidate();
 		}
 		
 		mEditTextWatcher.view = null;
 		mEditText.removeTextChangedListener( mEditTextWatcher );
-		mEditText.setOnKeyListener( null );
+		
 
 		final EditableDrawable editable = (EditableDrawable) view.getContent();
 		final String oldText = editable.isTextHint() ? "" : (String) editable.getText();
 		mEditText.setText( oldText );
 		mEditText.setSelection( mEditText.length() );
-		mEditText.setImeOptions( EditorInfo.IME_ACTION_DONE );
 		mEditText.requestFocusFromTouch();
-		// mInputManager.showSoftInput( mEditText, InputMethodManager.SHOW_IMPLICIT );
-		mInputManager.toggleSoftInput( InputMethodManager.SHOW_FORCED, 0 );
+		
+		InputMethodManager manager = (InputMethodManager) getContext().getBaseContext().getSystemService( Context.INPUT_METHOD_SERVICE );
+		if( null != manager ) {
+			// manager.toggleSoftInput( InputMethodManager.SHOW_FORCED, 0 );
+			manager.showSoftInput( mEditText, 0 );
+		}
 
 		mEditTextWatcher.view = view;
 		mEditText.setOnEditorActionListener( this );
 		mEditText.addTextChangedListener( mEditTextWatcher );
-		mEditText.setOnKeyListener( new OnKeyListener() {
-
-			@Override
-			public boolean onKey( View v, int keyCode, KeyEvent event ) {
-				mLogger.log( "onKey: " + event );
-				if ( keyCode == KeyEvent.KEYCODE_DEL || keyCode == KeyEvent.KEYCODE_BACK ) {
-					if ( editable.isTextHint() && editable.isEditing() ) {
-						editable.setText( "" );
-						view.forceUpdate();
-					}
-				}
-				return false;
-			}
-		} );
 	}
 
-	/**
-	 * Creates the and configure preview.
-	 */
 	private void createAndConfigurePreview() {
 
 		if ( ( mPreview != null ) && !mPreview.isRecycled() ) {
@@ -188,31 +143,34 @@ public class TextPanel extends AbstractContentPanel implements OnDrawableEventLi
 		mCanvas = new Canvas( mPreview );
 	}
 
-	/**
-	 * End edit text and closes the android keyboard
-	 * 
-	 * @param view
-	 *           the view
-	 */
 	private void endEdit( final DrawableHighlightView view ) {
 		if( null != view ){
 			view.setFocused( false );
-			view.forceUpdate();
+			if( view.forceUpdate() ) {
+				mImageView.invalidate( view.getInvalidationRect() );
+			} else {
+				mImageView.postInvalidate();
+			}
 		}
 		mEditTextWatcher.view = null;
 		mEditText.removeTextChangedListener( mEditTextWatcher );
-		mEditText.setOnKeyListener( null );
-		if ( mInputManager.isActive( mEditText ) ) mInputManager.hideSoftInputFromWindow( mEditText.getWindowToken(), 0 );
+		
+		InputMethodManager manager = (InputMethodManager) getContext().getBaseContext().getSystemService( Context.INPUT_METHOD_SERVICE );
+		if( null != manager ) {
+			if ( manager.isActive( mEditText ) ) {
+				manager.hideSoftInputFromWindow( mEditText.getWindowToken(), 0 );
+			}
+		}
 	}
 
 	@Override
 	protected View generateContentView( final LayoutInflater inflater ) {
-		return inflater.inflate( R.layout.feather_text_content, null );
+		return inflater.inflate( R.layout.aviary_content_text, null );
 	}
 
 	@Override
 	protected ViewGroup generateOptionView( final LayoutInflater inflater, ViewGroup parent ) {
-		return (ViewGroup) inflater.inflate( R.layout.feather_text_panel, parent, false );
+		return (ViewGroup) inflater.inflate( R.layout.aviary_panel_crop, parent, false );
 	}
 
 	@Override
@@ -220,20 +178,19 @@ public class TextPanel extends AbstractContentPanel implements OnDrawableEventLi
 		return super.getIsChanged() || ( ( (ImageViewDrawableOverlay) mImageView ).getHighlightCount() > 0 );
 	}
 
-	/**
-	 * Add a new editable text on the screen.
-	 */
 	private void onAddNewText() {
 		final ImageViewDrawableOverlay image = (ImageViewDrawableOverlay) mImageView;
 
 		if ( image.getHighlightCount() > 0 ) onApplyCurrent( image.getHighlightViewAt( 0 ) );
 
-		final TextDrawable text = new TextDrawable( "", defaultTextSize );
+		final AviaryTextDrawable text = new AviaryTextDrawable( "", mDefaultTextSize );
 		text.setTextColor( mColor );
-		text.setStrokeEnabled(false);
-		text.setTextHint( getContext().getBaseContext().getString( R.string.enter_text_here ) );
+		text.setStrokeEnabled( config.getBoolean( R.integer.aviary_text_stroke_enabled ) );
+		text.setCursorWidth( 2 );
+		text.setMinTextSize( 14 );
+		text.setTextHint( mEditText.getHint() );
 
-		final DrawableHighlightView hv = new DrawableHighlightView( mImageView, text );
+		final DrawableHighlightView hv = new DrawableHighlightView( mImageView, image.getOverlayStyleId(), text );
 
 		final Matrix mImageMatrix = mImageView.getImageViewMatrix();
 
@@ -264,31 +221,15 @@ public class TextPanel extends AbstractContentPanel implements OnDrawableEventLi
 		final RectF cropRect = new RectF( pts[0], pts[1], pts[2], pts[3] );
 		final Rect imageRect = new Rect( 0, 0, width, height );
 
-		hv.setRotateAndScale( true );
-		hv.showDelete( false );
-
 		hv.setup( getContext().getBaseContext(), mImageMatrix, imageRect, cropRect, false );
-		hv.drawOutlineFill( true );
-		hv.drawOutlineStroke( true );
-		hv.setPadding( textPadding );
-		hv.setMinSize( minTextSize );
-		hv.setOutlineEllipse( mHighlightEllipse );
 		
-		hv.setOutlineFillColor( mHighlightFillColorStateList );
-		hv.setOutlineStrokeColor( mHighlightStrokeColorStateList );
-
-		Paint stroke = hv.getOutlineStrokePaint();
-		stroke.setStrokeWidth( mHighlightStrokeWidth );
-
 		image.addHighlightView( hv );
+		
 		// image.setSelectedHighlightView( hv );
 
 		onClick( hv );
 	}
 
-	/**
-	 * apply the current text and flatten it over the image.
-	 */
 	private MoaActionList onApplyCurrent() {
 		final MoaActionList nullActions = MoaActionFactory.actionList();
 		final ImageViewDrawableOverlay image = (ImageViewDrawableOverlay) mImageView;
@@ -311,67 +252,65 @@ public class TextPanel extends AbstractContentPanel implements OnDrawableEventLi
 		return nullActions;
 	}
 
-	/**
-	 * Flatten the view on the current image
-	 * 
-	 * @param hv
-	 *           the hv
-	 */
 	private MoaActionList onApplyCurrent( final DrawableHighlightView hv ) {
 
-		MoaActionList actionList = MoaActionFactory.actionList();
-
+		MoaActionList actionList;
+		
 		if ( hv != null ) {
 			setIsChanged( true );
 
 			final RectF cropRect = hv.getCropRectF();
-			final Rect rect = new Rect( (int) cropRect.left, (int) cropRect.top, (int) cropRect.right, (int) cropRect.bottom );
-			final Matrix rotateMatrix = hv.getCropRotationMatrix();
+			final float scale = MatrixUtils.getScale( mImageView.getImageMatrix() )[0];
+			
+			mLogger.log( "cropRect: " + cropRect );
+			
 			final int w = mBitmap.getWidth();
 			final int h = mBitmap.getHeight();
-			final float left = cropRect.left / w;
-			final float top = cropRect.top / h;
-			final float right = cropRect.right / w;
-			final float bottom = cropRect.bottom / h;
+			
+			final float left = cropRect.left;
+			final float top = cropRect.top;
+			final float right = cropRect.right;
+			final float bottom = cropRect.bottom;
 
-			final Matrix matrix = new Matrix( mImageView.getImageMatrix() );
-			if ( !matrix.invert( matrix ) ) mLogger.error( "unable to invert matrix" );
-
+			// stop editing
 			EditableDrawable editable = (EditableDrawable) hv.getContent();
 			editable.endEdit();
+			
 			mImageView.invalidate();
 			
+			// generate the text filter
 			TextFilter filter = (TextFilter) FilterLoaderFactory.get(Filters.TEXT);
-			
+			filter.setPreviewSize(w, h);
 			filter.setText(editable.getText());
 			filter.setFillColor(mColor);
-			filter.setStrokeColor(0);
+			filter.setStrokeColor(editable.getStrokeEnabled() ? editable.getTextStrokeColor() : 0);
 			filter.setRotation(hv.getRotation());
 			filter.setTopLeft(top, left);
 			filter.setBottomRight(bottom, right);
+			filter.setTextSize(editable.getTextSize() / scale );
+			
+			actionList = (MoaActionList) filter.getActions().clone();
 
-			actionList.addAll( filter.getActions() );
-
+			// now save the preview bitmap
+			final Rect rect = new Rect( (int) cropRect.left, (int) cropRect.top, (int) cropRect.right, (int) cropRect.bottom );
 			final int saveCount = mCanvas.save( Canvas.MATRIX_SAVE_FLAG );
+			final Matrix rotateMatrix = hv.getCropRotationMatrix();
 			mCanvas.concat( rotateMatrix );
 			hv.getContent().setBounds( rect );
-
 			hv.getContent().draw( mCanvas );
 			mCanvas.restoreToCount( saveCount );
+
 			mImageView.invalidate();
 			onClearCurrent( hv );
+			
+		} else {
+			actionList = MoaActionFactory.actionList();
 		}
 
-		onPreviewChanged( mPreview, false );
+		onPreviewChanged( mPreview, false, false );
 		return actionList;
 	}
 
-	/**
-	 * Removes the current text
-	 * 
-	 * @param hv
-	 *           the hv
-	 */
 	private void onClearCurrent( final DrawableHighlightView hv ) {
 		hv.setOnDeleteClickListener( null );
 		( (ImageViewDrawableOverlay) mImageView ).removeHightlightView( hv );
@@ -381,74 +320,37 @@ public class TextPanel extends AbstractContentPanel implements OnDrawableEventLi
 	public void onClick( final DrawableHighlightView view ) {
 		if ( view != null ) if ( view.getContent() instanceof EditableDrawable ) {
 			
-			if( !view.getFocused() ){
+			if( !view.isFocused() ){
 				beginEdit( view );
 			}
-			
-			/*
-			final EditableDrawable text = (EditableDrawable) view.getContent();
-			if ( !text.isEditing() ) {
-				text.beginEdit();
-				beginEdit( view );
-			}
-			*/
 		}
 	}
 
 	@Override
-	public void onCreate( final Bitmap bitmap ) {
-		super.onCreate( bitmap );
+	public void onCreate( final Bitmap bitmap, Bundle options ) {
+		super.onCreate( bitmap, options );
 
 		config = getContext().getService( ConfigService.class );
 
-		mColors = config.getIntArray( R.array.feather_text_fill_colors );
+		mColors = config.getIntArray( R.array.aviary_text_fill_colors );
+		mSelectedPosition = config.getInteger( R.integer.aviary_text_fill_color_index );
 
-		mSelectedPosition = config.getInteger( R.integer.feather_text_selected_color );
 		mColor = mColors[mSelectedPosition];
 
-		mGallery = (Gallery) getOptionView().findViewById( R.id.gallery );
+		mGallery = (AviaryGallery) getOptionView().findViewById( R.id.aviary_gallery );
+		mGallery.setDefaultPosition( mSelectedPosition );
 		mGallery.setCallbackDuringFling( false );
-		mGallery.setSpacing( 0 );
+		mGallery.setAutoSelectChild( true );
 		mGallery.setAdapter( new GalleryAdapter( getContext().getBaseContext(), mColors ) );
-		mGallery.setSelection( mSelectedPosition, false, true );
-		mGallery.setOnItemsScrollListener( new OnItemsScrollListener() {
+		mGallery.setOnItemsScrollListener( this );
 
-			@Override
-			public void onScrollFinished( AdapterView<?> parent, View view, int position, long id ) {
-				updateSelection( view, position );
-
-				if( position >= 0 && position < mColors.length ) {
-					final int color = mColors[position];
-					mColor = color;
-					updateCurrentHighlightColor();
-				}
-			}
-
-			@Override
-			public void onScrollStarted( AdapterView<?> parent, View view, int position, long id ) {
-			}
-
-			@Override
-			public void onScroll( AdapterView<?> parent, View view, int position, long id ) {
-				
-				// if you want to update the color while scrolling
-				
-				//if( position >= 0 && position < mColors.length ) {
-				//	final int color = mColors[position];
-				//	mColor = color;
-				//	updateCurrentHighlightColor();
-				//}
-			}
-		} );
-
-		mEditText = (EditText) getContentView().findViewById( R.id.invisible_text );
-		mImageView = (ImageViewTouch) getContentView().findViewById( R.id.overlay );
+		mEditText = (EditText) getContentView().findViewById( R.id.aviary_text );
+		mImageView = (ImageViewTouch) getContentView().findViewById( R.id.aviary_image );
 		mImageView.setDisplayType( DisplayType.FIT_IF_BIGGER );
 		mImageView.setDoubleTapEnabled( false );
 
 		createAndConfigurePreview();
 
-		@SuppressWarnings ( "unused" ) Matrix matrix = getContext().getCurrentImageViewMatrix();
 		mImageView.setImageBitmap( mPreview, null, -1, UIConfiguration.IMAGE_VIEW_MAX_ZOOM );
 	}
 
@@ -458,27 +360,16 @@ public class TextPanel extends AbstractContentPanel implements OnDrawableEventLi
 
 		disableHapticIsNecessary( mGallery );
 
-		mHighlightFillColorStateList = config.getColorStateList( R.color.feather_effect_text_color_fill_selector );
-		mHighlightStrokeColorStateList = config.getColorStateList( R.color.feather_effect_text_color_stroke_selector );
+		mDefaultTextSize = config.getDimensionPixelSize( R.dimen.aviary_text_overlay_default_size );
 		
-		mHighlightEllipse = config.getInteger( R.integer.feather_text_highlight_ellipse );
-		mHighlightStrokeWidth = config.getInteger( R.integer.feather_text_highlight_stroke_width );
-		
-		minTextSize = config.getDimensionPixelSize( R.dimen.feather_text_drawable_min_size );
-		defaultTextSize = config.getDimensionPixelSize( R.dimen.feather_text_default_size );
-		defaultTextSize = Math.max( minTextSize, defaultTextSize );
-		
-		textPadding = config.getInteger( R.integer.feather_text_padding );
-
 		( (ImageViewDrawableOverlay) mImageView ).setOnDrawableEventListener( this );
 		( (ImageViewDrawableOverlay) mImageView ).setScaleWithContent( true );
 		( (ImageViewDrawableOverlay) mImageView ).setForceSingleSelection( false );
 		
-		mInputManager = (InputMethodManager) getContext().getBaseContext().getSystemService( Context.INPUT_METHOD_SERVICE );
-
 		mImageView.requestLayout();
+		
+		mEditText.setOnKeyListener( this );
 
-		updateSelection( (View) mGallery.getSelectedView(), mGallery.getSelectedItemPosition() );
 		contentReady();
 
 		// delay the creation of the text element
@@ -494,6 +385,7 @@ public class TextPanel extends AbstractContentPanel implements OnDrawableEventLi
 	@Override
 	public void onDeactivate() {
 		( (ImageViewDrawableOverlay) mImageView ).setOnDrawableEventListener( null );
+		mGallery.setOnItemsScrollListener( null );
 		endEdit( null );
 		super.onDeactivate();
 	}
@@ -501,31 +393,56 @@ public class TextPanel extends AbstractContentPanel implements OnDrawableEventLi
 	@Override
 	public void onDestroy() {
 		mCanvas = null;
-		mInputManager = null;
 		( (ImageViewDrawableOverlay) mImageView ).clearOverlays();
 		super.onDestroy();
 	}
+	
+	@Override
+	public void onScrollStarted( AviaryAdapterView<?> parent, View view, int position, long id ) {
+	}
+	
+	@Override
+	public void onScroll( AviaryAdapterView<?> parent, View view, int position, long id ) {
+		if( position >= 0 && position < mColors.length ) {
+			final int color = mColors[position];
+			mColor = color;
+			updateCurrentHighlightColor();
+		}		
+	}
+	
+	@Override
+	public void onScrollFinished( AviaryAdapterView<?> parent, View view, int position, long id ) {
+		if( position >= 0 && position < mColors.length ) {
+			final int color = mColors[position];
+			mColor = color;
+			updateCurrentHighlightColor();
+		}		
+	}
+	
+	@Override
+	public boolean onKey( View v, int keyCode, KeyEvent event ) {
 
-	/**
-	 * Update selection.
-	 * 
-	 * @param newSelection
-	 *           the new selection
-	 * @param position
-	 *           the position
-	 */
-	protected void updateSelection( View newSelection, int position ) {
-		if ( mSelected != null ) {
-			mSelected.setSelected( false );
+		DrawableHighlightView hv = ((ImageViewDrawableOverlay) mImageView).getSelectedHighlightView();
+		mLogger.log( "onKey: " + keyCode );
+		
+		if( null != hv ) {
+			
+			if ( keyCode == KeyEvent.KEYCODE_DEL || keyCode == KeyEvent.KEYCODE_BACK ) {
+				
+				FeatherDrawable content = hv.getContent();
+				if( content instanceof EditableDrawable ) {
+					EditableDrawable editable = (EditableDrawable) content;
+				
+					if ( editable.isTextHint() && editable.isEditing() ) {
+						editable.setText( "" );
+						if( hv.forceUpdate() ){
+							mImageView.invalidate( hv.getInvalidationRect() );
+						}
+					}
+				}
+			}		
 		}
-
-		mSelected = newSelection;
-		mSelectedPosition = position;
-
-		if ( mSelected != null ) {
-			mSelected = newSelection;
-			mSelected.setSelected( true );
-		}
+		return false;
 	}
 
 	@Override
@@ -586,10 +503,12 @@ public class TextPanel extends AbstractContentPanel implements OnDrawableEventLi
 
 	@Override
 	public boolean onEditorAction( TextView v, int actionId, KeyEvent event ) {
+		
+		mLogger.info( "onEditorAction: " + actionId + ", event: " + event );
 
 		if ( mEditText != null ) {
 			if ( mEditText.equals( v ) ) {
-				if ( actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_UNSPECIFIED ) {
+				if ( actionId == EditorInfo.IME_ACTION_DONE ) {
 					final ImageViewDrawableOverlay image = (ImageViewDrawableOverlay) mImageView;
 					if ( image.getSelectedHighlightView() != null ) {
 						DrawableHighlightView d = image.getSelectedHighlightView();
@@ -607,92 +526,82 @@ public class TextPanel extends AbstractContentPanel implements OnDrawableEventLi
 
 		return false;
 	}
+	
 
 	class GalleryAdapter extends BaseAdapter {
 
 		private final int VALID_POSITION = 0;
 		private final int INVALID_POSITION = 1;
-		private int[] colors;
-		Resources mRes;
-		LayoutInflater mLayoutInflater;
 
-		/**
-		 * Instantiates a new gallery adapter.
-		 * 
-		 * @param context
-		 *           the context
-		 * @param values
-		 *           the values
-		 */
+		private int[] sizes;
+		LayoutInflater mLayoutInflater;
+		Resources mRes;
+
 		public GalleryAdapter( Context context, int[] values ) {
 			mLayoutInflater = LayoutInflater.from( context );
-			colors = values;
-			mRes = getContext().getBaseContext().getResources();
+			sizes = values;
+			mRes = context.getResources();
 		}
 
 		@Override
 		public int getCount() {
-			return colors.length;
+			return sizes.length;
 		}
 
 		@Override
 		public Object getItem( int position ) {
-			return colors[position];
+			return sizes[position];
 		}
 
 		@Override
 		public long getItemId( int position ) {
 			return 0;
 		}
-		
+
 		@Override
 		public int getViewTypeCount() {
 			return 2;
 		}
-		
+
 		@Override
 		public int getItemViewType( int position ) {
 			final boolean valid = position >= 0 && position < getCount();
 			return valid ? VALID_POSITION : INVALID_POSITION;
-		}		
+		}
 
-		@SuppressWarnings("deprecation")
 		@Override
 		public View getView( int position, View convertView, ViewGroup parent ) {
 
 			final int type = getItemViewType( position );
 
-			View view;
+			PreviewFillColorDrawable drawable = null;
+			int color = 0;
+
 			if ( convertView == null ) {
+				
+				convertView = mLayoutInflater.inflate( R.layout.aviary_gallery_item_view, mGallery, false );
+				
 				if ( type == VALID_POSITION ) {
-					view = mLayoutInflater.inflate( R.layout.feather_color_button, mGallery, false );
-					Drawable unselectedBackground = new OverlayGalleryCheckboxDrawable( mRes, false, null, 1.0f, 20 );
-					Drawable selectedBackground = new OverlayGalleryCheckboxDrawable( mRes, true, null, 1.0f, 20 );
-					StateListDrawable st = new StateListDrawable();
-					st.addState( new int[] { -attr.state_selected }, unselectedBackground );
-					st.addState( new int[] { attr.state_selected }, selectedBackground );
-					view.setBackgroundDrawable( st );
-				} else {
-					// use the blank view
-					view = mLayoutInflater.inflate( R.layout.feather_default_blank_gallery_item, mGallery, false );
-					Drawable unselectedBackground = new DefaultGalleryCheckboxDrawable( mRes, false );
-					view.setBackgroundDrawable( unselectedBackground );
+					drawable = new PreviewFillColorDrawable( getContext().getBaseContext() );
+					ImageView image = (ImageView) convertView.findViewById( R.id.image );
+					image.setImageDrawable( drawable );
+					convertView.setTag( drawable );
 				}
 			} else {
-				view = convertView;
+				if ( type == VALID_POSITION ) {
+					drawable = (PreviewFillColorDrawable) convertView.getTag();
+				}
 			}
 
-			if ( type == VALID_POSITION ) {
-				ImageView masked = (ImageView) view.findViewById( R.id.color_mask );
-				final int color = (Integer) getItem( position );
-				LayerDrawable layer = (LayerDrawable) masked.getDrawable();
-				GradientDrawable shape = (GradientDrawable) layer.findDrawableByLayerId( R.id.masked );
-				shape.setColor( color );
-
-				view.setSelected( position == mSelectedPosition );
+			if ( drawable != null && type == VALID_POSITION ) {
+				color = sizes[position];
+				drawable.setColor( color );
 			}
 
-			return view;
+			convertView.setSelected( mSelectedPosition == position );
+			convertView.setId( position );
+			return convertView;
 		}
-	}
+	}	
+
 }

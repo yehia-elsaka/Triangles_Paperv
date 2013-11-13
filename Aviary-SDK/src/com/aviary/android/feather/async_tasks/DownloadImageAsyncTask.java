@@ -6,7 +6,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.DisplayMetrics;
 
-import com.aviary.android.feather.Constants;
+import com.aviary.android.feather.library.Constants;
 import com.aviary.android.feather.library.log.LoggerFactory;
 import com.aviary.android.feather.library.log.LoggerFactory.Logger;
 import com.aviary.android.feather.library.log.LoggerFactory.LoggerType;
@@ -60,6 +60,7 @@ public class DownloadImageAsyncTask extends AsyncTask<Context, Void, Bitmap> {
 	private Uri mUri;
 	private String error;
 	private ImageLoader.ImageSizes mImageSize;
+	private int mMaxSize;
 
 	/**
 	 * Instantiates a new download image async task.
@@ -67,9 +68,10 @@ public class DownloadImageAsyncTask extends AsyncTask<Context, Void, Bitmap> {
 	 * @param uri
 	 *           the uri
 	 */
-	public DownloadImageAsyncTask( Uri uri ) {
+	public DownloadImageAsyncTask( Uri uri, int maxSize ) {
 		super();
 		mUri = uri;
+		mMaxSize = maxSize;
 	}
 
 	/**
@@ -96,13 +98,8 @@ public class DownloadImageAsyncTask extends AsyncTask<Context, Void, Bitmap> {
 		
 		int max_size = -1;
 		
-		// if the passed intent explicitly contains a max image size, then
-		// just use that value
-		if ( Constants.containsValue( Constants.EXTRA_MAX_IMAGE_SIZE ) ) {
-			int size = Constants.getValueFromIntent( Constants.EXTRA_MAX_IMAGE_SIZE, 0 );
-			if ( size > 0 ) {
-				max_size = size;
-			}
+		if( mMaxSize > 0 ) {
+			max_size = mMaxSize;
 		}
 		
 		if( max_size <= 0 ) {

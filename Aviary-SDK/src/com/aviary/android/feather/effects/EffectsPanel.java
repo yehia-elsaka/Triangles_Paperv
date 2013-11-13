@@ -1,7 +1,5 @@
 package com.aviary.android.feather.effects;
 
-import it.sephiroth.android.library.imagezoom.ImageViewTouch;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -17,35 +15,38 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
+import android.os.Bundle;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
-import com.aviary.android.feather.Constants;
 import com.aviary.android.feather.R;
 import com.aviary.android.feather.headless.filters.INativeFilter;
 import com.aviary.android.feather.headless.filters.NativeFilterProxy;
 import com.aviary.android.feather.headless.filters.impl.EffectFilter;
 import com.aviary.android.feather.headless.gl.GLUtils;
+import com.aviary.android.feather.headless.moa.MoaAction;
+import com.aviary.android.feather.headless.moa.MoaActionFactory;
 import com.aviary.android.feather.headless.moa.MoaActionList;
 import com.aviary.android.feather.headless.moa.MoaResult;
 import com.aviary.android.feather.library.content.FeatherIntent;
+import com.aviary.android.feather.library.content.ToolEntry;
 import com.aviary.android.feather.library.filters.FilterLoaderFactory;
 import com.aviary.android.feather.library.filters.FilterLoaderFactory.Filters;
 import com.aviary.android.feather.library.plugins.PluginFactory.ICDSPlugin;
 import com.aviary.android.feather.library.plugins.PluginFactory.InternalPlugin;
 import com.aviary.android.feather.library.services.CDSPackage.CDSEntry;
-import com.aviary.android.feather.library.services.EffectContext;
+import com.aviary.android.feather.library.services.IAviaryController;
 import com.aviary.android.feather.library.services.ImageCacheService;
 import com.aviary.android.feather.library.services.PluginService;
 import com.aviary.android.feather.library.threading.Future;
 import com.aviary.android.feather.library.threading.FutureListener;
+import com.aviary.android.feather.library.utils.BitmapUtils;
 import com.aviary.android.feather.opengl.AviaryGLSurfaceView;
 import com.aviary.android.feather.opengl.AviaryGLSurfaceView.GLRendererListener;
-import com.aviary.android.feather.utils.UIUtils;
-import com.aviary.android.feather.widget.ImageSwitcher;
+import com.aviary.android.feather.widget.AviaryImageSwitcher;
 
 public class EffectsPanel extends BordersPanel {
 
@@ -56,22 +57,33 @@ public class EffectsPanel extends BordersPanel {
 	private AviaryGLSurfaceView mOpenGlView;
 	
 	/** enable/disable fast preview. */
-	private boolean mEnableFastPreview = false;
+	
 	private Bitmap mSmallPreview;
 	private static final int PREVIEW_SCALE_FACTOR = 4;
+	
+	private int mThumbPadding;
+	private int mThumbRoundedCorners;
+	private int mThumbStrokeColor;
+	private int mThumbStrokeWidth;	
 
-	public EffectsPanel( EffectContext context ) {
-		super( context, FeatherIntent.PluginType.TYPE_FILTER );
+	public EffectsPanel( IAviaryController context, ToolEntry entry ) {
+		super( context, entry, FeatherIntent.PluginType.TYPE_FILTER );
 		checkOpenGL( context );
 	}
 
 	@Override
-	public void onCreate( Bitmap bitmap ) {
-		super.onCreate( bitmap );
+	public void onCreate( Bitmap bitmap, Bundle options ) {
+		super.onCreate( bitmap, options );
 		
 		mLogger.info( "OpenGL enabled: " + mOpenGlEnabled );
 		mLogger.info( "FastPreview enabled: "+  mEnableFastPreview );
 
+		mThumbPadding = mConfigService.getDimensionPixelSize( R.dimen.aviary_effect_thumb_padding );
+		mThumbRoundedCorners = mConfigService.getDimensionPixelSize( R.dimen.aviary_effect_thumb_radius );
+		mThumbStrokeWidth = mConfigService.getDimensionPixelSize( R.dimen.aviary_effect_thumb_stroke );
+		mThumbStrokeColor = mConfigService.getColor( R.color.aviary_effect_thumb_stroke_color );
+		
+		
 		if ( mOpenGlEnabled ) {
 			mOpenGlView = (AviaryGLSurfaceView) getContentView().findViewById( R.id.imagegl );
 			mOpenGlView.setOnGlRendererListener( mGLRendererListener );
@@ -100,7 +112,6 @@ public class EffectsPanel extends BordersPanel {
 		super.onDispose();
 
 		if ( mSmallPreview != null && !mSmallPreview.isRecycled() ) {
-			mLogger.log( "Dispose the small preview" );
 			mSmallPreview.recycle();
 		}
 		mSmallPreview = null;
@@ -157,34 +168,25 @@ public class EffectsPanel extends BordersPanel {
 	}
 	
 	@Override
-	protected FramesListAdapter createListAdapter( Context context, List<EffectPack> result ) {
-		return new EffectsListAdapter( context, R.layout.feather_effect_thumb, R.layout.feather_effect_external_thumb, R.layout.feather_stickers_pack_divider_empty,
-				R.layout.feather_getmore_stickers_thumb, R.layout.feather_getmore_stickers_thumb_inverted, result );
+	protected ListAdapter createListAdapter( Context context, List<EffectPack> result ) {
+		return new EffectsListAdapter( context, 
+				R.layout.aviary_frame_item, 
+				R.layout.aviary_effect_item_more, 
+				R.layout.aviary_frame_item_external, 
+				R.layout.aviary_frame_item_divider, result );
 	}	
 	
 	@Override
 	protected RenderTask createRenderTask( int position ) {
 		return new EffectsRenderTask( position );
 	}
-
-	@Override
-	public View makeView() {
-		View view = super.makeView();
-		( (ImageViewTouch) view ).setScrollEnabled( false );
-		( (ImageViewTouch) view ).setScaleEnabled( false );
-		return view;
-	}
 	
 	@Override
 	protected View generateContentView( LayoutInflater inflater ) {
-		if( !mOpenGlEnabled ) {
-			mEnableFastPreview = Constants.getFastPreviewEnabled();
-		}
-		
 		if( !mOpenGlEnabled )
 			return super.generateContentView( inflater );
 		else
-			return inflater.inflate( R.layout.feather_native_effects_content_gl, null );
+			return inflater.inflate( R.layout.aviary_content_effects_gl, null );
 	}
 
 	@Override
@@ -196,7 +198,7 @@ public class EffectsPanel extends BordersPanel {
 	}
 
 	@Override
-	protected void initContentImage( ImageSwitcher imageView ) {
+	protected void initContentImage( AviaryImageSwitcher imageView ) {
 
 		if ( !mOpenGlEnabled ) {
 			Animation inAnimation = null;
@@ -228,7 +230,7 @@ public class EffectsPanel extends BordersPanel {
 		}
 	}
 
-	private void checkOpenGL( final EffectContext context ) {
+	private void checkOpenGL( final IAviaryController context ) {
 		// check if OpenGL 2.0 is available for this application
 		if ( GLUtils.getGlEsEnabled( context.getBaseContext() ) && getPluginType() == FeatherIntent.PluginType.TYPE_FILTER ) {
 			mOpenGlEnabled = GLUtils.getGlEsVersion( context.getBaseContext() ) >= 0x20000;
@@ -255,7 +257,7 @@ public class EffectsPanel extends BordersPanel {
 	
 	@Override
 	protected CharSequence[] getOptionalEffectsLabels() {
-		return new CharSequence[] { "Original" };
+		return new CharSequence[] { mConfigService.getString( R.string.feather_original ) };
 	}
 	
 	@Override
@@ -290,12 +292,10 @@ public class EffectsPanel extends BordersPanel {
 	}
 	
 	private void renderFirstTime( String label ) {
-		mLogger.log( "renderFirstTime: " + label );
 		FutureListener<Boolean> listener = new FutureListener<Boolean>() {
 
 			@Override
 			public void onFutureDone( Future<Boolean> arg0 ) {
-				mLogger.log( "renderedFirstTime!" );
 				mOpenGlView.requestRender();
 				contentReady();
 			}
@@ -354,7 +354,6 @@ public class EffectsPanel extends BordersPanel {
 		protected MoaResult initPreview( INativeFilter filter ) {
 			if( !mOpenGlEnabled && mEnableFastPreview ) {
 				try {
-					mLogger.log( "initPreview: " + mSmallPreview );
 					return filter.prepare( mBitmap, mSmallPreview, mSmallPreview.getWidth(), mSmallPreview.getHeight() );
 				} catch ( JSONException e ) {
 					e.printStackTrace();
@@ -365,7 +364,6 @@ public class EffectsPanel extends BordersPanel {
 		
 		@Override
 		public void doFullPreviewInBackground( final String effectName ) {
-			mLogger.log( "doFullPreviewInBackground: " + effectName );
 			if( mOpenGlEnabled ) {
 				mOpenGlView.executeEffect( effectName, mPreview, true, mOpenGlBackgroundListener ); // <-- listener here!
 
@@ -383,7 +381,6 @@ public class EffectsPanel extends BordersPanel {
 		
 		@Override
 		public Bitmap doInBackground( EffectPack... params ) {
-			mLogger.info( "doInBackground" );
 			Bitmap result = super.doInBackground( params );
 			if( mOpenGlEnabled ){
 				return mPreview;
@@ -393,7 +390,6 @@ public class EffectsPanel extends BordersPanel {
 		
 		@Override
 		protected void onRestoreOriginalBitmap() {
-			mLogger.info( "onRestoreOriginalBitmap" );
 			if( mOpenGlEnabled ) {
 				mOpenGlView.requestRender();
 			} else {
@@ -403,7 +399,6 @@ public class EffectsPanel extends BordersPanel {
 		
 		@Override
 		protected void onApplyNewBitmap( Bitmap result ) {
-			mLogger.info( "onApplyNewBitmap" );
 			if( mOpenGlEnabled ) {
 				mOpenGlView.requestRender();
 			} else {
@@ -413,15 +408,19 @@ public class EffectsPanel extends BordersPanel {
 	}
 	
 	
-	class EffectsListAdapter extends FramesListAdapter {
+	class EffectsListAdapter extends ListAdapter {
 
-		public EffectsListAdapter( Context context, int mainResId, int externalResId, int dividerResId, int altResId, int altResId2, List<EffectPack> objects ) {
-			super( context, mainResId, externalResId, dividerResId, altResId, altResId2, objects );
+		public EffectsListAdapter( Context context, int mainResId, int moreResId, int externalResId, int dividerResId, List<EffectPack> objects ) {
+			super( context, mainResId, moreResId, externalResId, dividerResId, objects );
 		}
 		
 		@Override
 		protected Callable<Bitmap> createExternalContentCallable( String iconUrl ) {
-			return new ExternalEffectsThumbnailCallable( iconUrl, mCacheService, mExternalFolderIcon, this.getContext().getResources(), R.drawable.feather_iap_dialog_image_na );
+			return new ExternalEffectsThumbnailCallable( iconUrl, 
+					mCacheService, 
+					mExternalFolderIcon, 
+					getContext().getBaseContext().getResources(), 
+					R.drawable.aviary_ic_na );
 		}
 		
 		@Override
@@ -431,17 +430,11 @@ public class EffectsPanel extends BordersPanel {
 		
 		@Override
 		protected BitmapDrawable getExternalBackgroundDrawable( Context context ) {
-			return (BitmapDrawable) context.getResources().getDrawable( R.drawable.feather_effects_pack_background );
+			return (BitmapDrawable) context.getResources().getDrawable( R.drawable.aviary_effects_pack_background );
 		}
 	}
 	
 
-	/**
-	 * Render the passed effect in a thumbnail
-	 * 
-	 * @author alessandro
-	 * 
-	 */
 	class FilterThumbnailCallable implements Callable<Bitmap> {
 
 		INativeFilter mFilter;
@@ -516,6 +509,27 @@ public class EffectsPanel extends BordersPanel {
 				canvas.drawBitmap( invalidBitmap, src, dst, paint );
 			}
 		}
+		
+		MoaActionList actionsForRoundedThumbnail( final boolean isValid, INativeFilter filter ) {
+			
+			MoaActionList actions = MoaActionFactory.actionList();
+			if ( null != filter ) {
+				actions.addAll( filter.getActions() );
+			}
+
+			MoaAction action = MoaActionFactory.action( "ext-roundedborders" );
+			action.setValue( "padding", mThumbPadding );
+			action.setValue( "roundPx", mThumbRoundedCorners );
+			action.setValue( "strokeColor", mThumbStrokeColor );
+			action.setValue( "strokeWeight", mThumbStrokeWidth );
+
+			if ( !isValid ) {
+				action.setValue( "overlaycolor", 0x99000000 );
+			}
+			
+			actions.add( action );
+			return actions;
+		}		
 	}
 	
 	static class ExternalEffectsThumbnailCallable extends ExternalFramesThumbnailCallable {
@@ -527,7 +541,7 @@ public class EffectsPanel extends BordersPanel {
 		@SuppressWarnings("deprecation")
 		@Override
 		Bitmap generateBitmap( Bitmap icon ) {
-			return UIUtils.drawFolderBitmap( mFolder, new BitmapDrawable( icon ), 1.0f );
+			return BitmapUtils.flattenDrawables( mFolder, new BitmapDrawable( icon ), 1.0f, 0f );
 		}
 	}
 }

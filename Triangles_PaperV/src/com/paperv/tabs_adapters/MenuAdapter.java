@@ -10,9 +10,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.paperv.www.R;
 import com.paperv.models.MenuItem;
 import com.paperv.tabs_utils.Utils;
+import com.paperv.www.R;
 
 public class MenuAdapter extends ArrayAdapter<MenuItem> {
 

@@ -17,7 +17,6 @@ import android.view.View;
 
 /**
  * Draw a bitmap repeated horizontally and scaled vertically.
- * 
  * @author alessandro
  */
 public class RepeatableHorizontalDrawable extends Drawable {
@@ -31,10 +30,8 @@ public class RepeatableHorizontalDrawable extends Drawable {
 	/**
 	 * Construct a new {@link RepeatableHorizontalDrawable} instance.
 	 * 
-	 * @param resources
-	 *           the current Context {@link Resources} used to extract the resource
-	 * @param resId
-	 *           the {@link BitmapDrawable} resource used to draw
+	 * @param resources	the current Context {@link Resources} used to extract the resource
+	 * @param resId	the {@link BitmapDrawable} resource used to draw
 	 */
 	public RepeatableHorizontalDrawable( Resources resources, int resId ) {
 		try {
@@ -69,11 +66,6 @@ public class RepeatableHorizontalDrawable extends Drawable {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see android.graphics.drawable.Drawable#draw(android.graphics.Canvas)
-	 */
 	@Override
 	public void draw( Canvas canvas ) {
 		if ( null != mBitmap ) {
@@ -82,11 +74,6 @@ public class RepeatableHorizontalDrawable extends Drawable {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see android.graphics.drawable.Drawable#onBoundsChange(android.graphics.Rect)
-	 */
 	@Override
 	protected void onBoundsChange( Rect bounds ) {
 		super.onBoundsChange( bounds );
@@ -96,31 +83,16 @@ public class RepeatableHorizontalDrawable extends Drawable {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see android.graphics.drawable.Drawable#getOpacity()
-	 */
 	@Override
 	public int getOpacity() {
 		return PixelFormat.TRANSLUCENT;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see android.graphics.drawable.Drawable#setAlpha(int)
-	 */
 	@Override
 	public void setAlpha( int alpha ) {
 		mPaint.setAlpha( alpha );
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see android.graphics.drawable.Drawable#setColorFilter(android.graphics.ColorFilter)
-	 */
 	@Override
 	public void setColorFilter( ColorFilter cf ) {
 		mPaint.setColorFilter( cf );

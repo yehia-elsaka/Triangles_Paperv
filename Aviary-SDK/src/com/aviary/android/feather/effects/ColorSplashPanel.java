@@ -14,24 +14,27 @@ import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 
 import com.aviary.android.feather.R;
 import com.aviary.android.feather.headless.filters.NativeToolFilter.ColorSplashBrushMode;
 import com.aviary.android.feather.headless.moa.MoaActionFactory;
 import com.aviary.android.feather.headless.moa.MoaActionList;
 import com.aviary.android.feather.headless.moa.MoaStrokeParameter;
+import com.aviary.android.feather.library.content.ToolEntry;
 import com.aviary.android.feather.library.filters.ColorSplashFilter;
 import com.aviary.android.feather.library.filters.FilterLoaderFactory;
 import com.aviary.android.feather.library.filters.FilterLoaderFactory.Filters;
 import com.aviary.android.feather.library.services.ConfigService;
-import com.aviary.android.feather.library.services.EffectContext;
+import com.aviary.android.feather.library.services.IAviaryController;
 import com.aviary.android.feather.library.tracking.Tracker;
 import com.aviary.android.feather.library.utils.UIConfiguration;
+import com.aviary.android.feather.widget.AviaryHighlightImageButton;
+import com.aviary.android.feather.widget.AviaryHighlightImageButton.OnCheckedChangeListener;
 import com.aviary.android.feather.widget.ImageViewSpotDraw;
 import com.aviary.android.feather.widget.ImageViewSpotDraw.OnDrawListener;
 import com.aviary.android.feather.widget.ImageViewSpotDraw.TouchMode;
@@ -39,14 +42,13 @@ import com.aviary.android.feather.widget.ImageViewSpotDraw.TouchMode;
 /**
  * The Class SpotDrawPanel.
  */
-public class ColorSplashPanel extends AbstractContentPanel implements OnDrawListener, OnClickListener {
+public class ColorSplashPanel extends AbstractContentPanel implements OnDrawListener, OnCheckedChangeListener, OnClickListener {
 
-	private ImageButton mLensButton;
+	private AviaryHighlightImageButton mLensButton;
 	private BackgroundDrawThread mBackgroundDrawThread;
 	private ColorSplashFilter mFilter;
-	private ImageButton mSmart;
-	private ImageButton mErase;
-	private ImageButton mFree;
+	private AviaryHighlightImageButton mSmart, mErase, mFree;
+	private AviaryHighlightImageButton mCurrent;
 	private View mDisabledStatusView;
 	private ColorSplashBrushMode mBrushType = ColorSplashBrushMode.Free;
 
@@ -54,21 +56,21 @@ public class ColorSplashPanel extends AbstractContentPanel implements OnDrawList
 
 	MoaActionList mActions = MoaActionFactory.actionList();
 
-	public ColorSplashPanel( EffectContext context ) {
-		super( context );
+	public ColorSplashPanel( IAviaryController context, ToolEntry entry ) {
+		super( context, entry );
 	}
 
 	@Override
-	public void onCreate( Bitmap bitmap ) {
-		super.onCreate( bitmap );
+	public void onCreate( Bitmap bitmap, Bundle options ) {
+		super.onCreate( bitmap, options );
 		ConfigService config = getContext().getService( ConfigService.class );
 
-		int brushSize = config.getDimensionPixelSize( R.dimen.feather_colorsplash_brush_size );
+		int brushSize = config.getDimensionPixelSize( R.dimen.aviary_color_splash_brush_size );
 
-		mLensButton = (ImageButton) getContentView().findViewById( R.id.lens_button );
-		mFree = (ImageButton) getOptionView().findViewById( R.id.free );
-		mSmart = (ImageButton) getOptionView().findViewById( R.id.smart );
-		mErase = (ImageButton) getOptionView().findViewById( R.id.erase );
+		mLensButton = (AviaryHighlightImageButton) getContentView().findViewById( R.id.aviary_lens_button );
+		mFree = (AviaryHighlightImageButton) getOptionView().findViewById( R.id.aviary_button1 );
+		mSmart = (AviaryHighlightImageButton) getOptionView().findViewById( R.id.aviary_button2 );
+		mErase = (AviaryHighlightImageButton) getOptionView().findViewById( R.id.aviary_button3 );
 
 		mImageView = (ImageViewSpotDraw) getContentView().findViewById( R.id.image );
 		( (ImageViewSpotDraw) mImageView ).setBrushSize( (int) ( brushSize * BRUSH_MULTIPLIER ) );
@@ -76,21 +78,10 @@ public class ColorSplashPanel extends AbstractContentPanel implements OnDrawList
 		( (ImageViewSpotDraw) mImageView ).setPaintEnabled( false );
 		( (ImageViewSpotDraw) mImageView ).setDisplayType( DisplayType.FIT_IF_BIGGER );
 
-		mDisabledStatusView = getOptionView().findViewById( R.id.disable_status );
+		mDisabledStatusView = getOptionView().findViewById( R.id.aviary_disable_status );
 
 		mPreview = Bitmap.createBitmap( mBitmap.getWidth(), mBitmap.getHeight(), Bitmap.Config.ARGB_8888 );
 		mPreview.eraseColor( Color.BLACK );
-
-		if( mBrushType == ColorSplashBrushMode.Smart )
-			mSmart.setSelected( true );
-		else if( mBrushType == ColorSplashBrushMode.Free )
-			mFree.setSelected( true );
-		else
-			mErase.setSelected( true );
-
-		mFree.setOnClickListener( this );
-		mSmart.setOnClickListener( this );
-		mErase.setOnClickListener( this );
 
 		mBackgroundDrawThread = new BackgroundDrawThread( "filter-thread", Thread.NORM_PRIORITY );
 
@@ -113,20 +104,23 @@ public class ColorSplashPanel extends AbstractContentPanel implements OnDrawList
 	@Override
 	public void onActivate() {
 		super.onActivate();
+		
+		mFree.setOnCheckedChangeListener( this );
+		if( mFree.isChecked() ) mCurrent = mFree;
+		
+		mSmart.setOnCheckedChangeListener( this );
+		if( mSmart.isChecked() ) mCurrent = mSmart;
+		
+		mErase.setOnCheckedChangeListener( this );
+		if( mErase.isChecked() ) mCurrent = mErase;				
 
 		( (ImageViewSpotDraw) mImageView ).setOnDrawStartListener( this );
 
 		mBackgroundDrawThread.start();
 
-		mLensButton.setOnClickListener( new OnClickListener() {
-
-			@Override
-			public void onClick( View arg0 ) {
-				setSelectedTool( ( (ImageViewSpotDraw) mImageView ).getDrawMode() == TouchMode.DRAW ? TouchMode.IMAGE : TouchMode.DRAW );
-			}
-		} );
-
-		mLensButton.setVisibility( View.VISIBLE );
+		mLensButton.setOnClickListener( this );
+		
+		getContentView().setVisibility( View.VISIBLE );
 		contentReady();
 	}
 
@@ -139,37 +133,43 @@ public class ColorSplashPanel extends AbstractContentPanel implements OnDrawList
 		super.onDispose();
 	}
 	
-
 	@Override
 	public void onClick( View v ) {
-
-		if ( v.isSelected() ) return;
-
-		mFree.setSelected( false );
-		mSmart.setSelected( false );
-		mErase.setSelected( false );
-
-		if ( v.equals( mFree ) ) {
-			mBrushType = ColorSplashBrushMode.Free;
-			Tracker.recordTag( Filters.COLOR_SPLASH.name().toLowerCase( Locale.US ) + ": FreeBrushClicked" );
-		} else if ( v.equals( mSmart ) ) {
-			mBrushType = ColorSplashBrushMode.Smart;
-			Tracker.recordTag( Filters.COLOR_SPLASH.name().toLowerCase( Locale.US ) + ": SmartBrushClicked" );
-		} else if ( v.equals( mErase ) ) {
-			mBrushType = ColorSplashBrushMode.Erase;
-			Tracker.recordTag( Filters.COLOR_SPLASH.name().toLowerCase( Locale.US ) + ": EraserClicked" );
+		final int id = v.getId();
+		
+		if( id == mLensButton.getId() ) {
+			setSelectedTool( ( (ImageViewSpotDraw) mImageView ).getDrawMode() == TouchMode.DRAW ? TouchMode.IMAGE : TouchMode.DRAW );
 		}
-
-		v.setSelected( true );
-
-		if ( ( (ImageViewSpotDraw) mImageView ).getDrawMode() != TouchMode.DRAW ) {
-			setSelectedTool( TouchMode.DRAW );
+	}
+	
+	@Override
+	public void onCheckedChanged( AviaryHighlightImageButton buttonView, boolean isChecked, boolean fromUser ) {
+		if( mCurrent != null && !buttonView.equals( mCurrent ) ) {
+			mCurrent.setChecked( false );
 		}
-	}	
+		mCurrent = buttonView;
+		
+		if( fromUser && isChecked ) {
+			final int id = buttonView.getId();
+		
+			if( id == mFree.getId() ) {
+				mBrushType = ColorSplashBrushMode.Free;
+				Tracker.recordTag( Filters.COLOR_SPLASH.name().toLowerCase( Locale.US ) + ": FreeBrushClicked" );
+			} else if( id == mSmart.getId() ) {
+				mBrushType = ColorSplashBrushMode.Smart;
+				Tracker.recordTag( Filters.COLOR_SPLASH.name().toLowerCase( Locale.US ) + ": SmartBrushClicked" );
+			} else if( id == mErase.getId() ) {
+				mBrushType = ColorSplashBrushMode.Erase;
+				Tracker.recordTag( Filters.COLOR_SPLASH.name().toLowerCase( Locale.US ) + ": EraserClicked" );
+			}
+			
+			if ( ( (ImageViewSpotDraw) mImageView ).getDrawMode() != TouchMode.DRAW ) {
+				setSelectedTool( TouchMode.DRAW );
+			}
+		}
+	}
 
-	/**
-	 * Sets the selected tool.
-	 */
+
 	private void setSelectedTool( TouchMode which ) {
 		( (ImageViewSpotDraw) mImageView ).setDrawMode( which );
 		mLensButton.setSelected( which == TouchMode.IMAGE );
@@ -179,9 +179,10 @@ public class ColorSplashPanel extends AbstractContentPanel implements OnDrawList
 	@Override
 	public void onDeactivate() {
 		
-		mFree.setOnClickListener( null );
-		mSmart.setOnClickListener( null );
-		mErase.setOnClickListener( null );
+		mFree.setOnCheckedChangeListener( this );
+		mSmart.setOnCheckedChangeListener( this );
+		mErase.setOnCheckedChangeListener( this );
+		mLensButton.setOnClickListener( null );
 
 		( (ImageViewSpotDraw) mImageView ).setOnDrawStartListener( null );
 
@@ -253,7 +254,7 @@ public class ColorSplashPanel extends AbstractContentPanel implements OnDrawList
 				if ( value ) {
 					getContext().restoreToolbarTitle();
 				} else {
-					getContext().setToolbarTitle( R.string.zoom_mode );
+					getContext().setToolbarTitle( R.string.feather_zoom_mode );
 				}
 
 				mDisabledStatusView.setVisibility( value ? View.INVISIBLE : View.VISIBLE );
@@ -279,17 +280,12 @@ public class ColorSplashPanel extends AbstractContentPanel implements OnDrawList
 
 	@Override
 	protected View generateContentView( LayoutInflater inflater ) {
-		return inflater.inflate( R.layout.feather_spotdraw_content, null );
+		return inflater.inflate( R.layout.aviary_content_spot_draw, null );
 	}
 
 	@Override
 	protected ViewGroup generateOptionView( LayoutInflater inflater, ViewGroup parent ) {
-		return (ViewGroup) inflater.inflate( R.layout.feather_colorsplash_panel, parent, false );
-	}
-
-	@Override
-	public Matrix getContentDisplayMatrix() {
-		return mImageView.getDisplayMatrix();
+		return (ViewGroup) inflater.inflate( R.layout.aviary_panel_colorsplash, parent, false );
 	}
 
 	static class DrawQueue extends LinkedBlockingQueue<float[]> {
@@ -567,7 +563,7 @@ public class ColorSplashPanel extends AbstractContentPanel implements OnDrawList
 		protected void onPreExecute() {
 			super.onPreExecute();
 			mProgress.setTitle( getContext().getBaseContext().getString( R.string.feather_loading_title ) );
-			mProgress.setMessage( getContext().getBaseContext().getString( R.string.effect_loading_message ) );
+			mProgress.setMessage( getContext().getBaseContext().getString( R.string.feather_effect_loading_message ) );
 			mProgress.setIndeterminate( true );
 			mProgress.setCancelable( false );
 			mProgress.show();

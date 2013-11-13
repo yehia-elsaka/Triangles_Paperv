@@ -2,6 +2,7 @@ package com.aviary.android.feather.widget;
 
 import it.sephiroth.android.library.imagezoom.easing.Easing;
 import it.sephiroth.android.library.imagezoom.easing.Quad;
+import android.content.res.TypedArray;
 import android.graphics.BlurMaskFilter;
 import android.graphics.BlurMaskFilter.Blur;
 import android.graphics.Canvas;
@@ -14,84 +15,43 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.view.View;
+
 import com.aviary.android.feather.R;
 import com.aviary.android.feather.library.graphics.RectD;
 import com.aviary.android.feather.library.utils.ReflectionUtils;
 import com.aviary.android.feather.library.utils.ReflectionUtils.ReflectionException;
 
-// TODO: Auto-generated Javadoc
-/**
- * The Class HighlightView.
- */
 public class HighlightView {
 
-	/** The Constant LOG_TAG. */
 	@SuppressWarnings("unused")
 	private static final String LOG_TAG = "hv";
 
-	/** The Constant GROW_NONE. */
 	static final int GROW_NONE = 1 << 0;
-
-	/** The Constant GROW_LEFT_EDGE. */
 	static final int GROW_LEFT_EDGE = 1 << 1;
-
-	/** The Constant GROW_RIGHT_EDGE. */
 	static final int GROW_RIGHT_EDGE = 1 << 2;
-
-	/** The Constant GROW_TOP_EDGE. */
 	static final int GROW_TOP_EDGE = 1 << 3;
-
-	/** The Constant GROW_BOTTOM_EDGE. */
 	static final int GROW_BOTTOM_EDGE = 1 << 4;
-
-	/** The Constant MOVE. */
 	static final int MOVE = 1 << 5;
-
-	/** The m hidden. */
 	private boolean mHidden;
-
-	/** The m context. */
-	private View mContext;
+	
+	private int mParentWidth, mParentHeight;
 
 	private static Handler mHandler = new Handler();
 
-	/**
-	 * The Enum Mode.
-	 */
 	enum Mode {
-
-		/** The None. */
 		None,
-		/** The Move. */
 		Move,
-		/** The Grow. */
 		Grow
 	}
 
-	/** The m min size. */
 	private int mMinSize = 20;
-
-	/** The m mode. */
 	private Mode mMode;
-
-	/** The draw rect. */
 	private Rect mDrawRect = new Rect();
-
-	/** The image rect. */
 	private RectD mImageRect;
-
-	/** The crop rect. */
 	private RectD mCropRect;
-
 	private Matrix mMatrix;
-
-	/** The m maintain aspect ratio. */
 	private boolean mMaintainAspectRatio = false;
-
-	/** The m initial aspect ratio. */
 	private double mInitialAspectRatio;
-
-	/** The handle knob drawable. */
 	private Drawable mResizeDrawable;
 
 	private final Paint mOutlinePaint = new Paint();
@@ -99,101 +59,79 @@ public class HighlightView {
 	private final Paint mOutlineFill = new Paint();
 	private Paint mLinesPaintShadow = new Paint();
 
-	/** The highlight_color. */
-	private int highlight_color;
+	private int mStrokeColor;
+	private int mStrokeColorPressed;
+	private int mOutsideFillColor;
+	private int mOutsideFillColorPressed;
+	private int mStrokeWidth, mStrokeWidth2;
+	private int mInternalStrokeColor, mInternalStrokeColorPressed;
 
-	/** The highlight_down_color. */
-	private int highlight_down_color;
-
-	/** The highlight_outside_color. */
-	private int highlight_outside_color;
-
-	/** The highlight_outside_color_down. */
-	private int highlight_outside_color_down;
-
-	/** The internal_stroke_width. */
-	private int stroke_width, internal_stroke_width;
-
-	/** internal grid colors */
-	private int highlight_internal_color, highlight_internal_color_down;
-
-	/** The d height. */
 	private int dWidth, dHeight;
 
 	final int grid_rows = 3;
 	final int grid_cols = 3;
 
-	/**
-	 * Instantiates a new highlight view.
-	 * 
-	 * @param ctx
-	 *           the ctx
-	 */
-	public HighlightView( View ctx ) {
-		mContext = ctx;
-		highlight_color = mContext.getResources().getColor( R.color.feather_crop_highlight );
-		highlight_down_color = mContext.getResources().getColor( R.color.feather_crop_highlight_down );
-		highlight_outside_color = mContext.getResources().getColor( R.color.feather_crop_highlight_outside );
-		highlight_outside_color_down = mContext.getResources().getColor( R.color.feather_crop_highlight_outside_down );
-		stroke_width = mContext.getResources().getInteger( R.integer.feather_crop_highlight_stroke_width );
-		internal_stroke_width = mContext.getResources().getInteger( R.integer.feather_crop_highlight_internal_stroke_width );
-		highlight_internal_color = mContext.getResources().getColor( R.color.feather_crop_highlight_internal );
-		highlight_internal_color_down = mContext.getResources().getColor( R.color.feather_crop_highlight_internal_down );
+	public HighlightView( View context, int styleId ) {
+		
+		if( styleId > 0 ) {
+			 TypedArray appearance = context.getContext().obtainStyledAttributes( styleId, R.styleable.AviaryCropHighlightView );
+			 
+			 mStrokeWidth = appearance.getDimensionPixelSize( R.styleable.AviaryCropHighlightView_aviary_strokeWidth, 2 );
+			 mStrokeColor = appearance.getColor( R.styleable.AviaryCropHighlightView_aviary_strokeColor, Color.WHITE );
+			 mStrokeColorPressed = appearance.getColor( R.styleable.AviaryCropHighlightView_aviary_strokeColor2, Color.WHITE );
+			 
+			 mOutsideFillColor = appearance.getColor( R.styleable.AviaryCropHighlightView_aviary_color1, 0x99000000 );
+			 mOutsideFillColorPressed = appearance.getColor( R.styleable.AviaryCropHighlightView_aviary_color2, 0x99000000 );
+			 
+			 mStrokeWidth2 = appearance.getDimensionPixelSize( R.styleable.AviaryCropHighlightView_aviary_strokeWidth2, 1 );
+			 mInternalStrokeColor = appearance.getColor( R.styleable.AviaryCropHighlightView_aviary_strokeColor3, Color.WHITE );
+			 mInternalStrokeColorPressed = appearance.getColor( R.styleable.AviaryCropHighlightView_aviary_strokeColor4, Color.WHITE );
+			 
+			 mResizeDrawable = appearance.getDrawable( R.styleable.AviaryCropHighlightView_android_src );
+			 
+			 appearance.recycle();
+		} else {
+			mStrokeWidth = 2;
+			mStrokeWidth2 = 1;
+			mStrokeColor = Color.WHITE;
+			mStrokeColorPressed = Color.WHITE;
+			mOutsideFillColor = 0;
+			mOutsideFillColorPressed = 0;
+			mInternalStrokeColor = 0;
+			mInternalStrokeColorPressed = 0;
+			mResizeDrawable = null;
+		}
+		
+		if( null != mResizeDrawable ) {
+			double w = mResizeDrawable.getIntrinsicWidth();
+			double h = mResizeDrawable.getIntrinsicHeight();
+		
+			dWidth = (int) Math.ceil( w / 2.0 );
+			dHeight = (int) Math.ceil( h / 2.0 );
+		}
+		
+		// calculate the initial drawing rectangle
+		context.getDrawingRect( mViewDrawingRect );
+		mParentWidth = context.getWidth();
+		mParentHeight = context.getHeight();
 	}
 
-	/**
-	 * Inits the.
-	 */
-	private void init() {
-		android.content.res.Resources resources = mContext.getResources();
-		mResizeDrawable = resources.getDrawable( R.drawable.feather_highlight_crop_handle );
-
-		double w = mResizeDrawable.getIntrinsicWidth();
-		double h = mResizeDrawable.getIntrinsicHeight();
-
-		dWidth = (int) Math.ceil( w / 2.0 );
-		dHeight = (int) Math.ceil( h / 2.0 );
-	}
-
-	/**
-	 * Dispose.
-	 */
 	public void dispose() {
-		mContext = null;
 	}
 
-	/**
-	 * Sets the min size.
-	 * 
-	 * @param value
-	 *           the new min size
-	 */
 	public void setMinSize( int value ) {
 		mMinSize = value;
 	}
 
-	/**
-	 * Sets the hidden.
-	 * 
-	 * @param hidden
-	 *           the new hidden
-	 */
 	public void setHidden( boolean hidden ) {
 		mHidden = hidden;
 	}
 
-	/** The m view drawing rect. */
 	private Rect mViewDrawingRect = new Rect();
 
-	/** The m path. */
 	private Path mPath = new Path();
-
-	/** The m lines path. */
 	private Path mLinesPath = new Path();
-
-	/** The m inverse path. */
 	private Path mInversePath = new Path();
-
 	private RectD tmpRect2 = new RectD();
 	private Rect tmpRect4 = new Rect();
 
@@ -204,22 +142,12 @@ public class HighlightView {
 	private RectD tmpRectMotionD = new RectD();
 	private RectF tempLayoutRectF = new RectF();
 
-	/**
-	 * Draw.
-	 * 
-	 * @param canvas
-	 *           the canvas
-	 */
 	protected void draw( Canvas canvas ) {
 		if ( mHidden ) return;
 		
-		// canvas.save();
-
 		mPath.reset();
 		mInversePath.reset();
 		mLinesPath.reset();
-
-		mContext.getDrawingRect( mViewDrawingRect );
 
 		tmpDrawRectF.set( mDrawRect );
 		tmpDrawRect2F.set( mViewDrawingRect );
@@ -270,35 +198,18 @@ public class HighlightView {
 		}
 	}
 
-	/**
-	 * Sets the mode.
-	 * 
-	 * @param mode
-	 *           the new mode
-	 */
 	public void setMode( Mode mode ) {
 		if ( mode != mMode ) {
 			mMode = mode;
-			mOutlinePaint.setColor( mMode == Mode.None ? highlight_color : highlight_down_color );
-			mOutlinePaint2.setColor( mMode == Mode.None ? highlight_internal_color : highlight_internal_color_down );
+			mOutlinePaint.setColor( mMode == Mode.None ? mStrokeColor : mStrokeColorPressed );
+			mOutlinePaint2.setColor( mMode == Mode.None ? mInternalStrokeColor : mInternalStrokeColorPressed );
 			mLinesPaintShadow.setAlpha( mMode == Mode.None ? 102 : 0 );
-			mOutlineFill.setColor( mMode == Mode.None ? highlight_outside_color : highlight_outside_color_down );
-			mContext.invalidate();
+			mOutlineFill.setColor( mMode == Mode.None ? mOutsideFillColor : mOutsideFillColorPressed );
 		}
 	}
 
-	/** The hysteresis. */
 	final float hysteresis = 30F;
 
-	/**
-	 * Gets the hit.
-	 * 
-	 * @param x
-	 *           the x
-	 * @param y
-	 *           the y
-	 * @return the hit
-	 */
 	public int getHit( float x, float y ) {
 		Rect r = new Rect();
 		computeLayout( false, r );
@@ -329,16 +240,6 @@ public class HighlightView {
 		return ( GROW_BOTTOM_EDGE & edge ) == GROW_BOTTOM_EDGE;
 	}
 
-	/**
-	 * Handle motion.
-	 * 
-	 * @param edge
-	 *           the edge
-	 * @param dx
-	 *           the dx
-	 * @param dy
-	 *           the dy
-	 */
 	void handleMotion( int edge, float dx, float dy ) {
 		if ( mRunning ) return;
 		computeLayout( false, tmpRect4 );
@@ -393,12 +294,6 @@ public class HighlightView {
 		return ndx;
 	}
 
-	/**
-	 * Grow only one handle
-	 * 
-	 * @param dx
-	 * @param dy
-	 */
 	void growWithConstantAspectSize( int edge, double dx, double dy ) {
 
 		final boolean left = isLeftEdge( edge );
@@ -467,15 +362,8 @@ public class HighlightView {
 		}
 
 		computeLayout( true, mDrawRect );
-		mContext.invalidate();
 	}
 
-	/**
-	 * Grow only one handle
-	 * 
-	 * @param dx
-	 * @param dy
-	 */
 	void growWithoutConstantAspectSize( int edge, double dx, double dy ) {
 
 		final boolean left = isLeftEdge( edge );
@@ -520,7 +408,6 @@ public class HighlightView {
 		}
 
 		computeLayout( true, mDrawRect );
-		mContext.invalidate();
 	}
 
 	void moveBy( double dx, double dy ) {
@@ -528,7 +415,6 @@ public class HighlightView {
 	}
 	
 	void moveBy( float dx, float dy ) {
-
 		tmpRectMotion.set( mDrawRect );
 		mCropRect.offset( dx, dy );
 		mCropRect.offset( Math.max( 0, mImageRect.left - mCropRect.left ), Math.max( 0, mImageRect.top - mCropRect.top ) );
@@ -538,72 +424,18 @@ public class HighlightView {
 
 		tmpRectMotion.union( mDrawRect );
 		tmpRectMotion.inset( -dWidth * 2, -dHeight * 2 );
-		mContext.invalidate( tmpRectMotion );
+	}
+	
+	public Rect getInvalidateRect() {
+		return tmpRectMotion;
 	}
 
-	/**
-	 * Gets the scale.
-	 * 
-	 * @return the scale
-	 */
 	protected float getScale() {
 		float values[] = new float[9];
 		mMatrix.getValues( values );
 		return values[Matrix.MSCALE_X];
 	}
 
-	/**
-	 * @deprecated Old grow behavior
-	 */
-	void growBy( double dx, double dy ) {
-
-		if ( mMaintainAspectRatio ) {
-			if ( dx != 0 ) {
-				dy = dx / mInitialAspectRatio;
-			} else if ( dy != 0 ) {
-				dx = dy * mInitialAspectRatio;
-			}
-		}
-
-		tmpRectMotionD.set( mCropRect );
-		if ( dx > 0F && tmpRectMotionD.width() + 2 * dx > mImageRect.width() ) {
-			double adjustment = ( mImageRect.width() - tmpRectMotionD.width() ) / 2.0;
-			dx = adjustment;
-			if ( mMaintainAspectRatio ) {
-				dy = dx / mInitialAspectRatio;
-			}
-		}
-		if ( dy > 0.0 && tmpRectMotionD.height() + 2 * dy > mImageRect.height() ) {
-			double adjustment = ( mImageRect.height() - tmpRectMotionD.height() ) / 2.0;
-			dy = adjustment;
-			if ( mMaintainAspectRatio ) {
-				dx = dy * mInitialAspectRatio;
-			}
-		}
-		
-		tmpRectMotionD.inset( -dx, -dy );
-		final double widthCap = (double) mMinSize / getScale();
-
-		if ( tmpRectMotionD.width() < widthCap ) {
-			tmpRectMotionD.inset( ( -( widthCap - tmpRectMotionD.width() ) / 2.0 ), 0.0 );
-		}
-
-		double heightCap = mMaintainAspectRatio ? ( widthCap / mInitialAspectRatio ) : widthCap;
-		if ( tmpRectMotionD.height() < heightCap ) {
-			tmpRectMotionD.inset( 0.0, ( -( heightCap - tmpRectMotionD.height() ) / 2.0 ) );
-		}
-
-		mCropRect.set( tmpRectMotionD );
-		computeLayout( true, mDrawRect );
-		mContext.invalidate();
-	}
-
-	/**
-	 * Adjust crop rect based on the current image.
-	 * 
-	 * @param r
-	 *           - The {@link Rect} to be adjusted
-	 */
 	private void adjustCropRect( RectD r ) {
 
 		if ( r.left < mImageRect.left ) {
@@ -656,17 +488,6 @@ public class HighlightView {
 		r.sort();
 	}
 
-	/**
-	 * Adjust real crop rect.
-	 * 
-	 * @param matrix
-	 *           the matrix
-	 * @param rect
-	 *           the rect
-	 * @param outsideRect
-	 *           the outside rect
-	 * @return the rect f
-	 */
 	private RectD adjustRealCropRect( Matrix matrix, RectD rect, RectD outsideRect ) {
 
 		boolean adjusted = false;
@@ -724,18 +545,10 @@ public class HighlightView {
 		return rect;
 	}
 
-	/**
-	 * Compute and adjust the current crop layout
-	 * 
-	 * @param adjust
-	 *           - If true tries to adjust the crop rect
-	 * @param outRect
-	 *           - The result will be stored in this {@link Rect}
-	 */
-	public void computeLayout( boolean adjust, Rect outRect ) {
+	private void computeLayout( boolean adjust, Rect outRect ) {
 		if ( adjust ) {
 			adjustCropRect( mCropRect );
-			tmpRect2.set( 0, 0, mContext.getWidth(), mContext.getHeight() );
+			tmpRect2.set( 0, 0, mParentWidth, mParentHeight );
 			mCropRect = adjustRealCropRect( mMatrix, mCropRect, tmpRect2 );
 		}
 		getDisplayRect( mMatrix, mCropRect, outRect );
@@ -753,29 +566,20 @@ public class HighlightView {
 		}
 	}
 
-	/** true while the view is animating */
 	protected volatile boolean mRunning = false;
-
-	/** animation duration in ms */
 	protected int animationDurationMs = 300;
-
-	/** {@link Easing} used to animate the view */
 	protected Easing mEasing = new Quad();
 
-	/**
-	 * Return true if the view is currently running
-	 * 
-	 * @return
-	 */
 	public boolean isRunning() {
 		return mRunning;
 	}
 
-	public void animateTo( Matrix m, RectD imageRect, RectD cropRect, final boolean maintainAspectRatio ) {
+	public void animateTo( final View parent, Matrix m, RectD imageRect, RectD cropRect, final boolean maintainAspectRatio ) {
 
 		if ( !mRunning ) {
 			mRunning = true;
 			setMode( Mode.None );
+			parent.postInvalidate();
 
 			mMatrix = new Matrix( m );
 			mCropRect = cropRect;
@@ -783,7 +587,6 @@ public class HighlightView {
 			mMaintainAspectRatio = false;
 
 			double ratio = (double) mCropRect.width() / (double) mCropRect.height();
-			// mInitialAspectRatio = Math.round( ratio * 1000.0 ) / 1000.0;
 			mInitialAspectRatio = ratio;
 
 			final Rect oldRect = mDrawRect;
@@ -804,9 +607,6 @@ public class HighlightView {
 
 				@Override
 				public void run() {
-
-					if ( mContext == null ) return;
-
 					long now = System.currentTimeMillis();
 					double currentMs = Math.min( animationDurationMs, now - startTime );
 
@@ -819,15 +619,20 @@ public class HighlightView {
 					mDrawRect.right = (int) ( bottomRight[0] + value2 );
 					mDrawRect.top = (int) ( topLeft[1] + value3 );
 					mDrawRect.bottom = (int) ( bottomRight[1] + value4 );
-					mContext.invalidate();
 
 					if ( currentMs < animationDurationMs ) {
-						mHandler.post( this );
+						if( null != parent ) {
+							parent.invalidate();
+							mHandler.post( this );
+						}
 					} else {
 						mMaintainAspectRatio = maintainAspectRatio;
 						mRunning = false;
 						invalidate();
-						mContext.invalidate();
+						
+						if( null != parent ) {
+							parent.postInvalidate();
+						}
 					}
 				}
 
@@ -836,18 +641,6 @@ public class HighlightView {
 		}
 	}
 
-	/**
-	 * Setup.
-	 * 
-	 * @param m
-	 *           the m
-	 * @param imageRect
-	 *           the image rect
-	 * @param cropRect
-	 *           the crop rect
-	 * @param maintainAspectRatio
-	 *           the maintain aspect ratio
-	 */
 	public void setup( Matrix m, RectD imageRect, RectD cropRect, boolean maintainAspectRatio ) {
 
 		mMatrix = new Matrix( m );
@@ -861,71 +654,50 @@ public class HighlightView {
 
 		computeLayout( true, mDrawRect );
 
-		mOutlinePaint.setStrokeWidth( stroke_width );
+		mOutlinePaint.setStrokeWidth( mStrokeWidth );
 		mOutlinePaint.setStyle( Paint.Style.STROKE );
 		mOutlinePaint.setAntiAlias( false );
 		try {
 			ReflectionUtils.invokeMethod( mOutlinePaint, "setHinting", new Class<?>[] { int.class }, 0 );
 		} catch ( ReflectionException e ) {}
 
-		mOutlinePaint2.setStrokeWidth( internal_stroke_width );
+		mOutlinePaint2.setStrokeWidth( mStrokeWidth2 );
 		mOutlinePaint2.setStyle( Paint.Style.STROKE );
 		mOutlinePaint2.setAntiAlias( false );
-		mOutlinePaint2.setColor( highlight_internal_color );
+		mOutlinePaint2.setColor( mInternalStrokeColor );
 		try {
 			ReflectionUtils.invokeMethod( mOutlinePaint2, "setHinting", new Class<?>[] { int.class }, 0 );
 		} catch ( ReflectionException e ) {}
 
-		mOutlineFill.setColor( highlight_outside_color );
+		mOutlineFill.setColor( mOutsideFillColor );
 		mOutlineFill.setStyle( Paint.Style.FILL );
 		mOutlineFill.setAntiAlias( false );
+		mOutlineFill.setDither( true );
 		try {
 			ReflectionUtils.invokeMethod( mOutlineFill, "setHinting", new Class<?>[] { int.class }, 0 );
 		} catch ( ReflectionException e ) {}
 
-		mLinesPaintShadow.setStrokeWidth( internal_stroke_width );
+		mLinesPaintShadow.setStrokeWidth( mStrokeWidth2 );
 		mLinesPaintShadow.setAntiAlias( true );
 		mLinesPaintShadow.setColor( Color.BLACK );
 		mLinesPaintShadow.setStyle( Paint.Style.STROKE );
 		mLinesPaintShadow.setMaskFilter( new BlurMaskFilter( 2, Blur.NORMAL ) );
 
 		setMode( Mode.None );
-		init();
 	}
 
-	/**
-	 * Sets the aspect ratio.
-	 * 
-	 * @param value
-	 *           the new aspect ratio
-	 */
 	public void setAspectRatio( double value ) {
 		mInitialAspectRatio = value;
 	}
 
-	/**
-	 * Sets the maintain aspect ratio.
-	 * 
-	 * @param value
-	 *           the new maintain aspect ratio
-	 */
 	public void setMaintainAspectRatio( boolean value ) {
 		mMaintainAspectRatio = value;
 	}
 
-	/**
-	 * Update.
-	 * 
-	 * @param imageMatrix
-	 *           the image matrix
-	 * @param imageRect
-	 *           the image rect
-	 */
 	public void update( Matrix imageMatrix, Rect imageRect ) {
 		mMatrix = new Matrix( imageMatrix );
 		mImageRect = new RectD( imageRect );
 		computeLayout( true, mDrawRect );
-		mContext.invalidate();
 	}
 
 	public Matrix getMatrix() {
@@ -942,6 +714,12 @@ public class HighlightView {
 
 	public Rect getCropRect() {
 		return new Rect( (int) mCropRect.left, (int) mCropRect.top, (int) mCropRect.right, (int) mCropRect.bottom );
+	}
+
+	public void onSizeChanged( CropImageView cropImageView, int w, int h, int oldw, int oldh ) {
+		cropImageView.getDrawingRect( mViewDrawingRect );
+		mParentWidth = w;
+		mParentHeight = h;
 	}
 
 }
