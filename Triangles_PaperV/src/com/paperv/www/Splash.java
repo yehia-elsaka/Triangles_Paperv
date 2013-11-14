@@ -19,7 +19,7 @@ public class Splash extends PapervActivity {
 			if (appInstance.isRememberMe()) {
 				LoginTask task = new LoginTask();
 				task.showDialog = false;
-				task.appInstance = this.appInstance;
+				task.activityInstance = this;
 				task.execute();
 			}
 

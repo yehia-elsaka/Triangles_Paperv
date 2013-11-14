@@ -40,7 +40,7 @@ public class StartActivity extends PapervActivity {
 		if (appInstance.isRememberMe()) {
 
 			LoginTask task = new LoginTask();
-			task.appInstance = this.appInstance;
+			task.activityInstance = this;
 			task.dialog = new ProgressDialog(mContext);
 			task.execute();
 

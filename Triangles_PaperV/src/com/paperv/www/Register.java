@@ -160,7 +160,7 @@ public class Register extends PapervActivity {
 				
 				LoginTask task = new LoginTask();
 				task.dialog = new ProgressDialog(mContext);
-				task.appInstance = appInstance;
+				task.activityInstance = Register.this;
 				task.execute();
 				
 			} else {

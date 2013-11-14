@@ -1,12 +1,11 @@
 package com.paperv.async;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.widget.Toast;
 
 import com.paperv.core.CacheManager;
+import com.paperv.core.PapervActivity;
 import com.paperv.core.PapervApp;
 import com.paperv.network.DataConnector;
 import com.paperv.www.MainActivity;
@@ -15,15 +14,17 @@ import com.paperv.www.R;
 public class LoginTask extends AsyncTask<Void, Void, Boolean> {
 
 	public ProgressDialog dialog = null;
+	public PapervActivity activityInstance;
+	PapervApp appInstance;
 	public boolean showDialog = true;
-	public PapervApp appInstance;
+	
 	CacheManager globalState = CacheManager.getInstance();
 	DataConnector dataConnector = DataConnector.getInstance();
 
 	@Override
 	protected void onPreExecute() {
 		// dialog = new ProgressDialog(myContext);
-
+		appInstance = activityInstance.appInstance;
 		if (showDialog) {
 			dialog.setTitle(" PaperV ");
 			dialog.setIcon(R.drawable.ico_dialog);
@@ -66,15 +67,15 @@ public class LoginTask extends AsyncTask<Void, Void, Boolean> {
 				appInstance.setPassword("");
 			}
 
-			((Activity)appInstance.getApplicationContext()).finish();
+			activityInstance.finish();
 			Intent i = new Intent(appInstance.getApplicationContext(), MainActivity.class);
-			((Activity) appInstance.getApplicationContext()).startActivityForResult(i, 700);
-			((Activity) appInstance.getApplicationContext()).overridePendingTransition(
-					R.anim.slide_in_right, R.anim.slide_out_left);
+			activityInstance.startActivityForResult(i, 700);
+			activityInstance.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 
 		} else {
-			Toast.makeText(appInstance.getApplicationContext(), "Username or Password Incorrect", Toast.LENGTH_LONG)
-					.show();
+			
+			activityInstance.showLongToast("Username or Password Incorrect");
+
 		}
 	}
 
