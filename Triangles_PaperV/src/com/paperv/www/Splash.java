@@ -6,7 +6,6 @@ import android.util.Log;
 import android.view.Window;
 import android.widget.LinearLayout;
 
-import com.paperv.async.LoginTask;
 import com.paperv.core.PapervActivity;
 
 public class Splash extends PapervActivity {
@@ -17,10 +16,13 @@ public class Splash extends PapervActivity {
 		setContentView(R.layout.splash);
 		try {
 			if (appInstance.isRememberMe()) {
-				LoginTask task = new LoginTask();
-				task.showDialog = false;
-				task.activityInstance = this;
-				task.execute();
+//				LoginTask task = new LoginTask();
+//				task.showDialog = false;
+//				task.activityInstance = this;
+//				task.execute();
+				
+				apiHandler.login(Splash.this,false , appInstance.getUserName(), appInstance.getPassword(), "");
+				
 			}
 
 			else {

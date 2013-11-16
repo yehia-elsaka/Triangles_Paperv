@@ -75,7 +75,8 @@ public abstract class APIConnector extends AsyncTask<Void, Void, Boolean> {
 	protected void onPostExecute(Boolean result) {
 		super.onPostExecute(result);
 		custom_onPostExecute(result);
-		dialog.dismiss();
+		if(dialog != null)
+			dialog.dismiss();
 	}
 
 	// ======= Abstract Functions =======

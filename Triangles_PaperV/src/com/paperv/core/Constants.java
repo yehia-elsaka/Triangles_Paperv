@@ -10,4 +10,7 @@ public class Constants {
 	public static String PREFS_USERNAME = "prefs_username";
 	public static String PREFS_PASSWORD = "prefs_password";
 	
+	//===== API URLS ========
+	public static String API_LOGIN = "http://paperv.com/api/login.php?";
+	
 }

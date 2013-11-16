@@ -11,19 +11,21 @@ public class RegisterAPI extends APIConnector{
 	public RegisterAPI(PapervActivity activityInstance, boolean showDialog,
 			String url, String dialogText) {
 		super(activityInstance, showDialog, url, dialogText);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	public boolean custom_doInBackground(JSONObject json) {
-		// TODO Auto-generated method stub
-		return false;
+		boolean success = json.optBoolean("success");
+		String user_id = json.optString("user_id");
+		return success;
 	}
 
 	@Override
 	public void custom_onPostExecute(boolean result) {
-		// TODO Auto-generated method stub
-		
+		if (result)
+			activityInstance.showLongToast("User registered successfully!");
+		else
+			activityInstance.showLongToast("Register failed .. username or email already exists");
 	}
 
 }

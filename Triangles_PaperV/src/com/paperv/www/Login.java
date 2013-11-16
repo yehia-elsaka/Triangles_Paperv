@@ -46,9 +46,10 @@ public class Login extends PapervActivity {
 			public void onClick(View v) {
 				user_name = user_name_field.getEditableText().toString().replaceAll(" ", "%20");
 				password = password_field.getEditableText().toString().replaceAll(" ", "%20");
-				LoginTask task = new LoginTask();
-				task.execute();
-
+				apiHandler.login(Login.this, true, user_name, password, "Verifying user information");
+				
+//				LoginTask task = new LoginTask();
+//				task.execute();
 			}
 		});
 

@@ -2,6 +2,8 @@ package com.paperv.api;
 
 import org.json.JSONObject;
 
+import android.util.Log;
+
 import com.paperv.core.PapervActivity;
 import com.paperv.models.User;
 
@@ -11,11 +13,14 @@ public class LoginAPI extends APIConnector{
 	public LoginAPI(PapervActivity activityInstance, boolean showDialog,
 			String url, String dialogText) {
 		super(activityInstance, showDialog, url, dialogText);
+
+		
+		Log.d("helal", url);
 	}
 
 	@Override
 	public boolean custom_doInBackground(JSONObject json) {
-		
+		Log.d("helal", json.toString());		
 		boolean success = json.optBoolean("success");
 		String user_id = json.optString("user_id");
 		String user_name = json.optString("user_name");
