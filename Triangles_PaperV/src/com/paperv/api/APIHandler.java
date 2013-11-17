@@ -20,6 +20,17 @@ public class APIHandler {
 		loginAPI.execute();
 	}
 	
+	// 2 - Register
+	RegisterAPI registerAPI;
+	public void register (PapervActivity activityInstance, String username, String password, String fullname, String email, String dialogText)
+	{
+		String url = Constants.API_REGISTER+"user_name="+username
+				+"&password="+password
+				+"&email="+email
+				+"&full_name="+fullname.replaceAll(" ", "%20");
+		registerAPI = new RegisterAPI(activityInstance, true, url, dialogText);
+		registerAPI.execute();
+	}
 	
 
 }

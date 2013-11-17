@@ -12,5 +12,5 @@ public class Constants {
 	
 	//===== API URLS ========
 	public static String API_LOGIN = "http://paperv.com/api/login.php?";
-	
+	public static String API_REGISTER = "http://paperv.com/api/register.php?";
 }
