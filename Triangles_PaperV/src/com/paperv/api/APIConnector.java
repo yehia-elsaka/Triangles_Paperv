@@ -10,6 +10,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.app.ProgressDialog;
@@ -42,6 +43,7 @@ public abstract class APIConnector extends AsyncTask<Void, Void, Boolean> {
 	protected void onPreExecute() {
 		super.onPreExecute();
 		if (showDialog) {
+			dialog = new ProgressDialog(activityInstance);
 			dialog.setTitle(" PaperV ");
 			dialog.setIcon(R.drawable.ico_dialog);
 			dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -61,11 +63,11 @@ public abstract class APIConnector extends AsyncTask<Void, Void, Boolean> {
 			String result = "";
 			if (entity != null) {
 				InputStream instream = entity.getContent();
-				result = convertStreamToString(instream);
+				result = convertStreamToString(instream).replace("/r/n", "").replace("/n", "").trim();
 				instream.close();
 			}
-			JSONObject json = new JSONObject(result);
-			return custom_doInBackground(json);
+			JSONArray jsonArr = new JSONArray(result);
+			return custom_doInBackground(jsonArr);
 		} catch (Exception e) {
 			return false;
 		}
@@ -80,7 +82,7 @@ public abstract class APIConnector extends AsyncTask<Void, Void, Boolean> {
 	}
 
 	// ======= Abstract Functions =======
-	public abstract boolean custom_doInBackground(JSONObject json);
+	public abstract boolean custom_doInBackground(JSONArray json);
 
 	public abstract void custom_onPostExecute(boolean result);
 
@@ -111,12 +113,11 @@ public abstract class APIConnector extends AsyncTask<Void, Void, Boolean> {
 		String url = bitmap_url;
 		Bitmap image = null;
 		try {
-			InputStream in = new java.net.URL(url).openStream();
+			InputStream in = new java.net.URL(url).openStream();	
 			image = BitmapFactory.decodeStream(in);
 			in.close();
 		} catch (Exception e) {
-			Log.e(Constants.TAG, e.getMessage());
-			e.printStackTrace();
+			return null;
 		}
 		return image;
 	}

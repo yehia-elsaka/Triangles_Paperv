@@ -1,5 +1,6 @@
 package com.paperv.api;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.paperv.core.PapervActivity;
@@ -14,7 +15,8 @@ public class RegisterAPI extends APIConnector{
 	}
 
 	@Override
-	public boolean custom_doInBackground(JSONObject json) {
+	public boolean custom_doInBackground(JSONArray jsonArr) {
+		JSONObject json = jsonArr.optJSONObject(0);
 		boolean success = json.optBoolean("success");
 		String user_id = json.optString("user_id");
 		return success;

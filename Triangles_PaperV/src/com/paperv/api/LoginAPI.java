@@ -1,11 +1,15 @@
 package com.paperv.api;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
+import android.content.Intent;
 import android.util.Log;
 
 import com.paperv.core.PapervActivity;
 import com.paperv.models.User;
+import com.paperv.www.MainActivity;
+import com.paperv.www.R;
 
 public class LoginAPI extends APIConnector{
 
@@ -19,7 +23,8 @@ public class LoginAPI extends APIConnector{
 	}
 
 	@Override
-	public boolean custom_doInBackground(JSONObject json) {
+	public boolean custom_doInBackground(JSONArray jsonArr) {
+		JSONObject json = jsonArr.optJSONObject(0);
 		Log.d("helal", json.toString());		
 		boolean success = json.optBoolean("success");
 		String user_id = json.optString("user_id");
@@ -28,15 +33,19 @@ public class LoginAPI extends APIConnector{
 		String email = json.optString("email");
 		String user_image = json.optString("user_image");
 		
-		activityInstance.cache.user = new User(user_id, user_name, email, downloadBitmap(user_image));
+		activityInstance.cache.user = new User(user_id, user_name, email, null	);
 		return success;
 	}
 
 	@Override
 	public void custom_onPostExecute(boolean result) {
 		
-		if(result)
-			activityInstance.showLongToast("Successfuly logged in");
+		if(result){
+			activityInstance.finish();
+			Intent i = new Intent(activityInstance, MainActivity.class);
+			activityInstance.startActivityForResult(i, 700);
+			activityInstance.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+		}
 		else
 			activityInstance.showLongToast("Login failed");
 		
