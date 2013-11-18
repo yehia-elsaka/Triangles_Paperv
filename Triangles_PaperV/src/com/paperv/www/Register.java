@@ -1,10 +1,7 @@
 package com.paperv.www;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
@@ -12,11 +9,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.paperv.async.LoginTask;
-import com.paperv.core.CacheManager;
-import com.paperv.core.Constants;
 import com.paperv.core.PapervActivity;
-import com.paperv.network.DataConnector;
 
 public class Register extends PapervActivity {
 
@@ -79,7 +72,7 @@ public class Register extends PapervActivity {
 		privacy.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-
+				
 				Intent i = new Intent(mContext, AppPrivacyActivity.class);
 				startActivityForResult(i, 700);
 				overridePendingTransition(R.anim.slide_in_right,

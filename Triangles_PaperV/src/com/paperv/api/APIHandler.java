@@ -32,5 +32,13 @@ public class APIHandler {
 		registerAPI.execute();
 	}
 	
+	// 3 - Explore Feed
+	ExploreAPI exploreAPI;
+	public void explore (PapervActivity activityInstance, String user_id, int page)
+	{
+		String url = Constants.API_EXPLORE+"user_id="+user_id+"&page="+page;
+		exploreAPI = new ExploreAPI(activityInstance, true, url, "Loading Explore Feed");
+		exploreAPI.execute();
+	}
 
 }
