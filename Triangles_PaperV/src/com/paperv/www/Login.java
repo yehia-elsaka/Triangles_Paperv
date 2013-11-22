@@ -21,13 +21,12 @@ public class Login extends PapervActivity {
 	CheckBox remember_me;
 	TextView forgot_password;
 
+	
 	public void onCreateUI(android.os.Bundle savedInstanceState) {
 		setContentView(R.layout.login);
 		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-
 		TextView page_title = (TextView) findViewById(R.id.page_title);
 		page_title.setText("Sign In");
-
 		user_name_field = (EditText) findViewById(R.id.user_name);
 		password_field = (EditText) findViewById(R.id.password);
 		remember_me = (CheckBox) findViewById(R.id.remember_me);

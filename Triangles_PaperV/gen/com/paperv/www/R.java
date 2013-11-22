@@ -2338,7 +2338,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int friends_list=0x7f0600d0;
         public static final int full_name_field=0x7f0600d1;
         public static final int fullscreen=0x7f06000e;
-        public static final int get_sdk=0x7f0600e5;
+        public static final int get_sdk=0x7f0600e7;
         public static final int glide_image=0x7f06001c;
         public static final int glide_photo=0x7f060021;
         public static final int header=0x7f060024;
@@ -2396,6 +2396,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int previous_image=0x7f06001f;
         public static final int privacy=0x7f0600d8;
         public static final int profile_user_image=0x7f0600ad;
+        public static final int progress=0x7f0600e2;
         public static final int progressbar=0x7f0600da;
         public static final int radio_group=0x7f060017;
         public static final int radio_photo=0x7f060018;
@@ -2411,9 +2412,10 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int root=0x7f060022;
         public static final int rootgroup=0x7f0600a7;
         public static final int search_field=0x7f060087;
+        public static final int seekbar=0x7f0600e1;
         public static final int selected=0x7f060002;
         public static final int selected_view=0x7f06000f;
-        public static final int shadow=0x7f0600e4;
+        public static final int shadow=0x7f0600e6;
         public static final int signin=0x7f06002c;
         public static final int signup=0x7f06002d;
         public static final int size_preview=0x7f06007f;
@@ -2449,12 +2451,12 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int user_stories_btn=0x7f0600ae;
         public static final int vertical=0x7f060009;
         public static final int video_url=0x7f06001d;
-        public static final int view_documentation=0x7f0600e6;
+        public static final int view_documentation=0x7f0600e8;
         public static final int view_layer1=0x7f0600c7;
         public static final int view_pager=0x7f060092;
-        public static final int viewpager_frame=0x7f0600e1;
-        public static final int viewpager_image=0x7f0600e2;
-        public static final int viewpager_video=0x7f0600e3;
+        public static final int viewpager_frame=0x7f0600e3;
+        public static final int viewpager_image=0x7f0600e4;
+        public static final int viewpager_video=0x7f0600e5;
         public static final int webview=0x7f060010;
     }
     public static final class integer {
@@ -2699,7 +2701,8 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int subheader_layout_blue=0x7f03005e;
         public static final int tab_indicator=0x7f03005f;
         public static final int tabsheader_layout_blue=0x7f030060;
-        public static final int view_pager=0x7f030061;
+        public static final int test=0x7f030061;
+        public static final int view_pager=0x7f030062;
     }
     public static final class menu {
         public static final int main_menu=0x7f0d0000;
@@ -3218,7 +3221,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
            <colgroup align="left" />
            <colgroup align="left" />
            <tr><th>Attribute</th><th>Description</th></tr>
-           <tr><td><code>{@link #AviaryAdjustImageView_android_padding android:padding}</code></td><td></td></tr>
+           <tr><td><code>{@link #AviaryAdjustImageView_android_padding com.paperv.www:android_padding}</code></td><td></td></tr>
            <tr><td><code>{@link #AviaryAdjustImageView_aviary_animationDuration com.paperv.www:aviary_animationDuration}</code></td><td> default animation duration </td></tr>
            <tr><td><code>{@link #AviaryAdjustImageView_aviary_animationDuration2 com.paperv.www:aviary_animationDuration2}</code></td><td> reset animation duration </td></tr>
            <tr><td><code>{@link #AviaryAdjustImageView_aviary_color1 com.paperv.www:aviary_color1}</code></td><td> outside fill color ( outside the grid ) </td></tr>
@@ -3248,9 +3251,9 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
             0x7f0100c3, 0x7f0100c4, 0x7f0100c5
         };
         /**
-          <p>This symbol is the offset where the {@link android.R.attr#padding}
+          <p>This symbol is the offset where the {@link com.paperv.www.R.attr#android_padding}
           attribute's value can be found in the {@link #AviaryAdjustImageView} array.
-          @attr name android:padding
+          @attr name android:android_padding
         */
         public static final int AviaryAdjustImageView_android_padding = 0;
         /**
@@ -3266,7 +3269,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_animationDuration
+          @attr name android:aviary_animationDuration
         */
         public static final int AviaryAdjustImageView_aviary_animationDuration = 4;
         /**
@@ -3282,7 +3285,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_animationDuration2
+          @attr name android:aviary_animationDuration2
         */
         public static final int AviaryAdjustImageView_aviary_animationDuration2 = 8;
         /**
@@ -3299,7 +3302,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_color1
+          @attr name android:aviary_color1
         */
         public static final int AviaryAdjustImageView_aviary_color1 = 5;
         /**
@@ -3315,7 +3318,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_enable3d
+          @attr name android:aviary_enable3d
         */
         public static final int AviaryAdjustImageView_aviary_enable3d = 9;
         /**
@@ -3331,7 +3334,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_freeRotate
+          @attr name android:aviary_freeRotate
         */
         public static final int AviaryAdjustImageView_aviary_freeRotate = 10;
         /**
@@ -3343,7 +3346,7 @@ containing a value of this type.
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_handle
+          @attr name android:aviary_handle
         */
         public static final int AviaryAdjustImageView_aviary_handle = 7;
         /**
@@ -3360,7 +3363,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_strokeColor
+          @attr name android:aviary_strokeColor
         */
         public static final int AviaryAdjustImageView_aviary_strokeColor = 1;
         /**
@@ -3377,7 +3380,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_strokeColor2
+          @attr name android:aviary_strokeColor2
         */
         public static final int AviaryAdjustImageView_aviary_strokeColor2 = 3;
         /**
@@ -3395,7 +3398,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_strokeWidth
+          @attr name android:aviary_strokeWidth
         */
         public static final int AviaryAdjustImageView_aviary_strokeWidth = 2;
         /**
@@ -3413,7 +3416,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_strokeWidth2
+          @attr name android:aviary_strokeWidth2
         */
         public static final int AviaryAdjustImageView_aviary_strokeWidth2 = 6;
         /** Attributes that can be used with a AviaryCellLayout.
@@ -3460,7 +3463,7 @@ in (inches), mm (millimeters).
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.paperv.www:aviary_cellBottomPadding
+          @attr name android:aviary_cellBottomPadding
         */
         public static final int AviaryCellLayout_aviary_cellBottomPadding = 3;
         /**
@@ -3476,7 +3479,7 @@ in (inches), mm (millimeters).
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.paperv.www:aviary_cellEndPadding
+          @attr name android:aviary_cellEndPadding
         */
         public static final int AviaryCellLayout_aviary_cellEndPadding = 1;
         /**
@@ -3492,7 +3495,7 @@ in (inches), mm (millimeters).
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.paperv.www:aviary_cellStartPadding
+          @attr name android:aviary_cellStartPadding
         */
         public static final int AviaryCellLayout_aviary_cellStartPadding = 0;
         /**
@@ -3508,7 +3511,7 @@ in (inches), mm (millimeters).
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.paperv.www:aviary_cellTopPadding
+          @attr name android:aviary_cellTopPadding
         */
         public static final int AviaryCellLayout_aviary_cellTopPadding = 2;
         /**
@@ -3522,7 +3525,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.paperv.www:aviary_cells
+          @attr name android:aviary_cells
         */
         public static final int AviaryCellLayout_aviary_cells = 6;
         /**
@@ -3538,7 +3541,7 @@ in (inches), mm (millimeters).
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.paperv.www:aviary_horizontalPadding
+          @attr name android:aviary_horizontalPadding
         */
         public static final int AviaryCellLayout_aviary_horizontalPadding = 4;
         /**
@@ -3555,7 +3558,7 @@ containing a value of this type.
 <tr><td><code>vertical</code></td><td>0</td><td></td></tr>
 <tr><td><code>horizontal</code></td><td>1</td><td></td></tr>
 </table>
-          @attr name com.paperv.www:aviary_layout_direction
+          @attr name android:aviary_layout_direction
         */
         public static final int AviaryCellLayout_aviary_layout_direction = 8;
         /**
@@ -3569,7 +3572,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.paperv.www:aviary_rows
+          @attr name android:aviary_rows
         */
         public static final int AviaryCellLayout_aviary_rows = 7;
         /**
@@ -3585,7 +3588,7 @@ in (inches), mm (millimeters).
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.paperv.www:aviary_verticalPadding
+          @attr name android:aviary_verticalPadding
         */
         public static final int AviaryCellLayout_aviary_verticalPadding = 5;
         /** Attributes that can be used with a AviaryCropHighlightView.
@@ -3594,7 +3597,7 @@ containing a value of this type.
            <colgroup align="left" />
            <colgroup align="left" />
            <tr><th>Attribute</th><th>Description</th></tr>
-           <tr><td><code>{@link #AviaryCropHighlightView_android_src android:src}</code></td><td> the knob drawable </td></tr>
+           <tr><td><code>{@link #AviaryCropHighlightView_android_src com.paperv.www:android_src}</code></td><td> the knob drawable </td></tr>
            <tr><td><code>{@link #AviaryCropHighlightView_aviary_color1 com.paperv.www:aviary_color1}</code></td><td> outside fill color normal </td></tr>
            <tr><td><code>{@link #AviaryCropHighlightView_aviary_color2 com.paperv.www:aviary_color2}</code></td><td> outside fill color when pressed </td></tr>
            <tr><td><code>{@link #AviaryCropHighlightView_aviary_strokeColor com.paperv.www:aviary_strokeColor}</code></td><td> outer ring stroke color </td></tr>
@@ -3623,9 +3626,8 @@ containing a value of this type.
           <p>
           @attr description
            the knob drawable 
-          <p>This corresponds to the global attribute
-          resource symbol {@link android.R.attr#src}.
-          @attr name android:src
+          <p>This corresponds to the global attribute          resource symbol {@link com.paperv.www.R.attr#android_src}.
+          @attr name android:android_src
         */
         public static final int AviaryCropHighlightView_android_src = 0;
         /**
@@ -3642,7 +3644,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_color1
+          @attr name android:aviary_color1
         */
         public static final int AviaryCropHighlightView_aviary_color1 = 4;
         /**
@@ -3659,7 +3661,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_color2
+          @attr name android:aviary_color2
         */
         public static final int AviaryCropHighlightView_aviary_color2 = 5;
         /**
@@ -3676,7 +3678,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_strokeColor
+          @attr name android:aviary_strokeColor
         */
         public static final int AviaryCropHighlightView_aviary_strokeColor = 1;
         /**
@@ -3693,7 +3695,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_strokeColor2
+          @attr name android:aviary_strokeColor2
         */
         public static final int AviaryCropHighlightView_aviary_strokeColor2 = 3;
         /**
@@ -3710,7 +3712,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_strokeColor3
+          @attr name android:aviary_strokeColor3
         */
         public static final int AviaryCropHighlightView_aviary_strokeColor3 = 7;
         /**
@@ -3727,7 +3729,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_strokeColor4
+          @attr name android:aviary_strokeColor4
         */
         public static final int AviaryCropHighlightView_aviary_strokeColor4 = 8;
         /**
@@ -3745,7 +3747,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_strokeWidth
+          @attr name android:aviary_strokeWidth
         */
         public static final int AviaryCropHighlightView_aviary_strokeWidth = 2;
         /**
@@ -3763,7 +3765,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_strokeWidth2
+          @attr name android:aviary_strokeWidth2
         */
         public static final int AviaryCropHighlightView_aviary_strokeWidth2 = 6;
         /** Attributes that can be used with a AviaryCropImageView.
@@ -3788,7 +3790,7 @@ containing a value of this type.
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:aviary_highlightStyle
+          @attr name android:aviary_highlightStyle
         */
         public static final int AviaryCropImageView_aviary_highlightStyle = 1;
         /**
@@ -3804,7 +3806,7 @@ in (inches), mm (millimeters).
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.paperv.www:aviary_minCropSize
+          @attr name android:aviary_minCropSize
         */
         public static final int AviaryCropImageView_aviary_minCropSize = 0;
         /** Attributes that can be used with a AviaryDrawableHighlightView.
@@ -3813,8 +3815,8 @@ containing a value of this type.
            <colgroup align="left" />
            <colgroup align="left" />
            <tr><th>Attribute</th><th>Description</th></tr>
-           <tr><td><code>{@link #AviaryDrawableHighlightView_android_background android:background}</code></td><td> background drawable </td></tr>
-           <tr><td><code>{@link #AviaryDrawableHighlightView_android_padding android:padding}</code></td><td> background padding </td></tr>
+           <tr><td><code>{@link #AviaryDrawableHighlightView_android_background com.paperv.www:android_background}</code></td><td> background drawable </td></tr>
+           <tr><td><code>{@link #AviaryDrawableHighlightView_android_padding com.paperv.www:android_padding}</code></td><td> background padding </td></tr>
            <tr><td><code>{@link #AviaryDrawableHighlightView_aviary_deleteDrawable com.paperv.www:aviary_deleteDrawable}</code></td><td> delete knob drawable </td></tr>
            <tr><td><code>{@link #AviaryDrawableHighlightView_aviary_minSize com.paperv.www:aviary_minSize}</code></td><td> overlay minimum size </td></tr>
            <tr><td><code>{@link #AviaryDrawableHighlightView_aviary_moveEnabled com.paperv.www:aviary_moveEnabled}</code></td><td> overlay can be moved </td></tr>
@@ -3842,18 +3844,16 @@ containing a value of this type.
           <p>
           @attr description
            background drawable 
-          <p>This corresponds to the global attribute
-          resource symbol {@link android.R.attr#background}.
-          @attr name android:background
+          <p>This corresponds to the global attribute          resource symbol {@link com.paperv.www.R.attr#android_background}.
+          @attr name android:android_background
         */
         public static final int AviaryDrawableHighlightView_android_background = 0;
         /**
           <p>
           @attr description
            background padding 
-          <p>This corresponds to the global attribute
-          resource symbol {@link android.R.attr#padding}.
-          @attr name android:padding
+          <p>This corresponds to the global attribute          resource symbol {@link com.paperv.www.R.attr#android_padding}.
+          @attr name android:android_padding
         */
         public static final int AviaryDrawableHighlightView_android_padding = 1;
         /**
@@ -3865,7 +3865,7 @@ containing a value of this type.
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_deleteDrawable
+          @attr name android:aviary_deleteDrawable
         */
         public static final int AviaryDrawableHighlightView_aviary_deleteDrawable = 4;
         /**
@@ -3883,7 +3883,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_minSize
+          @attr name android:aviary_minSize
         */
         public static final int AviaryDrawableHighlightView_aviary_minSize = 5;
         /**
@@ -3899,7 +3899,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_moveEnabled
+          @attr name android:aviary_moveEnabled
         */
         public static final int AviaryDrawableHighlightView_aviary_moveEnabled = 6;
         /**
@@ -3920,7 +3920,7 @@ containing a value of this type.
 <tr><td><code>edge_bottom</code></td><td>0x10</td><td></td></tr>
 </table>
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_resizeEdgeMode
+          @attr name android:aviary_resizeEdgeMode
         */
         public static final int AviaryDrawableHighlightView_aviary_resizeEdgeMode = 2;
         /**
@@ -3936,7 +3936,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_resizeEnabled
+          @attr name android:aviary_resizeEnabled
         */
         public static final int AviaryDrawableHighlightView_aviary_resizeEnabled = 8;
         /**
@@ -3948,7 +3948,7 @@ containing a value of this type.
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_rotateDrawable
+          @attr name android:aviary_rotateDrawable
         */
         public static final int AviaryDrawableHighlightView_aviary_rotateDrawable = 3;
         /**
@@ -3964,7 +3964,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_rotateEnabled
+          @attr name android:aviary_rotateEnabled
         */
         public static final int AviaryDrawableHighlightView_aviary_rotateEnabled = 7;
         /** Attributes that can be used with a AviaryEdgeEffect.
@@ -3999,7 +3999,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_blendMode
+          @attr name android:aviary_blendMode
         */
         public static final int AviaryEdgeEffect_aviary_blendMode = 0;
         /**
@@ -4016,7 +4016,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_edgeColor
+          @attr name android:aviary_edgeColor
         */
         public static final int AviaryEdgeEffect_aviary_edgeColor = 3;
         /**
@@ -4028,7 +4028,7 @@ containing a value of this type.
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_edgeDrawable
+          @attr name android:aviary_edgeDrawable
         */
         public static final int AviaryEdgeEffect_aviary_edgeDrawable = 1;
         /**
@@ -4040,7 +4040,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_glowDrawable
+          @attr name android:aviary_glowDrawable
         */
         public static final int AviaryEdgeEffect_aviary_glowDrawable = 2;
         /** Attributes that can be used with a AviaryEffectThumbLayout.
@@ -4069,7 +4069,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_animationDuration
+          @attr name android:aviary_animationDuration
         */
         public static final int AviaryEffectThumbLayout_aviary_animationDuration = 0;
         /** Attributes that can be used with a AviaryGallery.
@@ -4078,7 +4078,7 @@ containing a value of this type.
            <colgroup align="left" />
            <colgroup align="left" />
            <tr><th>Attribute</th><th>Description</th></tr>
-           <tr><td><code>{@link #AviaryGallery_android_animationDuration android:animationDuration}</code></td><td></td></tr>
+           <tr><td><code>{@link #AviaryGallery_android_animationDuration com.paperv.www:android_animationDuration}</code></td><td></td></tr>
            </table>
            @see #AviaryGallery_android_animationDuration
          */
@@ -4086,9 +4086,9 @@ containing a value of this type.
             0x01010112
         };
         /**
-          <p>This symbol is the offset where the {@link android.R.attr#animationDuration}
+          <p>This symbol is the offset where the {@link com.paperv.www.R.attr#android_animationDuration}
           attribute's value can be found in the {@link #AviaryGallery} array.
-          @attr name android:animationDuration
+          @attr name android:android_animationDuration
         */
         public static final int AviaryGallery_android_animationDuration = 0;
         /** Attributes that can be used with a AviaryGalleryIndicatorView.
@@ -4115,7 +4115,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.paperv.www:aviary_drawableStyle
+          @attr name android:aviary_drawableStyle
         */
         public static final int AviaryGalleryIndicatorView_aviary_drawableStyle = 0;
         /** Attributes that can be used with a AviaryGalleryTopIndicator.
@@ -4124,9 +4124,9 @@ containing a value of this type.
            <colgroup align="left" />
            <colgroup align="left" />
            <tr><th>Attribute</th><th>Description</th></tr>
-           <tr><td><code>{@link #AviaryGalleryTopIndicator_android_minHeight android:minHeight}</code></td><td></td></tr>
-           <tr><td><code>{@link #AviaryGalleryTopIndicator_android_shadowColor android:shadowColor}</code></td><td></td></tr>
-           <tr><td><code>{@link #AviaryGalleryTopIndicator_android_shadowDy android:shadowDy}</code></td><td></td></tr>
+           <tr><td><code>{@link #AviaryGalleryTopIndicator_android_minHeight com.paperv.www:android_minHeight}</code></td><td></td></tr>
+           <tr><td><code>{@link #AviaryGalleryTopIndicator_android_shadowColor com.paperv.www:android_shadowColor}</code></td><td></td></tr>
+           <tr><td><code>{@link #AviaryGalleryTopIndicator_android_shadowDy com.paperv.www:android_shadowDy}</code></td><td></td></tr>
            <tr><td><code>{@link #AviaryGalleryTopIndicator_aviary_color1 com.paperv.www:aviary_color1}</code></td><td></td></tr>
            <tr><td><code>{@link #AviaryGalleryTopIndicator_aviary_direction com.paperv.www:aviary_direction}</code></td><td></td></tr>
            <tr><td><code>{@link #AviaryGalleryTopIndicator_aviary_indicatorSize com.paperv.www:aviary_indicatorSize}</code></td><td></td></tr>
@@ -4152,21 +4152,21 @@ containing a value of this type.
             0x7f0100b3, 0x7f0100b4
         };
         /**
-          <p>This symbol is the offset where the {@link android.R.attr#minHeight}
+          <p>This symbol is the offset where the {@link com.paperv.www.R.attr#android_minHeight}
           attribute's value can be found in the {@link #AviaryGalleryTopIndicator} array.
-          @attr name android:minHeight
+          @attr name android:android_minHeight
         */
         public static final int AviaryGalleryTopIndicator_android_minHeight = 0;
         /**
-          <p>This symbol is the offset where the {@link android.R.attr#shadowColor}
+          <p>This symbol is the offset where the {@link com.paperv.www.R.attr#android_shadowColor}
           attribute's value can be found in the {@link #AviaryGalleryTopIndicator} array.
-          @attr name android:shadowColor
+          @attr name android:android_shadowColor
         */
         public static final int AviaryGalleryTopIndicator_android_shadowColor = 1;
         /**
-          <p>This symbol is the offset where the {@link android.R.attr#shadowDy}
+          <p>This symbol is the offset where the {@link com.paperv.www.R.attr#android_shadowDy}
           attribute's value can be found in the {@link #AviaryGalleryTopIndicator} array.
-          @attr name android:shadowDy
+          @attr name android:android_shadowDy
         */
         public static final int AviaryGalleryTopIndicator_android_shadowDy = 2;
         /**
@@ -4181,7 +4181,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.paperv.www:aviary_color1
+          @attr name android:aviary_color1
         */
         public static final int AviaryGalleryTopIndicator_aviary_color1 = 7;
         /**
@@ -4198,7 +4198,7 @@ containing a value of this type.
 <tr><td><code>top_down</code></td><td>0x01</td><td></td></tr>
 <tr><td><code>down_top</code></td><td>0x02</td><td></td></tr>
 </table>
-          @attr name com.paperv.www:aviary_direction
+          @attr name android:aviary_direction
         */
         public static final int AviaryGalleryTopIndicator_aviary_direction = 6;
         /**
@@ -4212,7 +4212,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.paperv.www:aviary_indicatorSize
+          @attr name android:aviary_indicatorSize
         */
         public static final int AviaryGalleryTopIndicator_aviary_indicatorSize = 8;
         /**
@@ -4228,7 +4228,7 @@ in (inches), mm (millimeters).
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.paperv.www:aviary_offsety
+          @attr name android:aviary_offsety
         */
         public static final int AviaryGalleryTopIndicator_aviary_offsety = 9;
         /**
@@ -4245,7 +4245,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_strokeColor
+          @attr name android:aviary_strokeColor
         */
         public static final int AviaryGalleryTopIndicator_aviary_strokeColor = 3;
         /**
@@ -4262,7 +4262,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_strokeColor2
+          @attr name android:aviary_strokeColor2
         */
         public static final int AviaryGalleryTopIndicator_aviary_strokeColor2 = 5;
         /**
@@ -4280,7 +4280,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_strokeWidth
+          @attr name android:aviary_strokeWidth
         */
         public static final int AviaryGalleryTopIndicator_aviary_strokeWidth = 4;
         /** Attributes that can be used with a AviaryHighlightImageButton.
@@ -4329,7 +4329,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_blendMode
+          @attr name android:aviary_blendMode
         */
         public static final int AviaryHighlightImageButton_aviary_blendMode = 2;
         /**
@@ -4343,7 +4343,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.paperv.www:aviary_checked
+          @attr name android:aviary_checked
         */
         public static final int AviaryHighlightImageButton_aviary_checked = 8;
         /**
@@ -4363,7 +4363,7 @@ containing a value of this type.
 <tr><td><code>selected</code></td><td>0x08</td><td></td></tr>
 </table>
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_glowMode
+          @attr name android:aviary_glowMode
         */
         public static final int AviaryHighlightImageButton_aviary_glowMode = 0;
         /**
@@ -4379,7 +4379,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_glowSize
+          @attr name android:aviary_glowSize
         */
         public static final int AviaryHighlightImageButton_aviary_glowSize = 7;
         /**
@@ -4396,7 +4396,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_highlightColorChecked
+          @attr name android:aviary_highlightColorChecked
         */
         public static final int AviaryHighlightImageButton_aviary_highlightColorChecked = 4;
         /**
@@ -4413,7 +4413,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_highlightColorPressed
+          @attr name android:aviary_highlightColorPressed
         */
         public static final int AviaryHighlightImageButton_aviary_highlightColorPressed = 3;
         /**
@@ -4430,7 +4430,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_highlightColorSelected
+          @attr name android:aviary_highlightColorSelected
         */
         public static final int AviaryHighlightImageButton_aviary_highlightColorSelected = 5;
         /**
@@ -4450,7 +4450,7 @@ containing a value of this type.
 <tr><td><code>selected</code></td><td>0x08</td><td></td></tr>
 </table>
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_highlightMode
+          @attr name android:aviary_highlightMode
         */
         public static final int AviaryHighlightImageButton_aviary_highlightMode = 1;
         /**
@@ -4466,7 +4466,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_toggleable
+          @attr name android:aviary_toggleable
         */
         public static final int AviaryHighlightImageButton_aviary_toggleable = 6;
         /**
@@ -4482,7 +4482,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_untoggleable
+          @attr name android:aviary_untoggleable
         */
         public static final int AviaryHighlightImageButton_aviary_untoggleable = 9;
         /** Attributes that can be used with a AviaryImageViewDrawableOverlay.
@@ -4505,7 +4505,7 @@ containing a value of this type.
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:aviary_highlightStyle
+          @attr name android:aviary_highlightStyle
         */
         public static final int AviaryImageViewDrawableOverlay_aviary_highlightStyle = 0;
         /** Attributes that can be used with a AviaryPluginDividerDrawable.
@@ -4514,7 +4514,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
            <colgroup align="left" />
            <colgroup align="left" />
            <tr><th>Attribute</th><th>Description</th></tr>
-           <tr><td><code>{@link #AviaryPluginDividerDrawable_android_textColor android:textColor}</code></td><td> text color </td></tr>
+           <tr><td><code>{@link #AviaryPluginDividerDrawable_android_textColor com.paperv.www:android_textColor}</code></td><td> text color </td></tr>
            <tr><td><code>{@link #AviaryPluginDividerDrawable_aviary_strokeColor com.paperv.www:aviary_strokeColor}</code></td><td> text stroke color </td></tr>
            <tr><td><code>{@link #AviaryPluginDividerDrawable_aviary_strokeWidth com.paperv.www:aviary_strokeWidth}</code></td><td> text stroke width ( use 0 to remove stroke ) </td></tr>
            <tr><td><code>{@link #AviaryPluginDividerDrawable_aviary_textPerc com.paperv.www:aviary_textPerc}</code></td><td> text size % based on the drawable width </td></tr>
@@ -4534,9 +4534,8 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>
           @attr description
            text color 
-          <p>This corresponds to the global attribute
-          resource symbol {@link android.R.attr#textColor}.
-          @attr name android:textColor
+          <p>This corresponds to the global attribute          resource symbol {@link com.paperv.www.R.attr#android_textColor}.
+          @attr name android:android_textColor
         */
         public static final int AviaryPluginDividerDrawable_android_textColor = 0;
         /**
@@ -4553,7 +4552,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_strokeColor
+          @attr name android:aviary_strokeColor
         */
         public static final int AviaryPluginDividerDrawable_aviary_strokeColor = 1;
         /**
@@ -4571,7 +4570,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_strokeWidth
+          @attr name android:aviary_strokeWidth
         */
         public static final int AviaryPluginDividerDrawable_aviary_strokeWidth = 2;
         /**
@@ -4587,7 +4586,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_textPerc
+          @attr name android:aviary_textPerc
         */
         public static final int AviaryPluginDividerDrawable_aviary_textPerc = 4;
         /**
@@ -4603,7 +4602,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_typeface
+          @attr name android:aviary_typeface
         */
         public static final int AviaryPluginDividerDrawable_aviary_typeface = 3;
         /** Attributes that can be used with a AviaryPreviewFillDrawable.
@@ -4636,7 +4635,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_radius
+          @attr name android:aviary_radius
         */
         public static final int AviaryPreviewFillDrawable_aviary_radius = 2;
         /**
@@ -4653,7 +4652,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_strokeColor
+          @attr name android:aviary_strokeColor
         */
         public static final int AviaryPreviewFillDrawable_aviary_strokeColor = 0;
         /**
@@ -4671,7 +4670,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_strokeWidth
+          @attr name android:aviary_strokeWidth
         */
         public static final int AviaryPreviewFillDrawable_aviary_strokeWidth = 1;
         /** Attributes that can be used with a AviaryPreviewSpotDrawable.
@@ -4719,7 +4718,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.paperv.www:aviary_bg_color1
+          @attr name android:aviary_bg_color1
         */
         public static final int AviaryPreviewSpotDrawable_aviary_bg_color1 = 8;
         /**
@@ -4734,7 +4733,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.paperv.www:aviary_bg_color2
+          @attr name android:aviary_bg_color2
         */
         public static final int AviaryPreviewSpotDrawable_aviary_bg_color2 = 9;
         /**
@@ -4749,7 +4748,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.paperv.www:aviary_color1
+          @attr name android:aviary_color1
         */
         public static final int AviaryPreviewSpotDrawable_aviary_color1 = 4;
         /**
@@ -4764,7 +4763,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.paperv.www:aviary_color2
+          @attr name android:aviary_color2
         */
         public static final int AviaryPreviewSpotDrawable_aviary_color2 = 5;
         /**
@@ -4779,7 +4778,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.paperv.www:aviary_color3
+          @attr name android:aviary_color3
         */
         public static final int AviaryPreviewSpotDrawable_aviary_color3 = 6;
         /**
@@ -4794,7 +4793,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.paperv.www:aviary_color4
+          @attr name android:aviary_color4
         */
         public static final int AviaryPreviewSpotDrawable_aviary_color4 = 7;
         /**
@@ -4810,7 +4809,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_glowSize
+          @attr name android:aviary_glowSize
         */
         public static final int AviaryPreviewSpotDrawable_aviary_glowSize = 3;
         /**
@@ -4827,7 +4826,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_highlightColorChecked
+          @attr name android:aviary_highlightColorChecked
         */
         public static final int AviaryPreviewSpotDrawable_aviary_highlightColorChecked = 2;
         /**
@@ -4844,7 +4843,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_strokeColor
+          @attr name android:aviary_strokeColor
         */
         public static final int AviaryPreviewSpotDrawable_aviary_strokeColor = 0;
         /**
@@ -4862,7 +4861,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_strokeWidth
+          @attr name android:aviary_strokeWidth
         */
         public static final int AviaryPreviewSpotDrawable_aviary_strokeWidth = 1;
         /** Attributes that can be used with a AviarySeekBar.
@@ -4896,7 +4895,7 @@ containing a value of this type.
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviarySeekBarSecondary
+          @attr name android:aviarySeekBarSecondary
         */
         public static final int AviarySeekBar_aviarySeekBarSecondary = 2;
         /**
@@ -4908,7 +4907,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviarySeekBarSecondaryCenter
+          @attr name android:aviarySeekBarSecondaryCenter
         */
         public static final int AviarySeekBar_aviarySeekBarSecondaryCenter = 4;
         /**
@@ -4920,7 +4919,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviarySeekBarSecondaryInverted
+          @attr name android:aviarySeekBarSecondaryInverted
         */
         public static final int AviarySeekBar_aviarySeekBarSecondaryInverted = 3;
         /**
@@ -4932,7 +4931,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviarySeekBarThumb
+          @attr name android:aviarySeekBarThumb
         */
         public static final int AviarySeekBar_aviarySeekBarThumb = 0;
         /**
@@ -4950,7 +4949,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviarySeekBarThumbOffset
+          @attr name android:aviarySeekBarThumbOffset
         */
         public static final int AviarySeekBar_aviarySeekBarThumbOffset = 1;
         /** Attributes that can be used with a AviaryTextView.
@@ -4977,7 +4976,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.paperv.www:aviary_typeface
+          @attr name android:aviary_typeface
         */
         public static final int AviaryTextView_aviary_typeface = 0;
         /**  Wave image view 
@@ -5039,7 +5038,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryCrosshair_enabled
+          @attr name android:aviaryCrosshair_enabled
         */
         public static final int AviaryTiltShiftImageView_aviaryCrosshair_enabled = 15;
         /**
@@ -5055,7 +5054,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryWave_animationDuration
+          @attr name android:aviaryWave_animationDuration
         */
         public static final int AviaryTiltShiftImageView_aviaryWave_animationDuration = 14;
         /**
@@ -5073,7 +5072,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryWave_innerRadius
+          @attr name android:aviaryWave_innerRadius
         */
         public static final int AviaryTiltShiftImageView_aviaryWave_innerRadius = 12;
         /**
@@ -5091,7 +5090,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryWave_outerRadius
+          @attr name android:aviaryWave_outerRadius
         */
         public static final int AviaryTiltShiftImageView_aviaryWave_outerRadius = 13;
         /**
@@ -5103,7 +5102,7 @@ containing a value of this type.
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryWave_pointDrawable
+          @attr name android:aviaryWave_pointDrawable
         */
         public static final int AviaryTiltShiftImageView_aviaryWave_pointDrawable = 11;
         /**
@@ -5119,7 +5118,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_animationDuration
+          @attr name android:aviary_animationDuration
         */
         public static final int AviaryTiltShiftImageView_aviary_animationDuration = 10;
         /**
@@ -5137,7 +5136,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_crosshair_edge
+          @attr name android:aviary_crosshair_edge
         */
         public static final int AviaryTiltShiftImageView_aviary_crosshair_edge = 7;
         /**
@@ -5155,7 +5154,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_crosshair_radius
+          @attr name android:aviary_crosshair_radius
         */
         public static final int AviaryTiltShiftImageView_aviary_crosshair_radius = 6;
         /**
@@ -5171,7 +5170,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_crosshair_strokeWidth
+          @attr name android:aviary_crosshair_strokeWidth
         */
         public static final int AviaryTiltShiftImageView_aviary_crosshair_strokeWidth = 5;
         /**
@@ -5189,7 +5188,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_shape_defaultsize
+          @attr name android:aviary_shape_defaultsize
         */
         public static final int AviaryTiltShiftImageView_aviary_shape_defaultsize = 4;
         /**
@@ -5205,7 +5204,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_shape_maxsize
+          @attr name android:aviary_shape_maxsize
         */
         public static final int AviaryTiltShiftImageView_aviary_shape_maxsize = 3;
         /**
@@ -5221,7 +5220,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_shape_minsize
+          @attr name android:aviary_shape_minsize
         */
         public static final int AviaryTiltShiftImageView_aviary_shape_minsize = 2;
         /**
@@ -5238,7 +5237,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_strokeColor
+          @attr name android:aviary_strokeColor
         */
         public static final int AviaryTiltShiftImageView_aviary_strokeColor = 0;
         /**
@@ -5255,7 +5254,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_strokeColor2
+          @attr name android:aviary_strokeColor2
         */
         public static final int AviaryTiltShiftImageView_aviary_strokeColor2 = 8;
         /**
@@ -5273,7 +5272,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_strokeWidth
+          @attr name android:aviary_strokeWidth
         */
         public static final int AviaryTiltShiftImageView_aviary_strokeWidth = 1;
         /**
@@ -5289,7 +5288,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_timeout
+          @attr name android:aviary_timeout
         */
         public static final int AviaryTiltShiftImageView_aviary_timeout = 9;
         /** Attributes that can be used with a AviaryWheel.
@@ -5320,7 +5319,7 @@ containing a value of this type.
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryWheelIndicator
+          @attr name android:aviaryWheelIndicator
         */
         public static final int AviaryWheel_aviaryWheelIndicator = 2;
         /**
@@ -5332,7 +5331,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryWheelLine
+          @attr name android:aviaryWheelLine
         */
         public static final int AviaryWheel_aviaryWheelLine = 1;
         /**
@@ -5344,7 +5343,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryWheelShadowTop
+          @attr name android:aviaryWheelShadowTop
         */
         public static final int AviaryWheel_aviaryWheelShadowTop = 0;
         /**
@@ -5356,7 +5355,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviary_edgeStyle
+          @attr name android:aviary_edgeStyle
         */
         public static final int AviaryWheel_aviary_edgeStyle = 3;
         /** Attributes that can be used with a AviaryWorkspace.
@@ -5385,7 +5384,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.paperv.www:aviary_defaultScreen
+          @attr name android:aviary_defaultScreen
         */
         public static final int AviaryWorkspace_aviary_defaultScreen = 0;
         /**
@@ -5399,7 +5398,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.paperv.www:aviary_overscroll
+          @attr name android:aviary_overscroll
         */
         public static final int AviaryWorkspace_aviary_overscroll = 1;
         /** Attributes that can be used with a AviaryWorkspaceIndicator.
@@ -5422,7 +5421,7 @@ containing a value of this type.
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:aviary_indicatorId
+          @attr name android:aviary_indicatorId
         */
         public static final int AviaryWorkspaceIndicator_aviary_indicatorId = 0;
         /** Attributes that can be used with a FeatherDefaultTheme.
@@ -5447,7 +5446,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:dialog_button
+          @attr name android:dialog_button
         */
         public static final int FeatherDefaultTheme_dialog_button = 1;
         /**
@@ -5457,7 +5456,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:dialog_layout
+          @attr name android:dialog_layout
         */
         public static final int FeatherDefaultTheme_dialog_layout = 0;
         /** Attributes that can be used with a SlidingMenu.
@@ -5515,7 +5514,7 @@ in (inches), mm (millimeters).
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.paperv.www:behindOffset
+          @attr name android:behindOffset
         */
         public static final int SlidingMenu_behindOffset = 3;
         /**
@@ -5529,7 +5528,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.paperv.www:behindScrollScale
+          @attr name android:behindScrollScale
         */
         public static final int SlidingMenu_behindScrollScale = 5;
         /**
@@ -5545,7 +5544,7 @@ in (inches), mm (millimeters).
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.paperv.www:behindWidth
+          @attr name android:behindWidth
         */
         public static final int SlidingMenu_behindWidth = 4;
         /**
@@ -5559,7 +5558,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.paperv.www:fadeDegree
+          @attr name android:fadeDegree
         */
         public static final int SlidingMenu_fadeDegree = 11;
         /**
@@ -5573,7 +5572,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.paperv.www:fadeEnabled
+          @attr name android:fadeEnabled
         */
         public static final int SlidingMenu_fadeEnabled = 10;
         /**
@@ -5590,7 +5589,7 @@ containing a value of this type.
 <tr><td><code>left</code></td><td>0</td><td></td></tr>
 <tr><td><code>right</code></td><td>1</td><td></td></tr>
 </table>
-          @attr name com.paperv.www:mode
+          @attr name android:mode
         */
         public static final int SlidingMenu_mode = 0;
         /**
@@ -5600,7 +5599,7 @@ containing a value of this type.
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:selectorDrawable
+          @attr name android:selectorDrawable
         */
         public static final int SlidingMenu_selectorDrawable = 13;
         /**
@@ -5614,7 +5613,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.paperv.www:selectorEnabled
+          @attr name android:selectorEnabled
         */
         public static final int SlidingMenu_selectorEnabled = 12;
         /**
@@ -5624,7 +5623,7 @@ containing a value of this type.
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:shadowDrawable1
+          @attr name android:shadowDrawable1
         */
         public static final int SlidingMenu_shadowDrawable1 = 8;
         /**
@@ -5640,7 +5639,7 @@ in (inches), mm (millimeters).
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.paperv.www:shadowWidth
+          @attr name android:shadowWidth
         */
         public static final int SlidingMenu_shadowWidth = 9;
         /**
@@ -5657,7 +5656,7 @@ containing a value of this type.
 <tr><td><code>margin</code></td><td>0</td><td></td></tr>
 <tr><td><code>fullscreen</code></td><td>1</td><td></td></tr>
 </table>
-          @attr name com.paperv.www:touchModeAbove
+          @attr name android:touchModeAbove
         */
         public static final int SlidingMenu_touchModeAbove = 6;
         /**
@@ -5674,7 +5673,7 @@ containing a value of this type.
 <tr><td><code>margin</code></td><td>0</td><td></td></tr>
 <tr><td><code>fullscreen</code></td><td>1</td><td></td></tr>
 </table>
-          @attr name com.paperv.www:touchModeBehind
+          @attr name android:touchModeBehind
         */
         public static final int SlidingMenu_touchModeBehind = 7;
         /**
@@ -5684,7 +5683,7 @@ containing a value of this type.
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:viewAbove
+          @attr name android:viewAbove
         */
         public static final int SlidingMenu_viewAbove = 1;
         /**
@@ -5694,7 +5693,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:viewBehind
+          @attr name android:viewBehind
         */
         public static final int SlidingMenu_viewBehind = 2;
         /** Attributes that can be used with a Theme.
@@ -6028,7 +6027,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryAdjustDividerWeight
+          @attr name android:aviaryAdjustDividerWeight
         */
         public static final int Theme_aviaryAdjustDividerWeight = 52;
         /**
@@ -6040,7 +6039,7 @@ containing a value of this type.
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryAdjustImageViewStyle
+          @attr name android:aviaryAdjustImageViewStyle
         */
         public static final int Theme_aviaryAdjustImageViewStyle = 14;
         /**
@@ -6056,7 +6055,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryAdjustItemWeight
+          @attr name android:aviaryAdjustItemWeight
         */
         public static final int Theme_aviaryAdjustItemWeight = 51;
         /**
@@ -6068,7 +6067,7 @@ containing a value of this type.
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryAdjustOptionPanelToggleButtonStyle
+          @attr name android:aviaryAdjustOptionPanelToggleButtonStyle
         */
         public static final int Theme_aviaryAdjustOptionPanelToggleButtonStyle = 41;
         /**
@@ -6078,7 +6077,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:aviaryAdjustOptionPanelToggleCenterButtonStyle
+          @attr name android:aviaryAdjustOptionPanelToggleCenterButtonStyle
         */
         public static final int Theme_aviaryAdjustOptionPanelToggleCenterButtonStyle = 43;
         /**
@@ -6088,7 +6087,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:aviaryAdjustOptionPanelToggleLeftButtonStyle
+          @attr name android:aviaryAdjustOptionPanelToggleLeftButtonStyle
         */
         public static final int Theme_aviaryAdjustOptionPanelToggleLeftButtonStyle = 42;
         /**
@@ -6098,7 +6097,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:aviaryAdjustOptionPanelToggleRightButtonStyle
+          @attr name android:aviaryAdjustOptionPanelToggleRightButtonStyle
         */
         public static final int Theme_aviaryAdjustOptionPanelToggleRightButtonStyle = 44;
         /**
@@ -6113,7 +6112,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.paperv.www:aviaryBackgroundColor
+          @attr name android:aviaryBackgroundColor
         */
         public static final int Theme_aviaryBackgroundColor = 2;
         /**
@@ -6129,7 +6128,7 @@ in (inches), mm (millimeters).
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.paperv.www:aviaryBottomBarHeight
+          @attr name android:aviaryBottomBarHeight
         */
         public static final int Theme_aviaryBottomBarHeight = 16;
         /**
@@ -6141,7 +6140,7 @@ containing a value of this type.
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryBottomBarHorizontalViewStyle
+          @attr name android:aviaryBottomBarHorizontalViewStyle
         */
         public static final int Theme_aviaryBottomBarHorizontalViewStyle = 23;
         /**
@@ -6153,7 +6152,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryBottomBarLogoContainerStyle
+          @attr name android:aviaryBottomBarLogoContainerStyle
         */
         public static final int Theme_aviaryBottomBarLogoContainerStyle = 17;
         /**
@@ -6165,7 +6164,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryBottomBarLogoImageStyle
+          @attr name android:aviaryBottomBarLogoImageStyle
         */
         public static final int Theme_aviaryBottomBarLogoImageStyle = 18;
         /**
@@ -6177,7 +6176,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryBottomBarOptionPanelContainerStyle
+          @attr name android:aviaryBottomBarOptionPanelContainerStyle
         */
         public static final int Theme_aviaryBottomBarOptionPanelContainerStyle = 21;
         /**
@@ -6189,7 +6188,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryBottomBarOptionPanelContainerStyleNoMargin
+          @attr name android:aviaryBottomBarOptionPanelContainerStyleNoMargin
         */
         public static final int Theme_aviaryBottomBarOptionPanelContainerStyleNoMargin = 22;
         /**
@@ -6201,7 +6200,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryBottomBarOptionPanelStyle
+          @attr name android:aviaryBottomBarOptionPanelStyle
         */
         public static final int Theme_aviaryBottomBarOptionPanelStyle = 19;
         /**
@@ -6213,7 +6212,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryBottomBarToolFeedBackStyle
+          @attr name android:aviaryBottomBarToolFeedBackStyle
         */
         public static final int Theme_aviaryBottomBarToolFeedBackStyle = 20;
         /**
@@ -6223,7 +6222,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:aviaryBottomBarToolImageStyle
+          @attr name android:aviaryBottomBarToolImageStyle
         */
         public static final int Theme_aviaryBottomBarToolImageStyle = 26;
         /**
@@ -6235,7 +6234,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryBottomBarToolStyle
+          @attr name android:aviaryBottomBarToolStyle
         */
         public static final int Theme_aviaryBottomBarToolStyle = 25;
         /**
@@ -6245,7 +6244,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:aviaryBottomBarToolTextStyle
+          @attr name android:aviaryBottomBarToolTextStyle
         */
         public static final int Theme_aviaryBottomBarToolTextStyle = 27;
         /**
@@ -6257,7 +6256,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryBottomBarViewFlipperStyle
+          @attr name android:aviaryBottomBarViewFlipperStyle
         */
         public static final int Theme_aviaryBottomBarViewFlipperStyle = 15;
         /**
@@ -6269,7 +6268,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryColorSplashOptionPanelToggleButtonStyle
+          @attr name android:aviaryColorSplashOptionPanelToggleButtonStyle
         */
         public static final int Theme_aviaryColorSplashOptionPanelToggleButtonStyle = 55;
         /**
@@ -6279,7 +6278,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:aviaryColorSplashOptionPanelToggleLeftButtonStyle
+          @attr name android:aviaryColorSplashOptionPanelToggleLeftButtonStyle
         */
         public static final int Theme_aviaryColorSplashOptionPanelToggleLeftButtonStyle = 56;
         /**
@@ -6289,7 +6288,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:aviaryColorSplashOptionPanelToggleRightButtonStyle
+          @attr name android:aviaryColorSplashOptionPanelToggleRightButtonStyle
         */
         public static final int Theme_aviaryColorSplashOptionPanelToggleRightButtonStyle = 57;
         /**
@@ -6301,7 +6300,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryCropHighlightStyle
+          @attr name android:aviaryCropHighlightStyle
         */
         public static final int Theme_aviaryCropHighlightStyle = 9;
         /**
@@ -6313,7 +6312,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryCropImageViewStyle
+          @attr name android:aviaryCropImageViewStyle
         */
         public static final int Theme_aviaryCropImageViewStyle = 8;
         /**
@@ -6325,7 +6324,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryCustomDialogButtonSecondaryStyle
+          @attr name android:aviaryCustomDialogButtonSecondaryStyle
         */
         public static final int Theme_aviaryCustomDialogButtonSecondaryStyle = 124;
         /**
@@ -6338,7 +6337,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryCustomDialogButtonStyle
+          @attr name android:aviaryCustomDialogButtonStyle
         */
         public static final int Theme_aviaryCustomDialogButtonStyle = 123;
         /**
@@ -6350,7 +6349,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryDefaultTextStyle
+          @attr name android:aviaryDefaultTextStyle
         */
         public static final int Theme_aviaryDefaultTextStyle = 64;
         /**
@@ -6362,7 +6361,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryEdgeEffectDefaultStyle
+          @attr name android:aviaryEdgeEffectDefaultStyle
         */
         public static final int Theme_aviaryEdgeEffectDefaultStyle = 125;
         /**
@@ -6372,7 +6371,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:aviaryEffectThumbDividerLeftContainerStyle
+          @attr name android:aviaryEffectThumbDividerLeftContainerStyle
         */
         public static final int Theme_aviaryEffectThumbDividerLeftContainerStyle = 98;
         /**
@@ -6382,7 +6381,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:aviaryEffectThumbDividerLeftStyle
+          @attr name android:aviaryEffectThumbDividerLeftStyle
         */
         public static final int Theme_aviaryEffectThumbDividerLeftStyle = 96;
         /**
@@ -6392,7 +6391,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:aviaryEffectThumbDividerRightContainerStyle
+          @attr name android:aviaryEffectThumbDividerRightContainerStyle
         */
         public static final int Theme_aviaryEffectThumbDividerRightContainerStyle = 97;
         /**
@@ -6402,7 +6401,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:aviaryEffectThumbDividerRightStyle
+          @attr name android:aviaryEffectThumbDividerRightStyle
         */
         public static final int Theme_aviaryEffectThumbDividerRightStyle = 95;
         /**
@@ -6414,7 +6413,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryEffectThumbDividerStyle
+          @attr name android:aviaryEffectThumbDividerStyle
         */
         public static final int Theme_aviaryEffectThumbDividerStyle = 100;
         /**
@@ -6426,7 +6425,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryEffectThumbDividerTextStyle
+          @attr name android:aviaryEffectThumbDividerTextStyle
         */
         public static final int Theme_aviaryEffectThumbDividerTextStyle = 101;
         /**
@@ -6436,7 +6435,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:aviaryEffectThumbHiddenSelector
+          @attr name android:aviaryEffectThumbHiddenSelector
         */
         public static final int Theme_aviaryEffectThumbHiddenSelector = 94;
         /**
@@ -6446,7 +6445,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:aviaryEffectThumbLayoutExternalStyle
+          @attr name android:aviaryEffectThumbLayoutExternalStyle
         */
         public static final int Theme_aviaryEffectThumbLayoutExternalStyle = 93;
         /**
@@ -6456,7 +6455,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:aviaryEffectThumbLayoutStyle
+          @attr name android:aviaryEffectThumbLayoutStyle
         */
         public static final int Theme_aviaryEffectThumbLayoutStyle = 92;
         /**
@@ -6466,7 +6465,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:aviaryEffectThumbTextStyle
+          @attr name android:aviaryEffectThumbTextStyle
         */
         public static final int Theme_aviaryEffectThumbTextStyle = 99;
         /**
@@ -6478,7 +6477,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryEffectsHorizontalViewStyle
+          @attr name android:aviaryEffectsHorizontalViewStyle
         */
         public static final int Theme_aviaryEffectsHorizontalViewStyle = 24;
         /**
@@ -6496,7 +6495,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryEnhanceItemWeight
+          @attr name android:aviaryEnhanceItemWeight
         */
         public static final int Theme_aviaryEnhanceItemWeight = 48;
         /**
@@ -6506,7 +6505,7 @@ containing a value of this type.
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:aviaryEnhanceOptionPanelToggleCenterButtonStyle
+          @attr name android:aviaryEnhanceOptionPanelToggleCenterButtonStyle
         */
         public static final int Theme_aviaryEnhanceOptionPanelToggleCenterButtonStyle = 46;
         /**
@@ -6518,7 +6517,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryEnhanceOptionPanelToggleLeftButtonStyle
+          @attr name android:aviaryEnhanceOptionPanelToggleLeftButtonStyle
         */
         public static final int Theme_aviaryEnhanceOptionPanelToggleLeftButtonStyle = 45;
         /**
@@ -6528,7 +6527,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:aviaryEnhanceOptionPanelToggleRightButtonStyle
+          @attr name android:aviaryEnhanceOptionPanelToggleRightButtonStyle
         */
         public static final int Theme_aviaryEnhanceOptionPanelToggleRightButtonStyle = 47;
         /**
@@ -6538,7 +6537,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:aviaryFeedbackDialogDividerStyle
+          @attr name android:aviaryFeedbackDialogDividerStyle
         */
         public static final int Theme_aviaryFeedbackDialogDividerStyle = 119;
         /**
@@ -6550,7 +6549,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryFeedbackDialogStyle
+          @attr name android:aviaryFeedbackDialogStyle
         */
         public static final int Theme_aviaryFeedbackDialogStyle = 117;
         /**
@@ -6560,7 +6559,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:aviaryFeedbackDialogTextMessageStyle
+          @attr name android:aviaryFeedbackDialogTextMessageStyle
         */
         public static final int Theme_aviaryFeedbackDialogTextMessageStyle = 120;
         /**
@@ -6570,7 +6569,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:aviaryFeedbackDialogTextVersionStyle
+          @attr name android:aviaryFeedbackDialogTextVersionStyle
         */
         public static final int Theme_aviaryFeedbackDialogTextVersionStyle = 118;
         /**
@@ -6582,7 +6581,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryFocusOptionPanelToggleLeftButtonStyle
+          @attr name android:aviaryFocusOptionPanelToggleLeftButtonStyle
         */
         public static final int Theme_aviaryFocusOptionPanelToggleLeftButtonStyle = 53;
         /**
@@ -6592,7 +6591,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:aviaryFocusOptionPanelToggleRightButtonStyle
+          @attr name android:aviaryFocusOptionPanelToggleRightButtonStyle
         */
         public static final int Theme_aviaryFocusOptionPanelToggleRightButtonStyle = 54;
         /**
@@ -6606,7 +6605,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.paperv.www:aviaryFontLight
+          @attr name android:aviaryFontLight
         */
         public static final int Theme_aviaryFontLight = 1;
         /**
@@ -6622,7 +6621,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryFontRegular
+          @attr name android:aviaryFontRegular
         */
         public static final int Theme_aviaryFontRegular = 0;
         /**
@@ -6634,7 +6633,7 @@ containing a value of this type.
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryGalleryBottomIndicatorStyle
+          @attr name android:aviaryGalleryBottomIndicatorStyle
         */
         public static final int Theme_aviaryGalleryBottomIndicatorStyle = 77;
         /**
@@ -6646,7 +6645,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryGalleryItemContainerStyle
+          @attr name android:aviaryGalleryItemContainerStyle
         */
         public static final int Theme_aviaryGalleryItemContainerStyle = 70;
         /**
@@ -6658,7 +6657,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryGalleryItemCropImageViewStyle
+          @attr name android:aviaryGalleryItemCropImageViewStyle
         */
         public static final int Theme_aviaryGalleryItemCropImageViewStyle = 75;
         /**
@@ -6670,7 +6669,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryGalleryItemCropTextCustomStyle
+          @attr name android:aviaryGalleryItemCropTextCustomStyle
         */
         public static final int Theme_aviaryGalleryItemCropTextCustomStyle = 74;
         /**
@@ -6682,7 +6681,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryGalleryItemCropTextNormalStyle
+          @attr name android:aviaryGalleryItemCropTextNormalStyle
         */
         public static final int Theme_aviaryGalleryItemCropTextNormalStyle = 73;
         /**
@@ -6694,7 +6693,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryGalleryItemDividerStyle
+          @attr name android:aviaryGalleryItemDividerStyle
         */
         public static final int Theme_aviaryGalleryItemDividerStyle = 71;
         /**
@@ -6706,7 +6705,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryGalleryItemHighlightImageStyle
+          @attr name android:aviaryGalleryItemHighlightImageStyle
         */
         public static final int Theme_aviaryGalleryItemHighlightImageStyle = 72;
         /**
@@ -6716,7 +6715,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:aviaryGalleryStyle
+          @attr name android:aviaryGalleryStyle
         */
         public static final int Theme_aviaryGalleryStyle = 35;
         /**
@@ -6728,7 +6727,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryGalleryTopIndicatorStyle
+          @attr name android:aviaryGalleryTopIndicatorStyle
         */
         public static final int Theme_aviaryGalleryTopIndicatorStyle = 76;
         /**
@@ -6740,7 +6739,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryHiddenEditTextStyle
+          @attr name android:aviaryHiddenEditTextStyle
         */
         public static final int Theme_aviaryHiddenEditTextStyle = 90;
         /**
@@ -6752,7 +6751,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryHiddenEditTextStyleMultiline
+          @attr name android:aviaryHiddenEditTextStyleMultiline
         */
         public static final int Theme_aviaryHiddenEditTextStyleMultiline = 91;
         /**
@@ -6764,7 +6763,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryHighlightImageButtonStyle
+          @attr name android:aviaryHighlightImageButtonStyle
         */
         public static final int Theme_aviaryHighlightImageButtonStyle = 33;
         /**
@@ -6777,7 +6776,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryIAPDialogContainerStyle
+          @attr name android:aviaryIAPDialogContainerStyle
         */
         public static final int Theme_aviaryIAPDialogContainerStyle = 102;
         /**
@@ -6787,7 +6786,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:aviaryIAPDialogDownloadButtonStyle
+          @attr name android:aviaryIAPDialogDownloadButtonStyle
         */
         public static final int Theme_aviaryIAPDialogDownloadButtonStyle = 116;
         /**
@@ -6797,7 +6796,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:aviaryIAPDialogGridBackground
+          @attr name android:aviaryIAPDialogGridBackground
         */
         public static final int Theme_aviaryIAPDialogGridBackground = 112;
         /**
@@ -6813,7 +6812,7 @@ in (inches), mm (millimeters).
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.paperv.www:aviaryIAPDialogGridTopStyle
+          @attr name android:aviaryIAPDialogGridTopStyle
         */
         public static final int Theme_aviaryIAPDialogGridTopStyle = 113;
         /**
@@ -6829,7 +6828,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryIAPDialogHeightWeight
+          @attr name android:aviaryIAPDialogHeightWeight
         */
         public static final int Theme_aviaryIAPDialogHeightWeight = 104;
         /**
@@ -6839,7 +6838,7 @@ containing a value of this type.
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:aviaryIAPDialogIcon
+          @attr name android:aviaryIAPDialogIcon
         */
         public static final int Theme_aviaryIAPDialogIcon = 107;
         /**
@@ -6851,7 +6850,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryIAPDialogMainLayout
+          @attr name android:aviaryIAPDialogMainLayout
         */
         public static final int Theme_aviaryIAPDialogMainLayout = 103;
         /**
@@ -6867,7 +6866,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryIAPDialogMarginTopWeight
+          @attr name android:aviaryIAPDialogMarginTopWeight
         */
         public static final int Theme_aviaryIAPDialogMarginTopWeight = 105;
         /**
@@ -6877,7 +6876,7 @@ containing a value of this type.
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:aviaryIAPDialogShadowBottom
+          @attr name android:aviaryIAPDialogShadowBottom
         */
         public static final int Theme_aviaryIAPDialogShadowBottom = 115;
         /**
@@ -6887,7 +6886,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:aviaryIAPDialogShadowTop
+          @attr name android:aviaryIAPDialogShadowTop
         */
         public static final int Theme_aviaryIAPDialogShadowTop = 114;
         /**
@@ -6897,7 +6896,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:aviaryIAPDialogTextStyle
+          @attr name android:aviaryIAPDialogTextStyle
         */
         public static final int Theme_aviaryIAPDialogTextStyle = 109;
         /**
@@ -6907,7 +6906,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:aviaryIAPDialogTitleStyle
+          @attr name android:aviaryIAPDialogTitleStyle
         */
         public static final int Theme_aviaryIAPDialogTitleStyle = 108;
         /**
@@ -6923,7 +6922,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryIAPDialogWidthWeight
+          @attr name android:aviaryIAPDialogWidthWeight
         */
         public static final int Theme_aviaryIAPDialogWidthWeight = 106;
         /**
@@ -6933,7 +6932,7 @@ containing a value of this type.
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:aviaryIAPDialogWorkspaceIndicatorStyle
+          @attr name android:aviaryIAPDialogWorkspaceIndicatorStyle
         */
         public static final int Theme_aviaryIAPDialogWorkspaceIndicatorStyle = 111;
         /**
@@ -6943,7 +6942,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:aviaryIAPDialogWorkspaceStyle
+          @attr name android:aviaryIAPDialogWorkspaceStyle
         */
         public static final int Theme_aviaryIAPDialogWorkspaceStyle = 110;
         /**
@@ -6955,7 +6954,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryImageViewDrawableOverlaySticker
+          @attr name android:aviaryImageViewDrawableOverlaySticker
         */
         public static final int Theme_aviaryImageViewDrawableOverlaySticker = 12;
         /**
@@ -6965,7 +6964,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:aviaryImageViewDrawableOverlayStickerHighlightStyle
+          @attr name android:aviaryImageViewDrawableOverlayStickerHighlightStyle
         */
         public static final int Theme_aviaryImageViewDrawableOverlayStickerHighlightStyle = 13;
         /**
@@ -6977,7 +6976,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryImageViewDrawableOverlayText
+          @attr name android:aviaryImageViewDrawableOverlayText
         */
         public static final int Theme_aviaryImageViewDrawableOverlayText = 10;
         /**
@@ -6987,7 +6986,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:aviaryImageViewDrawableOverlayTextHighlightStyle
+          @attr name android:aviaryImageViewDrawableOverlayTextHighlightStyle
         */
         public static final int Theme_aviaryImageViewDrawableOverlayTextHighlightStyle = 11;
         /**
@@ -6999,7 +6998,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryLensViewStyle
+          @attr name android:aviaryLensViewStyle
         */
         public static final int Theme_aviaryLensViewStyle = 34;
         /**
@@ -7011,7 +7010,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryLoaderToastStyle
+          @attr name android:aviaryLoaderToastStyle
         */
         public static final int Theme_aviaryLoaderToastStyle = 121;
         /**
@@ -7029,7 +7028,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryMainImagePadding
+          @attr name android:aviaryMainImagePadding
         */
         public static final int Theme_aviaryMainImagePadding = 88;
         /**
@@ -7041,7 +7040,7 @@ containing a value of this type.
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryMemeButtonStyle
+          @attr name android:aviaryMemeButtonStyle
         */
         public static final int Theme_aviaryMemeButtonStyle = 68;
         /**
@@ -7053,7 +7052,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryMemeClearButtonStyle
+          @attr name android:aviaryMemeClearButtonStyle
         */
         public static final int Theme_aviaryMemeClearButtonStyle = 69;
         /**
@@ -7071,7 +7070,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryNavBarHeight
+          @attr name android:aviaryNavBarHeight
         */
         public static final int Theme_aviaryNavBarHeight = 29;
         /**
@@ -7083,7 +7082,7 @@ containing a value of this type.
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryNavBarStyle
+          @attr name android:aviaryNavBarStyle
         */
         public static final int Theme_aviaryNavBarStyle = 28;
         /**
@@ -7095,7 +7094,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryNavButtonApplyStyle
+          @attr name android:aviaryNavButtonApplyStyle
         */
         public static final int Theme_aviaryNavButtonApplyStyle = 32;
         /**
@@ -7107,7 +7106,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryNavButtonStyle
+          @attr name android:aviaryNavButtonStyle
         */
         public static final int Theme_aviaryNavButtonStyle = 31;
         /**
@@ -7119,7 +7118,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryNavDividerStyle
+          @attr name android:aviaryNavDividerStyle
         */
         public static final int Theme_aviaryNavDividerStyle = 78;
         /**
@@ -7131,7 +7130,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryNavTitleStyle
+          @attr name android:aviaryNavTitleStyle
         */
         public static final int Theme_aviaryNavTitleStyle = 30;
         /**
@@ -7143,7 +7142,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryOptionPanelBottomIndicatorStyle
+          @attr name android:aviaryOptionPanelBottomIndicatorStyle
         */
         public static final int Theme_aviaryOptionPanelBottomIndicatorStyle = 62;
         /**
@@ -7155,7 +7154,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryOptionPanelBottomLineStyle
+          @attr name android:aviaryOptionPanelBottomLineStyle
         */
         public static final int Theme_aviaryOptionPanelBottomLineStyle = 63;
         /**
@@ -7167,7 +7166,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryOptionPanelDefaultButtonStyle
+          @attr name android:aviaryOptionPanelDefaultButtonStyle
         */
         public static final int Theme_aviaryOptionPanelDefaultButtonStyle = 36;
         /**
@@ -7179,7 +7178,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryOptionPanelToggleButtonStyle
+          @attr name android:aviaryOptionPanelToggleButtonStyle
         */
         public static final int Theme_aviaryOptionPanelToggleButtonStyle = 37;
         /**
@@ -7189,7 +7188,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:aviaryOptionPanelToggleCenterButtonStyle
+          @attr name android:aviaryOptionPanelToggleCenterButtonStyle
         */
         public static final int Theme_aviaryOptionPanelToggleCenterButtonStyle = 39;
         /**
@@ -7199,7 +7198,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:aviaryOptionPanelToggleLeftButtonStyle
+          @attr name android:aviaryOptionPanelToggleLeftButtonStyle
         */
         public static final int Theme_aviaryOptionPanelToggleLeftButtonStyle = 38;
         /**
@@ -7209,7 +7208,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:aviaryOptionPanelToggleRightButtonStyle
+          @attr name android:aviaryOptionPanelToggleRightButtonStyle
         */
         public static final int Theme_aviaryOptionPanelToggleRightButtonStyle = 40;
         /**
@@ -7221,7 +7220,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryOptionPanelTopIndicatorStyle
+          @attr name android:aviaryOptionPanelTopIndicatorStyle
         */
         public static final int Theme_aviaryOptionPanelTopIndicatorStyle = 61;
         /**
@@ -7233,7 +7232,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryPanelDisabledStatusBackground
+          @attr name android:aviaryPanelDisabledStatusBackground
         */
         public static final int Theme_aviaryPanelDisabledStatusBackground = 89;
         /**
@@ -7245,7 +7244,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryPreviewFillDrawableStyle
+          @attr name android:aviaryPreviewFillDrawableStyle
         */
         public static final int Theme_aviaryPreviewFillDrawableStyle = 59;
         /**
@@ -7257,7 +7256,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryPreviewSpotDrawableStyle
+          @attr name android:aviaryPreviewSpotDrawableStyle
         */
         public static final int Theme_aviaryPreviewSpotDrawableStyle = 58;
         /**
@@ -7269,7 +7268,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryPreviewSpotViewStyle
+          @attr name android:aviaryPreviewSpotViewStyle
         */
         public static final int Theme_aviaryPreviewSpotViewStyle = 60;
         /**
@@ -7281,7 +7280,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryPrimaryButtonStyle
+          @attr name android:aviaryPrimaryButtonStyle
         */
         public static final int Theme_aviaryPrimaryButtonStyle = 65;
         /**
@@ -7293,7 +7292,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryProgressBarActionBar
+          @attr name android:aviaryProgressBarActionBar
         */
         public static final int Theme_aviaryProgressBarActionBar = 82;
         /**
@@ -7309,7 +7308,7 @@ in (inches), mm (millimeters).
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.paperv.www:aviaryProgressBarActionBarHeight
+          @attr name android:aviaryProgressBarActionBarHeight
         */
         public static final int Theme_aviaryProgressBarActionBarHeight = 84;
         /**
@@ -7325,7 +7324,7 @@ in (inches), mm (millimeters).
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.paperv.www:aviaryProgressBarActionBarWidth
+          @attr name android:aviaryProgressBarActionBarWidth
         */
         public static final int Theme_aviaryProgressBarActionBarWidth = 83;
         /**
@@ -7335,7 +7334,7 @@ containing a value of this type.
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:aviaryProgressBarLarge
+          @attr name android:aviaryProgressBarLarge
         */
         public static final int Theme_aviaryProgressBarLarge = 81;
         /**
@@ -7345,7 +7344,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:aviaryProgressBarLargeInverse
+          @attr name android:aviaryProgressBarLargeInverse
         */
         public static final int Theme_aviaryProgressBarLargeInverse = 87;
         /**
@@ -7355,7 +7354,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:aviaryProgressBarMedium
+          @attr name android:aviaryProgressBarMedium
         */
         public static final int Theme_aviaryProgressBarMedium = 80;
         /**
@@ -7365,7 +7364,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:aviaryProgressBarMediumInverse
+          @attr name android:aviaryProgressBarMediumInverse
         */
         public static final int Theme_aviaryProgressBarMediumInverse = 86;
         /**
@@ -7377,7 +7376,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryProgressBarSmall
+          @attr name android:aviaryProgressBarSmall
         */
         public static final int Theme_aviaryProgressBarSmall = 79;
         /**
@@ -7387,7 +7386,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:aviaryProgressBarSmallInverse
+          @attr name android:aviaryProgressBarSmallInverse
         */
         public static final int Theme_aviaryProgressBarSmallInverse = 85;
         /**
@@ -7399,7 +7398,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviarySecondaryButtonStyle
+          @attr name android:aviarySecondaryButtonStyle
         */
         public static final int Theme_aviarySecondaryButtonStyle = 66;
         /**
@@ -7409,7 +7408,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:aviarySeekBarStyle
+          @attr name android:aviarySeekBarStyle
         */
         public static final int Theme_aviarySeekBarStyle = 3;
         /**
@@ -7425,7 +7424,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviarySplashDividerWeight
+          @attr name android:aviarySplashDividerWeight
         */
         public static final int Theme_aviarySplashDividerWeight = 50;
         /**
@@ -7441,7 +7440,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviarySplashItemWeight
+          @attr name android:aviarySplashItemWeight
         */
         public static final int Theme_aviarySplashItemWeight = 49;
         /**
@@ -7451,7 +7450,7 @@ containing a value of this type.
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:aviarySymbolMinusStyle
+          @attr name android:aviarySymbolMinusStyle
         */
         public static final int Theme_aviarySymbolMinusStyle = 6;
         /**
@@ -7461,7 +7460,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:aviarySymbolPlusStyle
+          @attr name android:aviarySymbolPlusStyle
         */
         public static final int Theme_aviarySymbolPlusStyle = 7;
         /**
@@ -7471,7 +7470,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:aviaryTiltShiftViewStyle
+          @attr name android:aviaryTiltShiftViewStyle
         */
         public static final int Theme_aviaryTiltShiftViewStyle = 5;
         /**
@@ -7483,7 +7482,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryToastExitAnimation
+          @attr name android:aviaryToastExitAnimation
         */
         public static final int Theme_aviaryToastExitAnimation = 122;
         /**
@@ -7495,7 +7494,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:aviaryToggleButtonStyle
+          @attr name android:aviaryToggleButtonStyle
         */
         public static final int Theme_aviaryToggleButtonStyle = 67;
         /**
@@ -7505,7 +7504,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:aviaryWheelStyle
+          @attr name android:aviaryWheelStyle
         */
         public static final int Theme_aviaryWheelStyle = 4;
         /**
@@ -7517,7 +7516,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.paperv.www:textAppearance
+          @attr name android:textAppearance
         */
         public static final int Theme_textAppearance = 126;
         /**
@@ -7527,7 +7526,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:textAppearanceInverted
+          @attr name android:textAppearanceInverted
         */
         public static final int Theme_textAppearanceInverted = 131;
         /**
@@ -7537,7 +7536,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:textAppearanceLarge
+          @attr name android:textAppearanceLarge
         */
         public static final int Theme_textAppearanceLarge = 127;
         /**
@@ -7547,7 +7546,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:textAppearanceLargeInverted
+          @attr name android:textAppearanceLargeInverted
         */
         public static final int Theme_textAppearanceLargeInverted = 132;
         /**
@@ -7557,7 +7556,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:textAppearanceMedium
+          @attr name android:textAppearanceMedium
         */
         public static final int Theme_textAppearanceMedium = 128;
         /**
@@ -7567,7 +7566,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:textAppearanceMediumInverted
+          @attr name android:textAppearanceMediumInverted
         */
         public static final int Theme_textAppearanceMediumInverted = 133;
         /**
@@ -7577,7 +7576,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:textAppearanceSmall
+          @attr name android:textAppearanceSmall
         */
         public static final int Theme_textAppearanceSmall = 129;
         /**
@@ -7587,7 +7586,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:textAppearanceSmallInverted
+          @attr name android:textAppearanceSmallInverted
         */
         public static final int Theme_textAppearanceSmallInverted = 134;
         /**
@@ -7597,7 +7596,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.paperv.www:textAppearanceSmallNoSelection
+          @attr name android:textAppearanceSmallNoSelection
         */
         public static final int Theme_textAppearanceSmallNoSelection = 130;
     };

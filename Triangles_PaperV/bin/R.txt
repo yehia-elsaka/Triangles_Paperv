@@ -834,7 +834,7 @@ int id friend_name 0x7f0600bf
 int id friends_list 0x7f0600d0
 int id full_name_field 0x7f0600d1
 int id fullscreen 0x7f06000e
-int id get_sdk 0x7f0600e5
+int id get_sdk 0x7f0600e7
 int id glide_image 0x7f06001c
 int id glide_photo 0x7f060021
 int id header 0x7f060024
@@ -892,6 +892,7 @@ int id pressed 0x7f060000
 int id previous_image 0x7f06001f
 int id privacy 0x7f0600d8
 int id profile_user_image 0x7f0600ad
+int id progress 0x7f0600e2
 int id progressbar 0x7f0600da
 int id radio_group 0x7f060017
 int id radio_photo 0x7f060018
@@ -907,9 +908,10 @@ int id right 0x7f06000c
 int id root 0x7f060022
 int id rootgroup 0x7f0600a7
 int id search_field 0x7f060087
+int id seekbar 0x7f0600e1
 int id selected 0x7f060002
 int id selected_view 0x7f06000f
-int id shadow 0x7f0600e4
+int id shadow 0x7f0600e6
 int id signin 0x7f06002c
 int id signup 0x7f06002d
 int id size_preview 0x7f06007f
@@ -945,12 +947,12 @@ int id user_name_field 0x7f0600d2
 int id user_stories_btn 0x7f0600ae
 int id vertical 0x7f060009
 int id video_url 0x7f06001d
-int id view_documentation 0x7f0600e6
+int id view_documentation 0x7f0600e8
 int id view_layer1 0x7f0600c7
 int id view_pager 0x7f060092
-int id viewpager_frame 0x7f0600e1
-int id viewpager_image 0x7f0600e2
-int id viewpager_video 0x7f0600e3
+int id viewpager_frame 0x7f0600e3
+int id viewpager_image 0x7f0600e4
+int id viewpager_video 0x7f0600e5
 int id webview 0x7f060010
 int integer aviary_adjust_animationDuration 0x7f080012
 int integer aviary_adjust_animationDuration2 0x7f080013
@@ -1090,7 +1092,8 @@ int layout splash 0x7f03005d
 int layout subheader_layout_blue 0x7f03005e
 int layout tab_indicator 0x7f03005f
 int layout tabsheader_layout_blue 0x7f030060
-int layout view_pager 0x7f030061
+int layout test 0x7f030061
+int layout view_pager 0x7f030062
 int menu main_menu 0x7f0d0000
 int menu start 0x7f0d0001
 int raw aviary_default_effects 0x7f050000

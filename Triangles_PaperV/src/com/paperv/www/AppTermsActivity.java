@@ -1,11 +1,9 @@
 package com.paperv.www;
 
-import com.paperv.core.PapervActivity;
-
-import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.webkit.WebView;
+
+import com.paperv.core.PapervActivity;
 
 public class AppTermsActivity extends PapervActivity {
 	

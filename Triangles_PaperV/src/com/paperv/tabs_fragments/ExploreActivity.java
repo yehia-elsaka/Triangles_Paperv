@@ -28,6 +28,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.paperv.core.CacheManager;
+import com.paperv.core.PaperVAnimations;
+import com.paperv.core.PapervActivity;
 import com.paperv.lazy_adapter_utils.ImageLoader;
 import com.paperv.models.Story;
 import com.paperv.network.DataConnector;
@@ -45,21 +47,17 @@ public class ExploreActivity extends Fragment implements
 
 	ListView listView;
 	View footerView;
-	
 	ArrayList<Story> lstStories;
 	ArrayList<Story> currentStories;
+	
 	View vw_master;
 	View vw_detail;
 	LinearLayout comments_list;
-	
 	View tabs_bar;
 	View comments_bar;
-	
 	EditText comment;
 	ImageButton add_comment;
 	TextView loadMore;
-
-	// detail view
 	TextView likesNumber;
 	TextView commentsNumber;
 	TextView reglideNumber;
@@ -69,24 +67,11 @@ public class ExploreActivity extends Fragment implements
 	Button follow_user;
 	ViewPager viewPager;
 
-	// animation
-	private Animation mSlideInLeft;
-	private Animation mSlideOutRight;
-	private Animation mSlideInRight;
-	private Animation mSlideOutLeft;
-	private Animation mFade;
-	private Animation mSlideOutBottom;
-	private Animation mSlideInBottom;
-	private Animation mSlideOutTop;
-	private Animation mSlideInTop;
-	
 	
 	int current_story_id;
 	int current_story_index;
 	String current_video_url;
 	
-	CacheManager globalState = CacheManager.getInstance();
-	DataConnector dataConnector = DataConnector.getInstance();
 	
 	public ImageLoader userImageLoader; 
     public ImageLoader storyImageLoader;
@@ -94,25 +79,21 @@ public class ExploreActivity extends Fragment implements
 
 	boolean _isBack = true;
 	
-	ExploreAdapter exploreAdapter;
 	boolean flag_loading = false;
 
+	ExploreAdapter exploreAdapter;
+	CacheManager globalState = CacheManager.getInstance();
+	DataConnector dataConnector = DataConnector.getInstance();
+	PaperVAnimations animations;
 	
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * android.support.v4.app.Fragment#onCreateView(android.view.LayoutInflater,
-	 * android.view.ViewGroup, android.os.Bundle)
-	 */
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 
 		
 		MainActivity.page_title.setText("Explore");
-		
+		animations = PaperVAnimations.getInstance((PapervActivity)getActivity());
 		userImageLoader=new ImageLoader(getActivity().getApplicationContext());
 		storyImageLoader=new ImageLoader(getActivity().getApplicationContext());
 		
@@ -293,38 +274,12 @@ public class ExploreActivity extends Fragment implements
 		
 		
 
-		this.initAnimation();
 		Utils.setFontAllView((ViewGroup) vw_master);
 		Utils.setFontAllView((ViewGroup) vw_detail);
 		return theLayout;
 	}
 
-	private void initAnimation() {
-		// animation
-		mSlideInLeft = AnimationUtils.loadAnimation(getActivity(),
-				R.anim.push_left_in);
-		mSlideOutRight = AnimationUtils.loadAnimation(getActivity(),
-				R.anim.push_right_out);
-		mSlideInRight = AnimationUtils.loadAnimation(getActivity(),
-				R.anim.push_right_in);
-		mSlideOutLeft = AnimationUtils.loadAnimation(getActivity(),
-				R.anim.push_left_out);
-		
-		mFade = AnimationUtils.loadAnimation(getActivity(),
-				R.anim.fade_in);
-		
-		mSlideOutBottom = AnimationUtils.loadAnimation(getActivity(),
-				R.anim.slide_out_bottom);
-		
-		mSlideInBottom = AnimationUtils.loadAnimation(getActivity(),
-				R.anim.slide_in_bottom);
-		
-		mSlideOutTop = AnimationUtils.loadAnimation(getActivity(),
-				R.anim.slide_out_top);
-		
-		mSlideInTop = AnimationUtils.loadAnimation(getActivity(),
-				R.anim.slide_in_top);
-	}
+	
 	
 	
 
@@ -362,32 +317,32 @@ public class ExploreActivity extends Fragment implements
 
 			if (isBack) {
 				
-				this.comments_bar.startAnimation(mSlideOutTop);
+				this.comments_bar.startAnimation(animations.mSlideOutTop);
 				this.comments_bar.setVisibility(View.GONE);
 				
 				this.tabs_bar.setVisibility(View.VISIBLE);
-				this.tabs_bar.startAnimation(mSlideInBottom);
+				this.tabs_bar.startAnimation(animations.mSlideInBottom);
 				
 				
 				this.vw_master.setVisibility(View.VISIBLE);
 				this.vw_detail.setVisibility(View.GONE);
-				this.vw_detail.startAnimation(mSlideOutRight);
-				this.vw_master.startAnimation(mSlideInLeft);
+				this.vw_detail.startAnimation(animations.mSlideOutRight);
+				this.vw_master.startAnimation(animations.mSlideInLeft);
 				
 				
 				
 			} else {
 				this.vw_master.setVisibility(View.GONE);
 				this.vw_detail.setVisibility(View.VISIBLE);
-				this.vw_master.startAnimation(mSlideOutLeft);
-				this.vw_detail.startAnimation(mSlideInRight);
+				this.vw_master.startAnimation(animations.mSlideOutLeft);
+				this.vw_detail.startAnimation(animations.mSlideInRight);
 				
 				
-				this.tabs_bar.startAnimation(mSlideOutBottom);
+				this.tabs_bar.startAnimation(animations.mSlideOutBottom);
 				this.tabs_bar.setVisibility(View.GONE);
 				
 				this.comments_bar.setVisibility(View.VISIBLE);
-				this.comments_bar.startAnimation(mFade);
+				this.comments_bar.startAnimation(animations.mFade);
 				
 			}
 
