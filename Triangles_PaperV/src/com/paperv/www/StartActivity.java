@@ -18,7 +18,7 @@ public class StartActivity extends PapervActivity {
 		signin.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				finish();
-				Intent i = new Intent(mContext, Login.class);
+				Intent i = new Intent(mContext, LoginActivity.class);
 				startActivityForResult(i, 700);
 				overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
 			}
@@ -42,7 +42,7 @@ public class StartActivity extends PapervActivity {
 //			task.dialog = new ProgressDialog(mContext);
 //			task.execute();
 			
-			apiHandler.login(StartActivity.this, true, appInstance.getUserName(), appInstance.getPassword(), "Verifying user information");
+			apiHandler.login(StartActivity.this, true, appInstance.getUserName(), appInstance.getPassword(), "Verifying user information", appInstance.isRememberMe());
 
 
 		}

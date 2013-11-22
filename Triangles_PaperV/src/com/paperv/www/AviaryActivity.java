@@ -57,6 +57,8 @@ import com.aviary.android.feather.library.utils.SystemUtils;
 import com.paperv.core.CacheManager;
 import com.paperv.core.PapervActivity;
 
+
+
 public class AviaryActivity extends PapervActivity {
 
 	boolean change = true;

@@ -21,7 +21,7 @@ public class Splash extends PapervActivity {
 //				task.activityInstance = this;
 //				task.execute();
 				
-				apiHandler.login(Splash.this,false , appInstance.getUserName(), appInstance.getPassword(), "");
+				apiHandler.login(Splash.this,false , appInstance.getUserName(), appInstance.getPassword(), "", appInstance.isRememberMe());
 				
 			}
 
@@ -31,8 +31,7 @@ public class Splash extends PapervActivity {
 				Runnable r = new Runnable() {
 					public void run() {
 						finish();
-						Intent intent = new Intent(Splash.this,
-								StartActivity.class);
+						Intent intent = new Intent(Splash.this,LoginActivity.class);
 						startActivity(intent);
 					}
 				};

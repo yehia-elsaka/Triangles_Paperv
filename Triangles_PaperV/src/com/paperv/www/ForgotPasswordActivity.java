@@ -90,7 +90,7 @@ public class ForgotPasswordActivity extends PapervActivity {
 			if (this.result) {
 				
 				finish();
-				Intent i = new Intent(mContext, Login.class);
+				Intent i = new Intent(mContext, LoginActivity.class);
             	startActivityForResult(i, 700); 
         		overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         		

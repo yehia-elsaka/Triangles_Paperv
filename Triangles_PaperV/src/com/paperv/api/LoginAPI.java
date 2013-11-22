@@ -13,11 +13,12 @@ import com.paperv.www.R;
 
 public class LoginAPI extends APIConnector{
 
-	
+	public boolean rememberMe = false;
 	public LoginAPI(PapervActivity activityInstance, boolean showDialog,
 			String url, String dialogText) {
 		super(activityInstance, showDialog, url, dialogText);
 
+		
 		
 		Log.d("helal", url);
 	}
@@ -41,13 +42,17 @@ public class LoginAPI extends APIConnector{
 	public void custom_onPostExecute(boolean result) {
 		
 		if(result){
+			activityInstance.appInstance.setRememberMe(rememberMe);
 			activityInstance.finish();
 			Intent i = new Intent(activityInstance, MainActivity.class);
 			activityInstance.startActivityForResult(i, 700);
 			activityInstance.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 		}
 		else
+		{
+			activityInstance.appInstance.setRememberMe(false);
 			activityInstance.showLongToast("Login failed");
+		}
 		
 	}
 

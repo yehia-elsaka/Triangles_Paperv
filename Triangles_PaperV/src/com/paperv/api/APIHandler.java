@@ -13,10 +13,11 @@ public class APIHandler {
 	
 	// 1 - login
 	LoginAPI loginAPI;
-	public void login (PapervActivity activityInstance, boolean showDialog, String username, String password, String dialogText){
+	public void login (PapervActivity activityInstance, boolean showDialog, String username, String password, String dialogText, boolean rememberMe){
 		
 		String url = Constants.API_LOGIN+"login="+username+"&password="+password;
 		loginAPI = new LoginAPI(activityInstance, showDialog, url, dialogText);
+		loginAPI.rememberMe = rememberMe;
 		loginAPI.execute();
 	}
 	
