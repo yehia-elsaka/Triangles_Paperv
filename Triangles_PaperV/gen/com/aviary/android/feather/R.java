@@ -84,7 +84,7 @@ public final class R {
 		public static final int aviary_bottombar_hline = 0x7f02000c;
 		public static final int aviary_external_packs_download_icon = 0x7f02001c;
 		public static final int aviary_wheel_shadow = 0x7f02008c;
-		public static final int ic_stickers = 0x7f0200cc;
+		public static final int ic_stickers = 0x7f0200d2;
 		public static final int aviary_frame_item_getmore = 0x7f02001e;
 		public static final int aviary_frames_pack_background = 0x7f020020;
 		public static final int aviary_iap_grid_background_inverted = 0x7f02002a;
@@ -766,7 +766,7 @@ public final class R {
 		public static final int navbar_text2 = 0x7f06006d;
 		public static final int aviary_head = 0x7f060055;
 		public static final int aviary_content_view = 0x7f06003c;
-		public static final int shadow = 0x7f060107;
+		public static final int shadow = 0x7f06010b;
 		public static final int navbar_text1 = 0x7f060069;
 		public static final int aviary_crop_image = 0x7f060041;
 		public static final int image_loading_view = 0x7f060067;

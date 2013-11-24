@@ -22,9 +22,9 @@ import android.widget.TabHost.TabContentFactory;
 import android.widget.TextView;
 
 import com.paperv.core.PapervActivity;
+import com.paperv.fragments.HomeTab;
 import com.paperv.tabs_fragments.ExploreActivity;
 import com.paperv.tabs_fragments.GlideActivity;
-import com.paperv.tabs_fragments.HomeActivity;
 import com.paperv.tabs_fragments.LikesActivity;
 import com.paperv.tabs_fragments.ProfileActivity;
 import com.paperv.tabs_utils.Utils;
@@ -174,7 +174,7 @@ public class MainActivity extends PapervActivity implements
 		mTabHost = (TabHost) findViewById(android.R.id.tabhost);
 		mTabHost.setup();
 
-		addTab(R.string.lbl_home, R.drawable.ico_home_2, HomeActivity.class,
+		addTab(R.string.lbl_home, R.drawable.ico_home_2, HomeTab.class,
 				args);
 		addTab(R.string.lbl_explore, R.drawable.ico_search,
 				ExploreActivity.class, args);

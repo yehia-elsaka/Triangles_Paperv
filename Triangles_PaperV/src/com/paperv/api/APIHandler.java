@@ -41,5 +41,14 @@ public class APIHandler {
 		exploreAPI = new ExploreAPI(activityInstance, true, url, "Loading Explore Feed");
 		exploreAPI.execute();
 	}
+	
+	// 4 - Home Feed
+	HomeAPI homeAPI;
+	public void home(PapervActivity activityInstance, String user_id, int page)
+	{
+		String url = Constants.API_EXPLORE+"user_id="+user_id+"&page="+page;
+		homeAPI = new HomeAPI(activityInstance, true, url, "Loading Home Feed");
+		homeAPI.execute();
+	}
 
 }
