@@ -10,7 +10,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.paperv.lazy_adapter_utils.ImageLoader;
+import com.paperv.lazy_adapter_utils.LazyImageLoader;
 import com.paperv.models.Story;
 import com.paperv.tabs_utils.Utils;
 import com.paperv.www.R;
@@ -22,8 +22,8 @@ public class ExploreAdapter extends BaseAdapter {
 	private List<Story> _list;
 	private final Activity _context;
 	private static LayoutInflater _inflater = null;
-    public ImageLoader userImageLoader; 
-    public ImageLoader storyImageLoader;
+    public LazyImageLoader userImageLoader; 
+    public LazyImageLoader storyImageLoader;
     
     
     public ExploreAdapter(Activity context, List<Story> lst) {
@@ -32,8 +32,8 @@ public class ExploreAdapter extends BaseAdapter {
 		this._list = lst;
 
 		_inflater = this._context.getLayoutInflater();
-		userImageLoader=new ImageLoader(_context.getApplicationContext());
-		storyImageLoader=new ImageLoader(_context.getApplicationContext());
+		userImageLoader=new LazyImageLoader(_context.getApplicationContext());
+		storyImageLoader=new LazyImageLoader(_context.getApplicationContext());
 	}
     
     
@@ -90,8 +90,8 @@ public class ExploreAdapter extends BaseAdapter {
 		String userImage_url = storyItem.getUser_image();
 		String storyImage_url = storyItem.getPhoto_url();
 		
-		userImageLoader.DisplayImage(userImage_url, _context, userImage);
-		storyImageLoader.DisplayImage(storyImage_url, _context, storyImage);
+//		userImageLoader.DisplayImage(userImage_url, _context, userImage);
+//		storyImageLoader.DisplayImage(storyImage_url, _context, storyImage);
 
 		return view;
 	}

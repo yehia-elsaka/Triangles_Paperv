@@ -68,6 +68,7 @@ public class CacheManager {
 	
 	
 	
-	
+	public int screenWidth;
+	public int screenHeight;
 
 }

@@ -36,6 +36,7 @@ public class Constants {
 	public static String API_SEARCH_USERS = "http://paperv.com/api/search_user.php?";
 	public static String API_SEARCH_STORIES = "http://paperv.com/api/search_stories.php?";
 	
-	
+	//==== OTHER CONSTANTS
+	public static int SMALL_SCREEN_SIZE = 800;
 	
 }

@@ -1,6 +1,7 @@
 package com.paperv.core;
 
 import android.content.Context;
+import android.graphics.Point;
 import android.support.v4.app.FragmentActivity;
 import android.util.DisplayMetrics;
 import android.view.Display;
@@ -25,7 +26,7 @@ public abstract class PapervActivity extends FragmentActivity{
 	@Override
 	protected void onCreate(android.os.Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		BugSenseHandler.initAndStartSession(this, "0da77729");
+		//BugSenseHandler.initAndStartSession(this, "0da77729");
 		appInstance = (PapervApp)getApplication();
 		screenWidth = getWindowManager().getDefaultDisplay().getWidth();
 		screenHeight = getWindowManager().getDefaultDisplay().getHeight();
@@ -36,6 +37,24 @@ public abstract class PapervActivity extends FragmentActivity{
 	
 	public void showLongToast(String text){
 		Toast.makeText(mContext, text, Toast.LENGTH_LONG).show();
+	}
+	
+	public Point getFeedDimensions(){
+		Point p = new Point();
+		if (screenWidth > Constants.SMALL_SCREEN_SIZE)
+		{
+			int w = (int) (cache.screenWidth / 2.1);
+			int h = (int)(w * 1.2);
+			p = new Point(w, h);
+		}
+		else
+		{
+			int w = (int) (cache.screenWidth / 1.1);
+			int h = (int)(w * 1.2);
+			p = new Point(w, h);
+		}
+		
+		return p;
 	}
 
 }

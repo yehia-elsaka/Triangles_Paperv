@@ -10,7 +10,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.paperv.lazy_adapter_utils.ImageLoader;
+import com.paperv.lazy_adapter_utils.LazyImageLoader;
 import com.paperv.models.LikeStory;
 import com.paperv.tabs_utils.Utils;
 import com.paperv.www.R;
@@ -21,7 +21,7 @@ public class LikesAdapter extends BaseAdapter {
 	private final Activity _context;
 	private static LayoutInflater _inflater = null;
 	
-	public ImageLoader imageLoader; 
+	public LazyImageLoader imageLoader; 
 
 	public LikesAdapter(Activity context, List<LikeStory> lst) {
 //		super(context, R.layout.row_likes, lst);
@@ -30,7 +30,7 @@ public class LikesAdapter extends BaseAdapter {
 
 		_inflater = this._context.getLayoutInflater();
 		
-		imageLoader=new ImageLoader(_context.getApplicationContext());
+		imageLoader=new LazyImageLoader(_context.getApplicationContext());
 	}
 
 	@Override
@@ -61,7 +61,7 @@ public class LikesAdapter extends BaseAdapter {
 		
 		String image_url = item.getStory_image();
 		
-		imageLoader.DisplayImage(image_url, _context, storyImage);
+	//	imageLoader.DisplayImage(image_url, _context, storyImage);
 		
 
 

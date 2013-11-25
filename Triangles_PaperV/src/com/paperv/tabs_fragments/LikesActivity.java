@@ -28,7 +28,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.paperv.core.CacheManager;
-import com.paperv.lazy_adapter_utils.ImageLoader;
+import com.paperv.lazy_adapter_utils.LazyImageLoader;
 import com.paperv.models.LikeStory;
 import com.paperv.network.DataConnector;
 import com.paperv.tabs_adapters.ImageAdapter;
@@ -80,8 +80,8 @@ public class LikesActivity extends Fragment implements OnItemClickListener,
 	int current_story_index;
 	String current_video_url;
 
-	public ImageLoader userImageLoader;
-	public ImageLoader storyImageLoader;
+	public LazyImageLoader userImageLoader;
+	public LazyImageLoader storyImageLoader;
 
 
 	View tabs_bar;
@@ -106,8 +106,8 @@ public class LikesActivity extends Fragment implements OnItemClickListener,
 
 		MainActivity.page_title.setText("Likes");
 
-		userImageLoader = new ImageLoader(getActivity().getApplicationContext());
-		storyImageLoader = new ImageLoader(getActivity()
+		userImageLoader = new LazyImageLoader(getActivity().getApplicationContext());
+		storyImageLoader = new LazyImageLoader(getActivity()
 				.getApplicationContext());
 		
 
@@ -478,8 +478,8 @@ public class LikesActivity extends Fragment implements OnItemClickListener,
 
 				String userImage_url = globalState.story_view.getUser_image();
 
-				userImageLoader.DisplayImage(userImage_url, getActivity(),
-						userImage);
+//				userImageLoader.DisplayImage(userImage_url, getActivity(),
+//						userImage);
 
 
 				for (int i = 0; i < globalState.story_view.getComments().size(); i++) {
@@ -500,11 +500,11 @@ public class LikesActivity extends Fragment implements OnItemClickListener,
 					comment_text.setText(globalState.story_view.getComments()
 							.get(i).getCommentText());
 
-					ImageLoader imageLoader = new ImageLoader(getActivity()
+					LazyImageLoader imageLoader = new LazyImageLoader(getActivity()
 							.getApplicationContext());
-					imageLoader.DisplayImage(globalState.story_view
-							.getComments().get(i).getUser_image_url(),
-							getActivity(), comment_Image);
+//					imageLoader.DisplayImage(globalState.story_view
+//							.getComments().get(i).getUser_image_url(),
+//							getActivity(), comment_Image);
 
 					comments_list.addView(view);
 				}

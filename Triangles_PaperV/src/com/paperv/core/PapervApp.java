@@ -27,6 +27,9 @@ public class PapervApp extends Application {
 		return context;
 	}
 	
+	
+	
+	
 	//============ Shared Prefs Functions ======
 	
 	// 1 - Remember me

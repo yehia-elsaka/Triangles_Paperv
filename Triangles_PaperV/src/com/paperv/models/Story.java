@@ -4,18 +4,18 @@ import java.util.ArrayList;
 
 public class Story {
 	
-	private int story_id;
-	private String owner_id;
-	private String photo_url;
-	private String story_name;
-	private String user_name;
-	private String user_image;
-	private int likes_number;
-	private int reglide_number;
-	private int comments_number;
+	public int story_id;
+	public String owner_id;
+	public String photo_url;
+	public String story_name;
+	public String user_name;
+	public String user_image;
+	public int likes_number;
+	public int reglide_number;
+	public int comments_number;
 	
-	ArrayList<PhotoItem> photos = new ArrayList<PhotoItem>();
-	ArrayList<Comment> comments = new ArrayList<Comment>();
+	public ArrayList<PhotoItem> photos = new ArrayList<PhotoItem>();
+	public ArrayList<Comment> comments = new ArrayList<Comment>();
 	
 	
 	

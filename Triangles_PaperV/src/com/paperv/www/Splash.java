@@ -14,6 +14,9 @@ public class Splash extends PapervActivity {
 	public void onCreateUI(android.os.Bundle savedInstanceState) {
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.splash);
+		cache.screenWidth = getWindowManager().getDefaultDisplay().getWidth();
+		cache.screenHeight = getWindowManager().getDefaultDisplay().getHeight();
+		
 		try {
 			if (appInstance.isRememberMe()) {
 //				LoginTask task = new LoginTask();

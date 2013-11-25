@@ -28,7 +28,7 @@ import android.widget.Toast;
 import com.paperv.core.CacheManager;
 import com.paperv.core.PaperVAnimations;
 import com.paperv.core.PapervActivity;
-import com.paperv.lazy_adapter_utils.ImageLoader;
+import com.paperv.lazy_adapter_utils.LazyImageLoader;
 import com.paperv.models.Story;
 import com.paperv.network.DataConnector;
 import com.paperv.tabs_adapters.ExploreAdapter;
@@ -71,8 +71,8 @@ public class ExploreActivity extends Fragment implements
 	String current_video_url;
 	
 	
-	public ImageLoader userImageLoader; 
-    public ImageLoader storyImageLoader;
+	public LazyImageLoader userImageLoader; 
+    public LazyImageLoader storyImageLoader;
     
 
 	boolean _isBack = true;
@@ -92,8 +92,8 @@ public class ExploreActivity extends Fragment implements
 		
 		MainActivity.page_title.setText("Explore");
 		animations = PaperVAnimations.getInstance((PapervActivity)getActivity());
-		userImageLoader=new ImageLoader(getActivity().getApplicationContext());
-		storyImageLoader=new ImageLoader(getActivity().getApplicationContext());
+		userImageLoader=new LazyImageLoader(getActivity().getApplicationContext());
+		storyImageLoader=new LazyImageLoader(getActivity().getApplicationContext());
 		
 		currentStories = new ArrayList<Story>();
 		
@@ -466,7 +466,7 @@ public class ExploreActivity extends Fragment implements
 				
 				
 				
-				userImageLoader.DisplayImage(userImage_url, getActivity(), userImage);
+			//	userImageLoader.DisplayImage(userImage_url, getActivity(), userImage);
 				
 				
 				for(int i = 0; i < globalState.story_view.getComments().size(); i++)
@@ -482,8 +482,8 @@ public class ExploreActivity extends Fragment implements
 					comment_user.setText(globalState.story_view.getComments().get(i).getUser_name());
 					comment_text.setText(globalState.story_view.getComments().get(i).getCommentText());
 					
-					ImageLoader imageLoader = new ImageLoader(getActivity().getApplicationContext());
-					imageLoader.DisplayImage(globalState.story_view.getComments().get(i).getUser_image_url(), getActivity(), comment_Image);
+					LazyImageLoader imageLoader = new LazyImageLoader(getActivity().getApplicationContext());
+		//			imageLoader.DisplayImage(globalState.story_view.getComments().get(i).getUser_image_url(), getActivity(), comment_Image);
 					
 					comments_list.addView(view);
 				}

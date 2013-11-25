@@ -39,7 +39,7 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.Toast;
 
 import com.paperv.core.CacheManager;
-import com.paperv.lazy_adapter_utils.ImageLoader;
+import com.paperv.lazy_adapter_utils.LazyImageLoader;
 import com.paperv.network.DataConnector;
 import com.paperv.www.AviaryActivity;
 import com.paperv.www.MainActivity;
@@ -72,7 +72,7 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 	LinearLayout next_image, previous_image;
 	ImageButton add_photo_btn;
 
-	public ImageLoader imageLoader;
+	public LazyImageLoader imageLoader;
 	File imageFile = null;
 
 	// animation
@@ -97,7 +97,7 @@ public class GlideActivity extends Fragment implements OnItemClickListener,
 		globalState.is_glide = false;
 		globalState.is_profile = false;
 
-		imageLoader = new ImageLoader(getActivity().getApplicationContext());
+		imageLoader = new LazyImageLoader(getActivity().getApplicationContext());
 
 		LinearLayout tabs = (LinearLayout) getActivity().findViewById(
 				R.id.tabs_bar);

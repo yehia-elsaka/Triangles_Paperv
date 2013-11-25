@@ -40,7 +40,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.paperv.core.CacheManager;
-import com.paperv.lazy_adapter_utils.ImageLoader;
+import com.paperv.lazy_adapter_utils.LazyImageLoader;
 import com.paperv.models.Story;
 import com.paperv.network.DataConnector;
 import com.paperv.tabs_adapters.ImageAdapter;
@@ -103,8 +103,8 @@ public class ProfileActivity extends Fragment implements
 	CacheManager globalState = CacheManager.getInstance();
 	DataConnector dataConnector = DataConnector.getInstance();
 	
-	public ImageLoader userImageLoader; 
-    public ImageLoader storyImageLoader;
+	public LazyImageLoader userImageLoader; 
+    public LazyImageLoader storyImageLoader;
     
     LinearLayout done, cancel, edit_button;
 
@@ -128,7 +128,7 @@ public class ProfileActivity extends Fragment implements
 	LinearLayout followers_list;
 	LinearLayout following_list;
 	
-	ImageLoader imageLoader;
+	LazyImageLoader imageLoader;
 	
 
 	/*
@@ -144,10 +144,10 @@ public class ProfileActivity extends Fragment implements
 
 		MainActivity.page_title.setText("Profile");
 		
-		userImageLoader=new ImageLoader(getActivity().getApplicationContext());
-		storyImageLoader=new ImageLoader(getActivity().getApplicationContext());
+		userImageLoader=new LazyImageLoader(getActivity().getApplicationContext());
+		storyImageLoader=new LazyImageLoader(getActivity().getApplicationContext());
 		
-		imageLoader=new ImageLoader(getActivity().getApplicationContext());
+		imageLoader=new LazyImageLoader(getActivity().getApplicationContext());
 		
 		currentStories = new ArrayList<Story>();
 		
@@ -745,7 +745,7 @@ public class ProfileActivity extends Fragment implements
 			String userImage_url = globalState.followers_list.get(i).getFriend_image();
 			
 			if(!userImage_url.equals(""))
-				imageLoader.DisplayImage(userImage_url, getActivity(), friendImage);
+			//	imageLoader.DisplayImage(userImage_url, getActivity(), friendImage);
 			
 			view.setId(i);
 			
@@ -791,7 +791,7 @@ public class ProfileActivity extends Fragment implements
 			String userImage_url = globalState.following_list.get(i).getFriend_image();
 			
 			if(!userImage_url.equals(""))
-				imageLoader.DisplayImage(userImage_url, getActivity(), friendImage);
+		//		imageLoader.DisplayImage(userImage_url, getActivity(), friendImage);
 			
 			view.setId(i);
 			
@@ -944,7 +944,7 @@ public class ProfileActivity extends Fragment implements
 					String userImage_url = globalState.story_view.getUser_image();
 					
 					
-					userImageLoader.DisplayImage(userImage_url, getActivity(), userImage);
+			//		userImageLoader.DisplayImage(userImage_url, getActivity(), userImage);
 					
 					
 					for(int i = 0; i < globalState.story_view.getComments().size(); i++)
@@ -960,8 +960,8 @@ public class ProfileActivity extends Fragment implements
 						comment_user.setText(globalState.story_view.getComments().get(i).getUser_name());
 						comment_text.setText(globalState.story_view.getComments().get(i).getCommentText());
 						
-						ImageLoader imageLoader = new ImageLoader(getActivity().getApplicationContext());
-						imageLoader.DisplayImage(globalState.story_view.getComments().get(i).getUser_image_url(), getActivity(), comment_Image);
+						LazyImageLoader imageLoader = new LazyImageLoader(getActivity().getApplicationContext());
+			//			imageLoader.DisplayImage(globalState.story_view.getComments().get(i).getUser_image_url(), getActivity(), comment_Image);
 						
 						comments_list.addView(view);
 						

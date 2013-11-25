@@ -16,7 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.paperv.core.CacheManager;
-import com.paperv.lazy_adapter_utils.ImageLoader;
+import com.paperv.lazy_adapter_utils.LazyImageLoader;
 import com.paperv.models.Friend;
 import com.paperv.network.DataConnector;
 import com.paperv.www.MainActivity;
@@ -32,7 +32,7 @@ public class SearchList extends Fragment{
 	
 	ArrayList<Friend> lstFriends;
 	
-	ImageLoader imageLoader; 
+	LazyImageLoader imageLoader; 
 	View view;
 	
 	int i = 0; // index
@@ -42,7 +42,7 @@ public class SearchList extends Fragment{
 
 		MainActivity.page_title.setText("Find People");
 		
-		imageLoader=new ImageLoader(getActivity().getApplicationContext());
+		imageLoader=new LazyImageLoader(getActivity().getApplicationContext());
 		
 		if (container == null) {
 			// We have different layouts, and in one of them this
@@ -79,7 +79,7 @@ public class SearchList extends Fragment{
 			String userImage_url = globalState.friends_list.get(i).getFriend_image();
 			
 			if(!userImage_url.equals(""))
-				imageLoader.DisplayImage(userImage_url, getActivity(), friendImage);
+		//		imageLoader.DisplayImage(userImage_url, getActivity(), friendImage);
 			
 			view.setId(i);
 			

@@ -25,12 +25,10 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/story_title"
             android:background="@drawable/feed_image"
-            android:paddingBottom="80dp"
-            android:paddingLeft="50dp"
-            android:paddingRight="50dp"
-            android:paddingTop="80dp" >
+            android:padding="40dp" >
 
             <TextView
+                android:id="@+id/story_photo"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
@@ -38,32 +36,47 @@
         </RelativeLayout>
     </RelativeLayout>
 
-    
-    
     <RelativeLayout
         android:id="@+id/info_panel"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="#ABABAB"
-        android:padding="10dp" >
+        android:background="#ABABAB" >
+
+        <LinearLayout
+            android:id="@+id/user_img"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/rounded" >
+
+            <TextView
+                android:id="@+id/owner_photo"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:background="@drawable/helal" />
+        </LinearLayout>
 
         <TextView
+            android:layout_marginTop="5dp"
             android:id="@+id/story_owner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
+            android:layout_toRightOf="@+id/user_img"
             android:text="Helal Ismail"
             android:textColor="#6B6B6B"
             android:textSize="20sp" />
 
         <LinearLayout
-            android:layout_centerHorizontal="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/story_owner"
-            android:orientation="horizontal"
-            android:gravity="center_vertical" >
+            android:layout_centerHorizontal="true"
+            android:layout_toRightOf="@+id/user_img"
+            android:gravity="center_vertical"
+            android:orientation="horizontal" >
 
             <TextView
                 android:layout_width="wrap_content"
@@ -71,6 +84,7 @@
                 android:background="@drawable/heart" />
 
             <TextView
+                android:id="@+id/num_likes"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
@@ -85,6 +99,7 @@
                 android:background="@drawable/glide" />
 
             <TextView
+                android:id="@+id/num_reglides"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
@@ -99,6 +114,7 @@
                 android:background="@drawable/comment" />
 
             <TextView
+                android:id="@+id/num_comments"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"

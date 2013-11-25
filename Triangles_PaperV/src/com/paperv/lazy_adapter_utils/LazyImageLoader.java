@@ -17,15 +17,18 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.widget.ImageView;
+import android.widget.TextView;
 
-public class ImageLoader {
+public class LazyImageLoader {
     
     MemoryCache memoryCache=new MemoryCache();
     FileCache fileCache;
-    private Map<ImageView, String> imageViews=Collections.synchronizedMap(new WeakHashMap<ImageView, String>());
+    private Map<TextView, String> imageViews=Collections.synchronizedMap(new WeakHashMap<TextView, String>());
     
-    public ImageLoader(Context context){
+    public LazyImageLoader(Context context){
         //Make the background thead low priority. This way it will not affect the UI performance
         photoLoaderThread.setPriority(Thread.NORM_PRIORITY-1);
         
@@ -33,25 +36,28 @@ public class ImageLoader {
     }
     
     final int stub_id = com.paperv.www.R.drawable.ajax_loader;
-    public void DisplayImage(String url, Activity activity, ImageView imageView)
+    public void DisplayImage(String url, Activity activity, TextView textView)
     {
     	
-        imageViews.put(imageView, url);
+        imageViews.put(textView, url);
         Bitmap bitmap=memoryCache.get(url);
         if(bitmap!=null)
-            imageView.setImageBitmap(bitmap);
+        {
+        	BitmapDrawable d = new BitmapDrawable(bitmap);
+            textView.setBackgroundDrawable(d);
+        }
         else
         {
-            queuePhoto(url, activity, imageView);
-            imageView.setImageResource(stub_id);
+            queuePhoto(url, activity, textView);
+            textView.setBackgroundResource(stub_id);
         }    
     }
         
-    private void queuePhoto(String url, Activity activity, ImageView imageView)
+    private void queuePhoto(String url, Activity activity, TextView textView)
     {
         //This ImageView may be used for other images before. So there may be some old tasks in the queue. We need to discard them. 
-        photosQueue.Clean(imageView);
-        PhotoToLoad p=new PhotoToLoad(url, imageView);
+        photosQueue.Clean(textView);
+        PhotoToLoad p=new PhotoToLoad(url, textView);
         synchronized(photosQueue.photosToLoad){
             photosQueue.photosToLoad.push(p);
             photosQueue.photosToLoad.notifyAll();
@@ -122,10 +128,10 @@ public class ImageLoader {
     private class PhotoToLoad
     {
         public String url;
-        public ImageView imageView;
-        public PhotoToLoad(String u, ImageView i){
+        public TextView textView;
+        public PhotoToLoad(String u, TextView i){
             url=u; 
-            imageView=i;
+            textView=i;
         }
     }
     
@@ -142,10 +148,10 @@ public class ImageLoader {
         private Stack<PhotoToLoad> photosToLoad=new Stack<PhotoToLoad>();
         
         //removes all instances of this ImageView
-        public void Clean(ImageView image)
+        public void Clean(TextView image)
         {
             for(int j=0 ;j<photosToLoad.size();){
-                if(photosToLoad.get(j).imageView==image)
+                if(photosToLoad.get(j).textView==image)
                     photosToLoad.remove(j);
                 else
                     ++j;
@@ -171,10 +177,10 @@ public class ImageLoader {
                         }
                         Bitmap bmp=getBitmap(photoToLoad.url);
                         memoryCache.put(photoToLoad.url, bmp);
-                        String tag=imageViews.get(photoToLoad.imageView);
+                        String tag=imageViews.get(photoToLoad.textView);
                         if(tag!=null && tag.equals(photoToLoad.url)){
-                            BitmapDisplayer bd=new BitmapDisplayer(bmp, photoToLoad.imageView);
-                            Activity a=(Activity)photoToLoad.imageView.getContext();
+                            BitmapDisplayer bd=new BitmapDisplayer(bmp, photoToLoad.textView);
+                            Activity a=(Activity)photoToLoad.textView.getContext();
                             a.runOnUiThread(bd);
                         }
                     }
@@ -193,14 +199,17 @@ public class ImageLoader {
     class BitmapDisplayer implements Runnable
     {
         Bitmap bitmap;
-        ImageView imageView;
-        public BitmapDisplayer(Bitmap b, ImageView i){bitmap=b;imageView=i;}
+        TextView textView;
+        public BitmapDisplayer(Bitmap b, TextView i){bitmap=b;textView=i;}
         public void run()
         {
             if(bitmap!=null)
-                imageView.setImageBitmap(bitmap);
+            {
+            	Drawable d = new BitmapDrawable(bitmap);
+                textView.setBackgroundDrawable(d);
+            }
             else
-                imageView.setImageResource(stub_id);
+                textView.setBackgroundResource(stub_id);
         }
     }
 

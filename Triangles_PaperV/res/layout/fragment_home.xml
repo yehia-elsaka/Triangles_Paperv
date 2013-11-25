@@ -3,4 +3,16 @@
     android:layout_height="fill_parent"
     android:background="@android:color/transparent" >
 
+    <GridView
+        android:verticalSpacing="5dp"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:id="@+id/feed_grid"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:numColumns="2"
+        android:layout_margin="5dp" >
+        
+    </GridView>
+
 </LinearLayout>

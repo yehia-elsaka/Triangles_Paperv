@@ -13,7 +13,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.paperv.lazy_adapter_utils.ImageLoader;
+import com.paperv.lazy_adapter_utils.LazyImageLoader;
 import com.paperv.models.PhotoItem;
 import com.paperv.models.Story;
 import com.paperv.www.R;
@@ -22,7 +22,7 @@ public class ImageAdapter extends PagerAdapter {
 	
 //	Context context;
 	
-	public ImageLoader imageLoader; 
+	public LazyImageLoader imageLoader; 
 	private final Activity _context;
 	
 	private Story story;
@@ -40,7 +40,7 @@ public class ImageAdapter extends PagerAdapter {
     	this._list = story.getPhotos();
     	
     	_inflater = this._context.getLayoutInflater();
-    	imageLoader=new ImageLoader(_context.getApplicationContext());
+    	imageLoader=new LazyImageLoader(_context.getApplicationContext());
     }
     @Override
     public int getCount() {
@@ -78,7 +78,7 @@ public class ImageAdapter extends PagerAdapter {
     	  story_image.setVisibility(View.VISIBLE);
     	  play_image.setVisibility(View.GONE);
     	  
-    	  imageLoader.DisplayImage(_list.get(position).getItem_url(), _context, story_image);
+    //	  imageLoader.DisplayImage(_list.get(position).getItem_url(), _context, story_image);
       }
     	  
       
@@ -87,7 +87,7 @@ public class ImageAdapter extends PagerAdapter {
     	  story_image.setVisibility(View.VISIBLE);
     	  play_image.setVisibility(View.VISIBLE);
     	  
-    	  imageLoader.DisplayImage(story.getPhoto_url(), _context, story_image);
+    //	  imageLoader.DisplayImage(story.getPhoto_url(), _context, story_image);
     	  
     	  current_video_url = _list.get(position).getItem_url();
       }
