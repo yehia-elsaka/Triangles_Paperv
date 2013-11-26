@@ -53,19 +53,27 @@ public class FeedHelper extends BaseAdapter {
 		LayoutInflater inflater = LayoutInflater.from(mContext);
 
 		// main layout
-		RelativeLayout l = (RelativeLayout) inflater.inflate(
-				R.layout.custom_story, null);
+		RelativeLayout l = (RelativeLayout) inflater.inflate(R.layout.custom_story, null);
 		Point p = ((PapervActivity) mContext).getFeedDimensions();
-
 		l.setLayoutParams(new AbsListView.LayoutParams(p.x, p.y));
 
 		// update with story details
 
 		TextView storyTitle = (TextView) l.findViewById(R.id.story_title);
 		storyTitle.setText(story.story_name);
+		
+		RelativeLayout rl = (RelativeLayout)l.findViewById(R.id.story_image);
+		rl.setLayoutParams(new RelativeLayout.LayoutParams(360,265));
+		RelativeLayout.LayoutParams params = (android.widget.RelativeLayout.LayoutParams)rl.getLayoutParams();
+		params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+		rl.setLayoutParams(params);
 
 		TextView textView = (TextView) l.findViewById(R.id.story_photo);
-
+		textView.setLayoutParams(new RelativeLayout.LayoutParams(314,205));
+		RelativeLayout.LayoutParams params2 = (android.widget.RelativeLayout.LayoutParams)textView.getLayoutParams();
+		params2.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+		textView.setLayoutParams(params2);
+		
 		loader.DisplayImage(story.photo_url, (PapervActivity) mContext,
 				textView);
 

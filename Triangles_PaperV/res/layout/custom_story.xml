@@ -21,18 +21,19 @@
 
         <RelativeLayout
             android:id="@+id/story_image"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="360dp"
+            android:layout_height="265dp"
             android:layout_below="@+id/story_title"
-            android:background="@drawable/feed_image"
-            android:padding="40dp" >
+            android:background="@drawable/feed_image" >
 
-            <TextView
-                android:id="@+id/story_photo"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:background="@drawable/helal" />
+            
+                <TextView
+                    android:id="@+id/story_photo"
+                    android:layout_width="314dp"
+                    android:layout_height="205dp"
+                    android:layout_centerInParent="true"
+                    android:background="@drawable/helal" />
+            
         </RelativeLayout>
     </RelativeLayout>
 
@@ -45,25 +46,25 @@
 
         <LinearLayout
             android:id="@+id/user_img"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_marginRight="10dp"
             android:background="@drawable/rounded" >
 
             <TextView
                 android:id="@+id/owner_photo"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
                 android:background="@drawable/helal" />
         </LinearLayout>
 
         <TextView
-            android:layout_marginTop="5dp"
             android:id="@+id/story_owner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dp"
             android:layout_toRightOf="@+id/user_img"
             android:text="Helal Ismail"
             android:textColor="#6B6B6B"
