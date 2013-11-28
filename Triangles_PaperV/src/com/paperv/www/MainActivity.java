@@ -37,7 +37,7 @@ public class MainActivity extends PapervActivity implements
 	public static ImageButton btnList;
 	private Fragment mContent;
 	public static TextView page_title;
-	EditText comment;
+	//EditText comment;
 	private TabHost mTabHost;
 	private HashMap<String, TabInfo> mapTabInfo = new HashMap<String, TabInfo>();
 	private TabInfo mLastTab = null;
@@ -111,9 +111,9 @@ public class MainActivity extends PapervActivity implements
 	@Override
 	public void onCreateUI(android.os.Bundle savedInstanceState) {
 		setContentView(R.layout.activity_main);
-		comment = (EditText) findViewById(R.id.comment);
-		comment.requestFocus();
-		comment.setOnTouchListener(foucsHandler);
+//		comment = (EditText) findViewById(R.id.comment);
+//		comment.requestFocus();
+//		comment.setOnTouchListener(foucsHandler);
 		page_title = (TextView) findViewById(R.id.page_title);
 		page_title.setText("Home");
 		ViewGroup vg = (ViewGroup) findViewById(R.id.main_root);

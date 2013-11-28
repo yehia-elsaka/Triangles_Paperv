@@ -50,5 +50,14 @@ public class APIHandler {
 		homeAPI = new HomeAPI(activityInstance, true, url, "Loading Home Feed");
 		homeAPI.execute();
 	}
+	
+	// 5 - Get Story
+	StoryAPI storyAPI;
+	public void getStory(PapervActivity activityInstance, String user_id, int storyID){
+		String url = Constants.API_GET_STORY+"user_id="+user_id+"&story_id="+storyID;
+		storyAPI = new StoryAPI(activityInstance, true, url, "Loading story details");
+		storyAPI.execute();
+		
+	}
 
 }

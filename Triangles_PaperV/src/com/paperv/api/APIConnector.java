@@ -17,6 +17,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 
+import com.paperv.core.CacheManager;
 import com.paperv.core.PapervActivity;
 import com.paperv.www.R;
 
@@ -24,6 +25,7 @@ public abstract class APIConnector extends AsyncTask<Void, Void, Boolean> {
 
 	public PapervActivity activityInstance;
 	public boolean showDialog = true;
+	public CacheManager cache = CacheManager.getInstance();
 	ProgressDialog dialog = null;
 	String url;
 	String dialogText;

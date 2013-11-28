@@ -1,9 +1,11 @@
 package com.paperv.helpers;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Point;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
@@ -17,6 +19,7 @@ import com.paperv.core.PapervActivity;
 import com.paperv.lazy_adapter_utils.LazyImageLoader;
 import com.paperv.models.Story;
 import com.paperv.www.R;
+import com.paperv.www.StoryActivity;
 
 public class FeedHelper extends BaseAdapter {
 
@@ -49,11 +52,12 @@ public class FeedHelper extends BaseAdapter {
 	@Override
 	public View getView(int arg0, View arg1, ViewGroup arg2) {
 
-		Story story = cache.feed_list.get(arg0);
+		final Story story = cache.feed_list.get(arg0);
 		LayoutInflater inflater = LayoutInflater.from(mContext);
 
 		// main layout
-		RelativeLayout l = (RelativeLayout) inflater.inflate(R.layout.custom_story, null);
+		RelativeLayout l = (RelativeLayout) inflater.inflate(
+				R.layout.custom_story, null);
 		Point p = ((PapervActivity) mContext).getFeedDimensions();
 		l.setLayoutParams(new AbsListView.LayoutParams(p.x, p.y));
 
@@ -61,19 +65,31 @@ public class FeedHelper extends BaseAdapter {
 
 		TextView storyTitle = (TextView) l.findViewById(R.id.story_title);
 		storyTitle.setText(story.story_name);
-		
-		RelativeLayout rl = (RelativeLayout)l.findViewById(R.id.story_image);
-		rl.setLayoutParams(new RelativeLayout.LayoutParams(360,265));
-		RelativeLayout.LayoutParams params = (android.widget.RelativeLayout.LayoutParams)rl.getLayoutParams();
+
+		RelativeLayout rl = (RelativeLayout) l.findViewById(R.id.story_image);
+		rl.setLayoutParams(new RelativeLayout.LayoutParams(360, 265));
+		RelativeLayout.LayoutParams params = (android.widget.RelativeLayout.LayoutParams) rl
+				.getLayoutParams();
 		params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
 		rl.setLayoutParams(params);
 
+		rl.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				Intent storyDetails = new Intent(mContext, StoryActivity.class);
+				storyDetails.putExtra("story_id", story.story_id);
+				storyDetails.putExtra("photo_url", story.photo_url);
+				mContext.startActivity(storyDetails);
+			}
+		});
+
 		TextView textView = (TextView) l.findViewById(R.id.story_photo);
-		textView.setLayoutParams(new RelativeLayout.LayoutParams(314,205));
-		RelativeLayout.LayoutParams params2 = (android.widget.RelativeLayout.LayoutParams)textView.getLayoutParams();
+		textView.setLayoutParams(new RelativeLayout.LayoutParams(314, 205));
+		RelativeLayout.LayoutParams params2 = (android.widget.RelativeLayout.LayoutParams) textView
+				.getLayoutParams();
 		params2.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
 		textView.setLayoutParams(params2);
-		
+
 		loader.DisplayImage(story.photo_url, (PapervActivity) mContext,
 				textView);
 
@@ -95,8 +111,7 @@ public class FeedHelper extends BaseAdapter {
 		ownerPhotoLayout.setLayoutParams(new RelativeLayout.LayoutParams(100,
 				100));
 		TextView ownerPhoto = (TextView) l.findViewById(R.id.owner_photo);
-		// ownerPhoto.setLayoutParams(new LayoutParams(cache.screenWidth / 10,
-		// cache.screenWidth / 10));
+		ownerPhoto.setLayoutParams(new LayoutParams(100, 100));
 		loader.DisplayImage(story.user_image, (PapervActivity) mContext,
 				ownerPhoto);
 
