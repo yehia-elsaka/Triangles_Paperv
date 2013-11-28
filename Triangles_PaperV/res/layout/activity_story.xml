@@ -1,110 +1,119 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="@android:color/white"
     android:gravity="center_horizontal"
-    android:orientation="vertical" >
-    
-
-    
-    <FrameLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" >
-
-        <TextView
-            android:id="@+id/story_image"
-            android:layout_width="fill_parent"
-            android:layout_height="400dp"
-            android:layout_gravity="center"
-            android:background="@drawable/helal" />
-
-        <ImageView
-            android:layout_width="75dp"
-            android:layout_height="75dp"
-            android:layout_gravity="bottom|left"
-            android:src="@drawable/logo" />
-    </FrameLayout>
-
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical|right"
-        android:orientation="horizontal" >
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/heart" />
-
-        <TextView
-            android:id="@+id/num_likes"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginRight="15dp"
-            android:text="10"
-            android:textColor="#6B6B6B"
-            android:textSize="20sp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/glide" />
-
-        <TextView
-            android:id="@+id/num_reglides"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginRight="15dp"
-            android:text="10"
-            android:textColor="#6B6B6B"
-            android:textSize="20sp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/comment" />
-
-        <TextView
-            android:id="@+id/num_comments"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginRight="15dp"
-            android:text="10"
-            android:textColor="#6B6B6B"
-            android:textSize="20sp" />
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/story_title"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="15dp"
-        android:gravity="left"
-        android:text="Story title"
-        android:textColor="@color/blue"
-        android:textSize="40sp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:id="@+id/story_owner"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="15dp"
-        android:gravity="left"
-        android:text="Helal Ismail"
-        android:textColor="@android:color/darker_gray"
-        android:textSize="20sp"
-        android:textStyle="bold" />
+   >
 
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_margin="15sp"
+        android:background="@android:color/white"
         android:gravity="center_horizontal"
         android:orientation="vertical" >
+
+        <FrameLayout
+            android:layout_marginBottom="10dp"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:id="@+id/story_image"
+                android:layout_width="fill_parent"
+                android:layout_height="400dp"
+                android:layout_gravity="center"
+                android:background="@drawable/background" />
+
+            <ImageView
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:layout_gravity="bottom|left"
+                android:src="@drawable/logo" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical|right"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/heart" />
+
+            <TextView
+                android:id="@+id/num_likes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginRight="15dp"
+                android:text="10"
+                android:textColor="#6B6B6B"
+                android:textSize="20sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/glide" />
+
+            <TextView
+                android:id="@+id/num_reglides"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginRight="15dp"
+                android:text="10"
+                android:textColor="#6B6B6B"
+                android:textSize="20sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/comment" />
+
+            <TextView
+                android:id="@+id/num_comments"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginRight="15dp"
+                android:text="10"
+                android:textColor="#6B6B6B"
+                android:textSize="20sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/story_title"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:gravity="left"
+            android:text="Story title"
+            android:textColor="@color/blue"
+            android:textSize="40sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/story_owner"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:gravity="left"
+            android:text="Helal Ismail"
+            android:textColor="@android:color/darker_gray"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_margin="15sp"
+            android:gravity="center_horizontal"
+            android:orientation="vertical" >
+          
+            
+        </LinearLayout>
     </LinearLayout>
 
-</LinearLayout>
+</ScrollView>
