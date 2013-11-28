@@ -5,16 +5,13 @@ import java.util.ArrayList;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import android.view.LayoutInflater;
 import android.widget.GridView;
-import android.widget.RelativeLayout;
 
 import com.paperv.core.CacheManager;
 import com.paperv.core.PapervActivity;
 import com.paperv.helpers.FeedHelper;
 import com.paperv.models.Story;
 import com.paperv.www.R;
-import com.socialize.google.gson.JsonObject;
 
 public class HomeAPI extends APIConnector {
 

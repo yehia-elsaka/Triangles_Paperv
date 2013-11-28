@@ -3,11 +3,8 @@ package com.paperv.core;
 import android.content.Context;
 import android.graphics.Point;
 import android.support.v4.app.FragmentActivity;
-import android.util.DisplayMetrics;
-import android.view.Display;
 import android.widget.Toast;
 
-import com.bugsense.trace.BugSenseHandler;
 import com.paperv.api.APIHandler;
 import com.paperv.network.DataConnector;
 
