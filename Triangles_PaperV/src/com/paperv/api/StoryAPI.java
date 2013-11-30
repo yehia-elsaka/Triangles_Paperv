@@ -98,7 +98,7 @@ public class StoryAPI extends APIConnector {
 		LayoutInflater inflater = LayoutInflater.from(activityInstance);
 		for (int i = 0 ; i < 6 ; i ++){
 //			Comment comment = cache.story_view.comments.get(i);
-			RelativeLayout cl = (RelativeLayout)inflater.inflate(R.layout.custom_comment, null);
+			LinearLayout cl = (LinearLayout)inflater.inflate(R.layout.custom_comment, null);
 			
 //			TextView comment_owner_name = (TextView)cl.findViewById(R.id.comment_owner_name);
 //			comment_owner_name.setText(comment.user_full_name);

@@ -28,9 +28,6 @@ import com.paperv.tabs_fragments.LikesActivity;
 import com.paperv.tabs_fragments.ProfileActivity;
 import com.paperv.tabs_utils.Utils;
 import com.slidingmenu.lib.SlidingMenu;
-import com.socialize.ActionBarUtils;
-import com.socialize.Socialize;
-import com.socialize.entity.Entity;
 
 public class MainActivity extends PapervActivity implements
 		TabHost.OnTabChangeListener, OnClickListener {
@@ -118,7 +115,7 @@ public class MainActivity extends PapervActivity implements
 		setContentView(R.layout.activity_main);
 		
 		
-		linkAndPostTw("Madrid 2010, story via @paperv", "http://paperv.com/story/672/madrid-2010/", "PaperV");
+		//linkAndPostTw("Madrid 2010, story via @paperv", "http://paperv.com/story/672/madrid-2010/", "PaperV");
 		
 		// comment = (EditText) findViewById(R.id.comment);
 		// comment.requestFocus();

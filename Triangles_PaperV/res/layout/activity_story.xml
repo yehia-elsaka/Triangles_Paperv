@@ -32,16 +32,16 @@
 
                 <LinearLayout
                     android:id="@+id/comment_owner_layout"
-                    android:layout_width="75dp"
-                    android:layout_height="75dp"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
                     android:layout_gravity="bottom|left"
                     android:layout_margin="2dp"
                     android:background="@drawable/rounded" >
 
                     <TextView
                         android:id="@+id/comment_owner"
-                        android:layout_width="75dp"
-                        android:layout_height="75dp"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
                         android:background="@drawable/helal" />
                 </LinearLayout>
             </FrameLayout>
@@ -136,26 +136,55 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:background="@color/blue"
+        android:gravity="center_vertical|left"
         android:orientation="horizontal"
         android:padding="3dp" >
 
-        <LinearLayout
+        
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal" >
+            android:background="@drawable/ico_heart" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="favourites"
-                android:textSize="15sp"
-                android:textStyle="bold" />
+        <TextView
+            android:id="@+id/num_likes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginRight="25dp"
+            android:text="Like"
+            android:textColor="@android:color/white"
+            android:textSize="15sp" />
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/heart" />
-        </LinearLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ico_glide_2" />
+
+        <TextView
+            android:id="@+id/num_reglides"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginRight="25dp"
+            android:text="reglide"
+            android:textColor="@android:color/white"
+            android:textSize="15sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ico_comment" />
+
+        <TextView
+            android:id="@+id/num_comments"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginRight="15dp"
+            android:text="comment"
+            android:textColor="@android:color/white"
+            android:textSize="15sp" />
     </LinearLayout>
 
 </RelativeLayout>
