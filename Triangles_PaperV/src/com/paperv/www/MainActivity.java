@@ -118,7 +118,7 @@ public class MainActivity extends PapervActivity implements
 		setContentView(R.layout.activity_main);
 		
 		
-		linkAndPost("Madrid 2010", "http://paperv.com/story/672/madrid-2010/", "PaperV");
+		linkAndPostTw("Madrid 2010, story via @paperv", "http://paperv.com/story/672/madrid-2010/", "PaperV");
 		
 		// comment = (EditText) findViewById(R.id.comment);
 		// comment.requestFocus();

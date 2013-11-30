@@ -19,8 +19,10 @@ import com.socialize.api.action.share.SocialNetworkShareListener;
 import com.socialize.entity.Entity;
 import com.socialize.error.SocializeException;
 import com.socialize.listener.SocializeAuthListener;
+import com.socialize.networks.PostData;
 import com.socialize.networks.SocialNetwork;
 import com.socialize.networks.facebook.FacebookUtils;
+import com.socialize.networks.twitter.TwitterUtils;
 
 public abstract class PapervActivity extends FragmentActivity {
 
@@ -66,33 +68,33 @@ public abstract class PapervActivity extends FragmentActivity {
 		return p;
 	}
 
-	public void linkAndPost(final String msg,final String link,final String name) {
+	public void linkAndPostFb(final String msg, final String link,
+			final String name) {
 		if (FacebookUtils.isLinkedForWrite(this)) {
 			postToFb(msg, link, name);
-		}
-		else {
+		} else {
 			FacebookUtils.linkForWrite(this, new SocializeAuthListener() {
-				
+
 				@Override
 				public void onCancel() {
 					showLongToast("Link Canceled");
 				}
-				
+
 				@Override
 				public void onAuthSuccess(SocializeSession session) {
 					postToFb(msg, link, name);
 				}
-				
+
 				@Override
 				public void onAuthFail(SocializeException error) {
 					showLongToast("Auth Failed");
 				}
-				
+
 				@Override
 				public void onError(SocializeException error) {
 					showLongToast("Link Error");
 				}
-			});	
+			});
 		}
 	}
 
@@ -104,15 +106,14 @@ public abstract class PapervActivity extends FragmentActivity {
 		postData.put("link", link);
 		postData.put("name", name);
 
-//		FacebookUtils.post(this, graphPath, postData,
-//				new SocialNetworkPostListener()
-//		
-		
+		// FacebookUtils.post(this, graphPath, postData,
+		// new SocialNetworkPostListener()
+		//
+
 		Entity entity = Entity.newInstance(link, name);
-		
-		// The "this" argument refers to the current Activity
-		FacebookUtils.postEntity(this, entity, msg, new SocialNetworkShareListener()
-		{
+
+		FacebookUtils.postEntity(this, entity, msg,
+				new SocialNetworkShareListener() {
 
 					@Override
 					public void onNetworkError(Activity context,
@@ -153,5 +154,75 @@ public abstract class PapervActivity extends FragmentActivity {
 	protected void onDestroy() {
 		Socialize.onDestroy(this);
 		super.onDestroy();
+	}
+
+	public void linkAndPostTw(final String msg,final String link,final String name) {
+
+		if (TwitterUtils.isLinked(this)) {
+			postTw(msg, link, name);
+		} else {
+
+			TwitterUtils.link(this, new SocializeAuthListener() {
+
+				@Override
+				public void onCancel() {
+					showLongToast("Twitter Link Canceled");
+				}
+
+				@Override
+				public void onAuthSuccess(SocializeSession session) {
+					postTw(msg, link, name);
+				}
+
+				@Override
+				public void onAuthFail(SocializeException error) {
+					showLongToast("Twitter Link Failed");
+
+				}
+
+				@Override
+				public void onError(SocializeException error) {
+					showLongToast("Twitter Link Error");
+				}
+			});
+		}
+	}
+
+	private void postTw(String msg, String link, String name) {
+		Entity entity = Entity.newInstance(link, name);
+
+		TwitterUtils.tweetEntity(this, entity, msg,
+				new SocialNetworkShareListener() {
+
+					@Override
+					public void onNetworkError(Activity context,
+							SocialNetwork network, Exception error) {
+						showLongToast("Network error");
+					}
+
+					@Override
+					public void onCancel() {
+						showLongToast("Tw post canceled");
+					}
+
+					@Override
+					public void onAfterPost(Activity parent,
+							SocialNetwork socialNetwork,
+							JSONObject responseObject) {
+						showLongToast("finished");
+
+					}
+
+					@Override
+					public boolean onBeforePost(Activity parent,
+							SocialNetwork socialNetwork, PostData postData) {
+						// Called just prior to the post.
+						// postData contains the dictionary (map) of data to be
+						// posted.
+						// You can change this here to customize the post.
+						// Return true to prevent the post from occurring.
+						return false;
+					}
+				});
 	}
 }
