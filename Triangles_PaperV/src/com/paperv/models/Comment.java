@@ -3,12 +3,12 @@ package com.paperv.models;
 public class Comment {
 	
 	
-	private String comment_id;
-	private String comment_text;
-	private String user_id;
-	private String user_name;
-	private String user_full_name;
-	private String user_image_url;
+	public String comment_id;
+	public String comment_text;
+	public String user_id;
+	public String user_name;
+	public String user_full_name;
+	public String user_image_url;
 	
 	
 	

@@ -6,7 +6,10 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.paperv.core.Constants;
@@ -73,11 +76,42 @@ public class StoryAPI extends APIConnector {
 
 		imageLoader = new LazyImageLoader(activityInstance);
 		TextView storyImage = (TextView)activityInstance.findViewById(R.id.story_image);
-		storyImage.setLayoutParams(new FrameLayout.LayoutParams(cache.screenWidth, cache.screenWidth));
+		storyImage.setLayoutParams(new FrameLayout.LayoutParams(cache.screenWidth, cache.screenHeight/3));
 		imageLoader.DisplayImage(cache.story_view.photo_url, activityInstance, storyImage);
 		
 		TextView storyTitle = (TextView)activityInstance.findViewById(R.id.story_title);
 		storyTitle.setText(cache.story_view.story_name);
+		
+		TextView numLikes = (TextView)activityInstance.findViewById(R.id.num_likes);
+		numLikes.setText(cache.story_view.likes_number+"");
+		
+		
+		TextView numReglides = (TextView)activityInstance.findViewById(R.id.num_reglides);
+		numReglides.setText(cache.story_view.reglide_number+"");
+		
+		
+		TextView numComments = (TextView)activityInstance.findViewById(R.id.num_comments);
+		numComments.setText(cache.story_view.comments_number+"");
+		
+		
+		LinearLayout commentsLayout = (LinearLayout)activityInstance.findViewById(R.id.comments_layout);
+		LayoutInflater inflater = LayoutInflater.from(activityInstance);
+		for (int i = 0 ; i < 6 ; i ++){
+//			Comment comment = cache.story_view.comments.get(i);
+			RelativeLayout cl = (RelativeLayout)inflater.inflate(R.layout.custom_comment, null);
+			
+//			TextView comment_owner_name = (TextView)cl.findViewById(R.id.comment_owner_name);
+//			comment_owner_name.setText(comment.user_full_name);
+//			
+//			TextView comment_owner = (TextView)cl.findViewById(R.id.comment_owner);
+//			imageLoader.DisplayImage(comment.user_image_url, activityInstance, comment_owner);
+//			
+//			TextView comment_text = (TextView)cl.findViewById(R.id.comment_text);
+//			comment_text.setText(comment.comment_text);
+			
+			commentsLayout.addView(cl);
+		}
+		
 		
 	}
 
