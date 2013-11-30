@@ -28,6 +28,9 @@ import com.paperv.tabs_fragments.LikesActivity;
 import com.paperv.tabs_fragments.ProfileActivity;
 import com.paperv.tabs_utils.Utils;
 import com.slidingmenu.lib.SlidingMenu;
+import com.socialize.ActionBarUtils;
+import com.socialize.Socialize;
+import com.socialize.entity.Entity;
 
 public class MainActivity extends PapervActivity implements
 		TabHost.OnTabChangeListener, OnClickListener {
@@ -36,7 +39,7 @@ public class MainActivity extends PapervActivity implements
 	public static ImageButton btnList;
 	private Fragment mContent;
 	public static TextView page_title;
-	//EditText comment;
+	// EditText comment;
 	private TabHost mTabHost;
 	private HashMap<String, TabInfo> mapTabInfo = new HashMap<String, TabInfo>();
 	private TabInfo mLastTab = null;
@@ -109,10 +112,17 @@ public class MainActivity extends PapervActivity implements
 
 	@Override
 	public void onCreateUI(android.os.Bundle savedInstanceState) {
+
+	
+
 		setContentView(R.layout.activity_main);
-//		comment = (EditText) findViewById(R.id.comment);
-//		comment.requestFocus();
-//		comment.setOnTouchListener(foucsHandler);
+		
+		
+		linkAndPostTw("Madrid 2010, story via @paperv", "http://paperv.com/story/672/madrid-2010/", "PaperV");
+		
+		// comment = (EditText) findViewById(R.id.comment);
+		// comment.requestFocus();
+		// comment.setOnTouchListener(foucsHandler);
 		page_title = (TextView) findViewById(R.id.page_title);
 		page_title.setText("Home");
 		ViewGroup vg = (ViewGroup) findViewById(R.id.main_root);
@@ -173,8 +183,7 @@ public class MainActivity extends PapervActivity implements
 		mTabHost = (TabHost) findViewById(android.R.id.tabhost);
 		mTabHost.setup();
 
-		addTab(R.string.lbl_home, R.drawable.ico_home_2, HomeTab.class,
-				args);
+		addTab(R.string.lbl_home, R.drawable.ico_home_2, HomeTab.class, args);
 		addTab(R.string.lbl_explore, R.drawable.ico_search,
 				ExploreActivity.class, args);
 		addTab(R.string.lbl_glide, R.drawable.ico_glide_2, GlideActivity.class,
