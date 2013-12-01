@@ -21,6 +21,7 @@ import android.widget.TabHost.TabContentFactory;
 import android.widget.TextView;
 
 import com.paperv.core.PapervActivity;
+import com.paperv.fragments.ExploreTab;
 import com.paperv.fragments.HomeTab;
 import com.paperv.tabs_fragments.ExploreActivity;
 import com.paperv.tabs_fragments.GlideActivity;
@@ -124,7 +125,7 @@ public class MainActivity extends PapervActivity implements
 		page_title.setText("Home");
 		ViewGroup vg = (ViewGroup) findViewById(R.id.main_root);
 
-		// configure the SlidingMenu
+		// configure the SlidingMenu	
 		menu = new SlidingMenu(this);
 		menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
 		menu.setShadowWidthRes(R.dimen.shadow_width);
@@ -181,8 +182,9 @@ public class MainActivity extends PapervActivity implements
 		mTabHost.setup();
 
 		addTab(R.string.lbl_home, R.drawable.ico_home_2, HomeTab.class, args);
-		addTab(R.string.lbl_explore, R.drawable.ico_search,
-				ExploreActivity.class, args);
+		
+		addTab(R.string.lbl_explore, R.drawable.ico_search,ExploreTab.class, args);
+		
 		addTab(R.string.lbl_glide, R.drawable.ico_glide_2, GlideActivity.class,
 				args);
 		addTab(R.string.lbl_likes, R.drawable.ico_likes_2, LikesActivity.class,

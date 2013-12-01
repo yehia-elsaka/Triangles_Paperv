@@ -13,18 +13,18 @@ import com.paperv.helpers.FeedHelper;
 import com.paperv.www.MainActivity;
 import com.paperv.www.R;
 
-public class HomeTab extends PapervFragment{
+public class ExploreTab extends PapervFragment{
 
 
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		MainActivity.page_title.setText("Home");
+		MainActivity.page_title.setText("Explore");
 		
 		View v =  inflater.inflate(R.layout.fragment_home, null);
 		GridView grid = (GridView) v.findViewById(R.id.feed_grid);
-		grid.setAdapter(new FeedHelper(activityInstance, cache.feed_list));
+		grid.setAdapter(new FeedHelper(activityInstance, cache.explore_list));
 		
 		if (((PapervActivity)getActivity()).screenWidth < Constants.SMALL_SCREEN_SIZE)
 			grid.setNumColumns(1);
@@ -46,7 +46,7 @@ public class HomeTab extends PapervFragment{
 	public void loadData() {
 		
 		
-		apiHandler.home(activityInstance, activityInstance.appInstance.getUserName(), 1);
+		apiHandler.explore(activityInstance, activityInstance.appInstance.getUserName(), 1);
 		
 	}
 

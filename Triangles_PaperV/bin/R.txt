@@ -1008,8 +1008,8 @@ int id line 0x7f0600ab
 int id load_more 0x7f0600e8
 int id login_btn 0x7f06002c
 int id login_panel 0x7f060026
-int id logo 0x7f060028
-int id logo_txt 0x7f060029
+int id logo 0x7f060029
+int id logo_txt 0x7f060028
 int id lst_menu 0x7f0600bd
 int id lst_notification 0x7f0600ee
 int id lst_stories 0x7f0600d9

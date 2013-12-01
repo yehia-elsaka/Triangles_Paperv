@@ -1,5 +1,7 @@
 package com.paperv.helpers;
 
+import java.util.ArrayList;
+
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
@@ -25,10 +27,13 @@ public class FeedHelper extends BaseAdapter {
 
 	Context mContext;
 	LazyImageLoader loader;
+	ArrayList<Story> storyList;
 
-	public FeedHelper(Context mContext) {
+	public FeedHelper(Context mContext, ArrayList<Story> storyList) {
+		this.storyList = storyList;
 		this.mContext = mContext;
 		loader = new LazyImageLoader(mContext);
+		
 
 	}
 
@@ -36,12 +41,12 @@ public class FeedHelper extends BaseAdapter {
 
 	@Override
 	public int getCount() {
-		return cache.feed_list.size();
+		return storyList.size();
 	}
 
 	@Override
 	public Object getItem(int arg0) {
-		return cache.feed_list.get(arg0);
+		return storyList.get(arg0);
 	}
 
 	@Override
@@ -52,14 +57,15 @@ public class FeedHelper extends BaseAdapter {
 	@Override
 	public View getView(int arg0, View arg1, ViewGroup arg2) {
 
-		final Story story = cache.feed_list.get(arg0);
+		final Story story = storyList.get(arg0);
 		LayoutInflater inflater = LayoutInflater.from(mContext);
 
 		// main layout
 		RelativeLayout l = (RelativeLayout) inflater.inflate(
 				R.layout.custom_story, null);
+		
 		Point p = ((PapervActivity) mContext).getFeedDimensions();
-		l.setLayoutParams(new AbsListView.LayoutParams(p.x, p.y));
+		l.setLayoutParams(new AbsListView.LayoutParams(400, 500));
 
 		// update with story details
 
