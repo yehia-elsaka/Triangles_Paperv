@@ -51,10 +51,11 @@ public class LoginActivity extends PapervActivity implements OnClickListener {
 		logotxt.getLayoutParams().width = screenHeight / 5;
 		logotxt.getLayoutParams().height = screenHeight / 5;		
 		
-		user_name_field.getLayoutParams().height = (int)(screenHeight / 12);
+		/*user_name_field.getLayoutParams().height = (int)(screenHeight / 12);
 		password_field.getLayoutParams().height = (int)(screenHeight / 12);
+			*/
 		loginBtn.getLayoutParams().height = (int)(screenHeight / 12);
-		
+	
 		twitterBtn.getLayoutParams().width = (int)(screenWidth / 2.5);
 		twitterBtn.getLayoutParams().height = (int)(screenHeight / 12);
 		

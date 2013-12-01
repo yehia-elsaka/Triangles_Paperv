@@ -17,7 +17,7 @@
             android:layout_centerHorizontal="true"
             android:text="Story title"
             android:textColor="#6B6B6B"
-            android:textSize="20sp" />
+            android:textSize="15sp" />
 
         <RelativeLayout
             android:id="@+id/story_image"
@@ -67,7 +67,7 @@
             android:layout_toRightOf="@+id/user_img"
             android:text="Helal Ismail"
             android:textColor="#6B6B6B"
-            android:textSize="20sp" />
+            android:textSize="15sp" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -125,5 +125,11 @@
                 android:textSize="20sp" />
         </LinearLayout>
     </RelativeLayout>
+    
+    <TextView
+        android:layout_below="@+id/info_panel"
+        android:layout_width="fill_parent"
+        android:layout_height="20dp"
+        android:background="@drawable/bottom_shade"/>
 
 </RelativeLayout>
