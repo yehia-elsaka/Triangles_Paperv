@@ -41,6 +41,7 @@
             
 
             <FrameLayout
+                android:background="@drawable/background"
                 android:id="@+android:id/realtabcontent"
                 android:layout_width="fill_parent"
                 android:layout_height="0dp"

@@ -48,7 +48,7 @@ public class HomeTab extends PapervFragment{
 			@Override
 			public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemsCount, int totalItemsCount) {
 				boolean condition1 = ((firstVisibleItem + visibleItemsCount) == totalItemsCount);
-				boolean condition2 = (visibleItemsCount % 25 == 0);
+				boolean condition2 = (totalItemsCount % 25 == 0);
 				boolean condition3 = (totalItemsCount > 0);
 				
 
