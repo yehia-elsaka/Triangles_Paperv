@@ -2,6 +2,7 @@ package com.paperv.core;
 
 public class Constants {
 	
+
 	// ===== Generic Constants ====
 	public static String TAG = "helal";
 	
@@ -9,6 +10,8 @@ public class Constants {
 	public static String PREFS_REMEMBER_ME = "prefs_remember_me";
 	public static String PREFS_USERNAME = "prefs_username";
 	public static String PREFS_PASSWORD = "prefs_password";
+	public static final String PREFS_USER_ID = "prefs_user_id";
+
 	
 	//===== API URLS ========
 	public static String API_LOGIN = "http://paperv.com/api/login.php?";

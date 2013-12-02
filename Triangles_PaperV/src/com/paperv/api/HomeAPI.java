@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import android.util.Log;
 import android.widget.GridView;
 
 import com.paperv.core.CacheManager;
@@ -47,6 +48,8 @@ public class HomeAPI extends APIConnector {
 
 					stories.add(story);
 					CacheManager.getInstance().feed_list.add(story);
+					Log.d("helal", "feed : " + cache.feed_list.size());
+
 				} catch (Exception e) {
 
 				}

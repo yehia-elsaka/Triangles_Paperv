@@ -68,7 +68,15 @@ public class PapervApp extends Application {
 		return prefs.getString(Constants.PREFS_PASSWORD, "");
 	}
 	
-	// 3 - 
+	public void setUserId(String userID){
+		Editor editor = prefs.edit();
+		editor.putString(Constants.PREFS_USER_ID, userID);
+		editor.commit();
+	}
+	
+	public String getUserID(){
+		return prefs.getString(Constants.PREFS_USER_ID, "");
+	}
 	
 
 }

@@ -65,7 +65,7 @@ public class FeedHelper extends BaseAdapter {
 				R.layout.custom_story, null);
 		
 		Point p = ((PapervActivity) mContext).getFeedDimensions();
-		l.setLayoutParams(new AbsListView.LayoutParams(400, 500));
+		l.setLayoutParams(new AbsListView.LayoutParams(500, 550));
 
 		// update with story details
 

@@ -119,8 +119,9 @@ public class LazyImageLoader {
             BitmapFactory.Options o2 = new BitmapFactory.Options();
             o2.inSampleSize=scale;
             return BitmapFactory.decodeStream(new FileInputStream(f), null, o2);
-        } catch (FileNotFoundException e) {}
-        return null;
+        } catch (Exception e) {
+        	return null;
+        }
     }
     
     //Task for the queue

@@ -10,6 +10,7 @@
         android:background="#CBCBCB"
         android:padding="10dp" >
 
+        
         <TextView
             android:id="@+id/story_title"
             android:layout_width="wrap_content"
@@ -36,6 +37,7 @@
     </RelativeLayout>
 
     <RelativeLayout
+        android:paddingLeft="10dp"
         android:id="@+id/info_panel"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -82,7 +84,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/heart" />
+                android:background="@drawable/ico_heart" />
 
             <TextView
                 android:id="@+id/num_likes"
@@ -92,12 +94,12 @@
                 android:layout_marginRight="15dp"
                 android:text="10"
                 android:textColor="#6B6B6B"
-                android:textSize="20sp" />
+                android:textSize="15sp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/glide" />
+                android:background="@drawable/ico_glide_2" />
 
             <TextView
                 android:id="@+id/num_reglides"
@@ -107,12 +109,12 @@
                 android:layout_marginRight="15dp"
                 android:text="10"
                 android:textColor="#6B6B6B"
-                android:textSize="20sp" />
+                android:textSize="15sp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/comment" />
+                android:background="@drawable/ico_comment" />
 
             <TextView
                 android:id="@+id/num_comments"
@@ -122,7 +124,7 @@
                 android:layout_marginRight="15dp"
                 android:text="10"
                 android:textColor="#6B6B6B"
-                android:textSize="20sp" />
+                android:textSize="15sp" />
         </LinearLayout>
     </RelativeLayout>
     

@@ -20,7 +20,6 @@ public class LoginAPI extends APIConnector{
 
 		
 		
-		Log.d("helal", url);
 	}
 
 	@Override
@@ -29,6 +28,11 @@ public class LoginAPI extends APIConnector{
 		Log.d("helal", json.toString());		
 		boolean success = json.optBoolean("success");
 		String user_id = json.optString("user_id");
+		if(success)
+		{
+			activityInstance.appInstance.setUserId(user_id);
+		}
+		
 		String user_name = json.optString("user_name");
 		String full_name = json.optString("full_name");
 		String email = json.optString("email");

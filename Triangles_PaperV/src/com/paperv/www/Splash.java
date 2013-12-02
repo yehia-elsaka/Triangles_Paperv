@@ -17,25 +17,20 @@ public class Splash extends PapervActivity {
 		setContentView(R.layout.splash);
 		cache.screenWidth = getWindowManager().getDefaultDisplay().getWidth();
 		cache.screenHeight = getWindowManager().getDefaultDisplay().getHeight();
-		
-		
-		ImageView logo = (ImageView)findViewById(R.id.logo);
-		ImageView logotxt = (ImageView)findViewById(R.id.logo_txt);
-		
+
+		ImageView logo = (ImageView) findViewById(R.id.logo);
+		ImageView logotxt = (ImageView) findViewById(R.id.logo_txt);
+
 		logo.getLayoutParams().width = screenHeight / 4;
-		logo.getLayoutParams().height = screenHeight / 4;		
-		
+		logo.getLayoutParams().height = screenHeight / 4;
+
 		logotxt.getLayoutParams().width = screenHeight / 4;
-		logotxt.getLayoutParams().height = screenHeight / 4;		
+		logotxt.getLayoutParams().height = screenHeight / 4;
 		try {
 			if (appInstance.isRememberMe()) {
-//				LoginTask task = new LoginTask();
-//				task.showDialog = false;
-//				task.activityInstance = this;
-//				task.execute();
-				
-				apiHandler.login(Splash.this,false , appInstance.getUserName(), appInstance.getPassword(), "", appInstance.isRememberMe());
-				
+				apiHandler.login(Splash.this, false, appInstance.getUserName(),
+						appInstance.getPassword(), "",
+						appInstance.isRememberMe());
 			}
 
 			else {
@@ -44,7 +39,8 @@ public class Splash extends PapervActivity {
 				Runnable r = new Runnable() {
 					public void run() {
 						finish();
-						Intent intent = new Intent(Splash.this,LoginActivity.class);
+						Intent intent = new Intent(Splash.this,
+								LoginActivity.class);
 						startActivity(intent);
 					}
 				};

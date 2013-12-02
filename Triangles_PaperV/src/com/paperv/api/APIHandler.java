@@ -1,11 +1,13 @@
 package com.paperv.api;
 
+import com.paperv.core.CacheManager;
 import com.paperv.core.Constants;
 import com.paperv.core.PapervActivity;
 
 public class APIHandler {
 	
 	private static APIHandler instance = new APIHandler();
+	CacheManager cache = CacheManager.getInstance();
 	public static APIHandler getInstance(){
 		return instance;
 	}
@@ -19,6 +21,10 @@ public class APIHandler {
 		loginAPI = new LoginAPI(activityInstance, showDialog, url, dialogText);
 		loginAPI.rememberMe = rememberMe;
 		loginAPI.execute();
+		
+		activityInstance.appInstance.setUserName(username);
+		activityInstance.appInstance.setPassword(password);
+		
 	}
 	
 	// 2 - Register
@@ -46,7 +52,7 @@ public class APIHandler {
 	HomeAPI homeAPI;
 	public void home(PapervActivity activityInstance, String user_id, int page)
 	{
-		String url = Constants.API_EXPLORE+"user_id="+user_id+"&page="+page;
+		String url = Constants.API_HOME+"user_id="+user_id+"&page="+page;
 		homeAPI = new HomeAPI(activityInstance, true, url, "Loading Home Feed");
 		homeAPI.execute();
 	}
