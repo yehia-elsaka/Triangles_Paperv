@@ -23,6 +23,8 @@ import android.widget.TextView;
 import com.paperv.core.PapervActivity;
 import com.paperv.fragments.ExploreTab;
 import com.paperv.fragments.HomeTab;
+import com.paperv.fragments.LikesTab;
+import com.paperv.fragments.ProfileTab;
 import com.paperv.tabs_fragments.ExploreActivity;
 import com.paperv.tabs_fragments.GlideActivity;
 import com.paperv.tabs_fragments.LikesActivity;
@@ -187,10 +189,10 @@ public class MainActivity extends PapervActivity implements
 		
 		addTab(R.string.lbl_glide, R.drawable.ico_glide_2, GlideActivity.class,
 				args);
-		addTab(R.string.lbl_likes, R.drawable.ico_likes_2, LikesActivity.class,
+		addTab(R.string.lbl_likes, R.drawable.ico_likes_2, LikesTab.class,
 				args);
 		addTab(R.string.lbl_profile, R.drawable.ico_person,
-				ProfileActivity.class, args);
+				ProfileTab.class, args);
 
 		// Default to first tab
 		this.onTabChanged("tab" + R.string.lbl_home);

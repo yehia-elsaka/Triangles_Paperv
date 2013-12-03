@@ -29,7 +29,6 @@ public abstract class PapervFragment extends android.support.v4.app.Fragment imp
     
     @Override
     public void onResume() {
-    	// TODO Auto-generated method stub
     	super.onResume();
     	loadData();
 

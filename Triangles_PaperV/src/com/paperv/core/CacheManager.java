@@ -50,6 +50,7 @@ public class CacheManager {
 	
 	public ArrayList<Story> userStories_list = new ArrayList<Story>();
 	
+	public ArrayList<Story> likes_list = new ArrayList<Story>();
 	
 	public ArrayList<NotificationItem> notification_list = new ArrayList<NotificationItem>();
 	
