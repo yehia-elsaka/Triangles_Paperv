@@ -2,6 +2,7 @@ package com.paperv.fragments;
 
 import java.util.ArrayList;
 
+import android.location.Address;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,7 +22,7 @@ import com.paperv.www.R;
 
 public class HomeTab extends PapervFragment{
 
-
+	FeedHelper adapter;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -30,7 +31,9 @@ public class HomeTab extends PapervFragment{
 		
 		View v =  inflater.inflate(R.layout.fragment_home, null);
 		final GridView grid = (GridView) v.findViewById(R.id.feed_grid);
-		grid.setAdapter(new FeedHelper(activityInstance, cache.feed_list));
+		
+		adapter = new FeedHelper(activityInstance, cache.feed_list);
+		grid.setAdapter(adapter);
 		
 		if (((PapervActivity)getActivity()).screenWidth < Constants.SMALL_SCREEN_SIZE)
 			grid.setNumColumns(1);
@@ -58,7 +61,6 @@ public class HomeTab extends PapervFragment{
 					Log.d("helal", "condition true");
 					int pageNum = (totalItemsCount / 25)+1;
 					loadMore(pageNum);
-					FeedHelper adapter = (FeedHelper)grid.getAdapter();
 					adapter.notifyDataSetChanged();
 				}
 				else
@@ -66,10 +68,8 @@ public class HomeTab extends PapervFragment{
 
 			}
 		});
-
 		return v;
 	}
-	
 	
 	
 
@@ -80,7 +80,9 @@ public class HomeTab extends PapervFragment{
 
 	@Override
 	public void loadData() {
+		
 		cache.feed_list = new ArrayList<Story>();
+		adapter.clear();
 		apiHandler.home(activityInstance, activityInstance.appInstance.getUserID(), 1);
 	}
 

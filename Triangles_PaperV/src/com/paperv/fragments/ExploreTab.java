@@ -20,7 +20,7 @@ import com.paperv.www.MainActivity;
 import com.paperv.www.R;
 
 public class ExploreTab extends PapervFragment{
-
+	FeedHelper adapter;
 
 	
 	@Override
@@ -30,7 +30,8 @@ public class ExploreTab extends PapervFragment{
 		
 		View v =  inflater.inflate(R.layout.fragment_home, null);
 		final GridView grid = (GridView) v.findViewById(R.id.feed_grid);
-		grid.setAdapter(new FeedHelper(activityInstance, cache.feed_list));
+		adapter = new FeedHelper(activityInstance, cache.feed_list);
+		grid.setAdapter(adapter);
 		
 		if (((PapervActivity)getActivity()).screenWidth < Constants.SMALL_SCREEN_SIZE)
 			grid.setNumColumns(1);
@@ -58,7 +59,6 @@ public class ExploreTab extends PapervFragment{
 					Log.d("helal", "condition true");
 					int pageNum = (totalItemsCount / 25)+1;
 					loadMore(pageNum);
-					FeedHelper adapter = (FeedHelper)grid.getAdapter();
 					adapter.notifyDataSetChanged();
 				}
 				else
@@ -81,6 +81,7 @@ public class ExploreTab extends PapervFragment{
 	@Override
 	public void loadData() {
 		cache.explore_list = new ArrayList<Story>();
+		adapter.clear();
 		apiHandler.explore(activityInstance, activityInstance.appInstance.getUserID(), 1);
 	}
 

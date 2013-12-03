@@ -55,7 +55,7 @@ public abstract class PapervActivity extends FragmentActivity {
 
 	public Point getFeedDimensions() {
 		Point p = new Point();
-		if (screenWidth > Constants.SMALL_SCREEN_SIZE) {
+		if (screenWidth >= Constants.SMALL_SCREEN_SIZE) {
 			int w = (int) (cache.screenWidth / 2.1);
 			int h = (int) (w * 1.2);
 			p = new Point(w, h);

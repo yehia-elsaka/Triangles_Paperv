@@ -7,7 +7,10 @@ import org.json.JSONObject;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.webkit.WebView.FindListener;
+import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -72,46 +75,53 @@ public class StoryAPI extends APIConnector {
 	@Override
 	public void custom_onPostExecute(boolean result) {
 		
-		activityInstance.setContentView(R.layout.activity_story);
+		activityInstance.setContentView(R.layout.layout_detail);
 
 		imageLoader = new LazyImageLoader(activityInstance);
+		
+		ImageButton btnBack = (ImageButton)activityInstance.findViewById(R.id.btn_back);
+		ImageButton btnReglide = (ImageButton)activityInstance.findViewById(R.id.reglide_story);
+		ImageButton btnLike = (ImageButton)activityInstance.findViewById(R.id.like_story);
+		Button follow = (Button)activityInstance.findViewById(R.id.follow_user);
+		
+		TextView userAvatar = (TextView)activityInstance.findViewById(R.id.user_image_2);
+		imageLoader.DisplayImage(cache.story_view.user_image, activityInstance, userAvatar);
+		
 		TextView storyImage = (TextView)activityInstance.findViewById(R.id.story_image);
-		storyImage.setLayoutParams(new FrameLayout.LayoutParams(cache.screenWidth, cache.screenHeight/3));
+		storyImage.getLayoutParams().height = cache.screenHeight/3;
 		imageLoader.DisplayImage(cache.story_view.photo_url, activityInstance, storyImage);
 		
-		TextView storyTitle = (TextView)activityInstance.findViewById(R.id.story_title);
-		storyTitle.setText(cache.story_view.story_name);
 		
-		TextView numLikes = (TextView)activityInstance.findViewById(R.id.num_likes);
+		TextView userName = (TextView)activityInstance.findViewById(R.id.author_name);
+		userName.setText(cache.story_view.user_name);
+		
+		TextView storyName = (TextView)activityInstance.findViewById(R.id.story_name_2);
+		storyName.setText(cache.story_view.story_name);
+		
+		TextView numLikes = (TextView)activityInstance.findViewById(R.id.likes_number_2);
 		numLikes.setText(cache.story_view.likes_number+"");
 		
-		
-		TextView numReglides = (TextView)activityInstance.findViewById(R.id.num_reglides);
+		TextView numReglides = (TextView)activityInstance.findViewById(R.id.reglides_number_2);
 		numReglides.setText(cache.story_view.reglide_number+"");
 		
-		
-		TextView numComments = (TextView)activityInstance.findViewById(R.id.num_comments);
+		TextView numComments = (TextView)activityInstance.findViewById(R.id.comments_number_2);
 		numComments.setText(cache.story_view.comments_number+"");
 		
-		
-		LinearLayout commentsLayout = (LinearLayout)activityInstance.findViewById(R.id.comments_layout);
+		LinearLayout commentsLayout = (LinearLayout)activityInstance.findViewById(R.id.comments_list);
 		LayoutInflater inflater = LayoutInflater.from(activityInstance);
-		for (int i = 0 ; i < 6 ; i ++){
-//			Comment comment = cache.story_view.comments.get(i);
+		for (int i = 0 ; i < cache.story_view.comments_number ; i ++){
+			Comment comment = cache.story_view.comments.get(i);
 			LinearLayout cl = (LinearLayout)inflater.inflate(R.layout.custom_comment, null);
 			
-//			TextView comment_owner_name = (TextView)cl.findViewById(R.id.comment_owner_name);
-//			comment_owner_name.setText(comment.user_full_name);
-//			
-//			TextView comment_owner = (TextView)cl.findViewById(R.id.comment_owner);
-//			imageLoader.DisplayImage(comment.user_image_url, activityInstance, comment_owner);
-//			
-//			TextView comment_text = (TextView)cl.findViewById(R.id.comment_text);
-//			comment_text.setText(comment.comment_text);
+			TextView comment_owner_name = (TextView)cl.findViewById(R.id.comment_owner_name);
+			comment_owner_name.setText(comment.user_full_name);			
+			TextView comment_owner = (TextView)cl.findViewById(R.id.comment_owner);
+			imageLoader.DisplayImage(comment.user_image_url, activityInstance, comment_owner);
 			
+			TextView comment_text = (TextView)cl.findViewById(R.id.comment_text);
+			comment_text.setText(comment.comment_text);			
 			commentsLayout.addView(cl);
 		}
-		
 		
 	}
 

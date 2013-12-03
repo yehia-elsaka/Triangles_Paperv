@@ -25,7 +25,14 @@ public abstract class PapervFragment extends android.support.v4.app.Fragment imp
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
     	activityInstance = (PapervActivity)getActivity();
+    }
+    
+    @Override
+    public void onResume() {
+    	// TODO Auto-generated method stub
+    	super.onResume();
     	loadData();
+
     }
     
 	

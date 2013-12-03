@@ -37,8 +37,18 @@ public class FeedHelper extends BaseAdapter {
 
 	}
 
+	public void releod(ArrayList<Story> storyList){
+		this.storyList = storyList;
+		notifyDataSetChanged();
+	}
 	CacheManager cache = CacheManager.getInstance();
 
+	public void clear(){
+		storyList = new ArrayList<Story>();
+		notifyDataSetChanged();
+	}
+	
+	
 	@Override
 	public int getCount() {
 		return storyList.size();
@@ -59,13 +69,56 @@ public class FeedHelper extends BaseAdapter {
 
 		final Story story = storyList.get(arg0);
 		LayoutInflater inflater = LayoutInflater.from(mContext);
+		return loadStory(story, inflater);
+		
+		
+	}
+	
+	
+	public View loadStory(final Story story, LayoutInflater inflater){
+		LinearLayout l = (LinearLayout)inflater.inflate(R.layout.row_home, null);
+		Point p = ((PapervActivity) mContext).getFeedDimensions();
+		l.setLayoutParams(new AbsListView.LayoutParams(p.x, AbsListView.LayoutParams.WRAP_CONTENT));
+		
+		TextView storyTitle = (TextView) l.findViewById(R.id.story_name);
+		storyTitle.setText(story.story_name);
+		
+		TextView userName = (TextView) l.findViewById(R.id.user);
+		userName.setText(story.user_name);
+		
+		TextView numLikes = (TextView) l.findViewById(R.id.likes_number);
+		numLikes.setText(story.likes_number + "");
 
-		// main layout
-		RelativeLayout l = (RelativeLayout) inflater.inflate(
-				R.layout.custom_story, null);
+		TextView numReglides = (TextView) l.findViewById(R.id.reglide_number);
+		numReglides.setText(story.reglide_number + "");
+
+		TextView numComments = (TextView) l.findViewById(R.id.comments_number);
+		numComments.setText(story.comments_number + "");
+		
+		TextView storyImage = (TextView) l.findViewById(R.id.image);
+		loader.DisplayImage(story.photo_url, (PapervActivity) mContext,storyImage);
+		storyImage.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				Intent storyDetails = new Intent(mContext, StoryActivity.class);
+				storyDetails.putExtra("story_id", story.story_id);
+				storyDetails.putExtra("photo_url", story.photo_url);
+				mContext.startActivity(storyDetails);
+			}
+		});
+		
+		TextView ownerPhoto = (TextView) l.findViewById(R.id.user_image);
+		loader.DisplayImage(story.user_image, (PapervActivity) mContext,ownerPhoto);
+		
+		return l;
+
+	}
+	
+	public View loadStory2(final Story story, LayoutInflater inflater){
+		RelativeLayout l = (RelativeLayout) inflater.inflate(R.layout.custom_story, null);
 		
 		Point p = ((PapervActivity) mContext).getFeedDimensions();
-		l.setLayoutParams(new AbsListView.LayoutParams(500, 550));
+		l.setLayoutParams(new AbsListView.LayoutParams(p.x, 550));
 
 		// update with story details
 
@@ -123,5 +176,6 @@ public class FeedHelper extends BaseAdapter {
 
 		return l;
 	}
+	
 
 }

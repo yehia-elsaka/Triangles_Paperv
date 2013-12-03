@@ -168,22 +168,22 @@ public class ProfileActivity extends Fragment implements
 		comments_bar = tabs.getChildAt(0);
 		tabs_bar = tabs.getChildAt(1);
 		
-		comment = (EditText) comments_bar.findViewById(R.id.comment);
-		comment.setText("");
-		
-		add_comment = (ImageButton) comments_bar.findViewById(R.id.add_comment);
-		add_comment.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                // Perform action on click
-            	
-            	if (!comment.getEditableText().toString().equals(""))
-            	{
-            		CommentStoryTask task = new CommentStoryTask();
-        			task.execute();
-            	}
-            	
-            }
-        });
+//		comment = (EditText) comments_bar.findViewById(R.id.comment);
+//		comment.setText("");
+//		
+//		add_comment = (ImageButton) comments_bar.findViewById(R.id.add_comment);
+//		add_comment.setOnClickListener(new View.OnClickListener() {
+//            public void onClick(View v) {
+//                // Perform action on click
+//            	
+//            	if (!comment.getEditableText().toString().equals(""))
+//            	{
+//            		CommentStoryTask task = new CommentStoryTask();
+//        			task.execute();
+//            	}
+//            	
+//            }
+//        });
 
 		this.vw_master = (View) theLayout.findViewById(R.id.master);
 		

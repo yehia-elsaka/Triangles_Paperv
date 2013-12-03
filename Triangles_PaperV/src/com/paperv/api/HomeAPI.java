@@ -32,7 +32,6 @@ public class HomeAPI extends APIConnector {
 			for (int i = 0; i < data.length(); i++) {
 				try {
 					JSONObject j = data.getJSONObject(i);
-
 					int story_id = j.getInt("story_id");
 					String owner_id = j.getString("user_id");
 					String photo_url = j.getString("photourl");
@@ -70,7 +69,7 @@ public class HomeAPI extends APIConnector {
 		for (int i = 0; i < stories.size(); i++) {
 			CacheManager.getInstance().feed_list.add(new Story());
 		}
-		helper.notifyDataSetChanged();
+		helper.releod(cache.feed_list);
 	}
 
 }

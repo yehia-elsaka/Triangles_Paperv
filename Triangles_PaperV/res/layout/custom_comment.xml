@@ -28,10 +28,11 @@
             android:layout_height="50dp"
             android:layout_alignParentTop="true"
             android:layout_marginRight="20dp"
-            android:background="@drawable/rounded" >
+             >
 
             <TextView
                 android:id="@+id/comment_owner"
+                android:layout_gravity="center"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:background="@drawable/helal" />
