@@ -29,16 +29,16 @@
             android:layout_weight="1"
             android:background="@drawable/ui_button_blue"
             android:contentDescription="@string/desc"
-            android:src="@drawable/ico_glide_2" />
+            android:src="@drawable/fb_glide" />
 
         <ImageButton
             android:id="@+id/like_story"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1"
-            android:background="@drawable/ui_button_red"
+            android:background="@drawable/ui_button_blue"
             android:contentDescription="@string/desc"
-            android:src="@drawable/ico_heart" />
+            android:src="@drawable/tw_glide" />
     </LinearLayout>
 
     <com.paperv.tabs_utils.CustomScrollView

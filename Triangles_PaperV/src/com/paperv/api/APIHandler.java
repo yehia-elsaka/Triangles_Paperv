@@ -87,4 +87,22 @@ public class APIHandler {
 		likesAPI = new StoryLikesAPI(activityInstance, true, url, "Loading Likes Feed");
 		likesAPI.execute();
 	}
+	
+	// 7 - Reglide Story
+	ReglideAPI reglidesAPI;
+	public void reglide(PapervActivity activityInstance, String user_id, int story_id)
+	{
+		String url = Constants.API_REGLIDE+"user_id="+user_id+"&story_id="+story_id;
+		reglidesAPI = new ReglideAPI(activityInstance, true, url, "Regliding Story ...");
+		reglidesAPI.execute();
+	}
+	
+	// 8 - Like Story
+	LikeAPI likeAPI;
+	public void like(PapervActivity activityInstance, String user_id, int story_id)
+	{
+		String url = Constants.API_LIKE+"user_id="+user_id+"&story_id="+story_id;
+		likeAPI = new LikeAPI(activityInstance, true, url, "Sending Request ...");
+		likeAPI.execute();
+	}
 }

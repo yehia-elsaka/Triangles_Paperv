@@ -39,7 +39,7 @@ public class FeedHelper extends BaseAdapter {
 
 	public void releod(ArrayList<Story> storyList){
 		this.storyList = storyList;
-		notifyDataSetChangedD();
+		notifyDataSetChanged();
 	}
 	CacheManager cache = CacheManager.getInstance();
 

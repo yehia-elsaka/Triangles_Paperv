@@ -77,7 +77,7 @@ public abstract class PapervActivity extends FragmentActivity {
 
 				@Override
 				public void onCancel() {
-					showLongToast("Link Canceled");
+					showLongToast("Sharing Canceled");
 				}
 
 				@Override
@@ -87,12 +87,12 @@ public abstract class PapervActivity extends FragmentActivity {
 
 				@Override
 				public void onAuthFail(SocializeException error) {
-					showLongToast("Auth Failed");
+					showLongToast("Authentication Failed");
 				}
 
 				@Override
 				public void onError(SocializeException error) {
-					showLongToast("Link Error");
+					showLongToast("Facebook Link Error");
 				}
 			});
 		}
@@ -118,19 +118,19 @@ public abstract class PapervActivity extends FragmentActivity {
 					@Override
 					public void onNetworkError(Activity context,
 							SocialNetwork network, Exception error) {
-						showLongToast("network error");
+						showLongToast("Network error");
 					}
 
 					@Override
 					public void onCancel() {
-						showLongToast("request canceled");
+						showLongToast("Request canceled");
 					}
 
 					@Override
 					public void onAfterPost(Activity parent,
 							SocialNetwork socialNetwork,
 							JSONObject responseObject) {
-						showLongToast("finished");
+						showLongToast("Story shared on Facebook!");
 
 					}
 				});
@@ -166,7 +166,7 @@ public abstract class PapervActivity extends FragmentActivity {
 
 				@Override
 				public void onCancel() {
-					showLongToast("Twitter Link Canceled");
+					showLongToast("Twitter Sharing Canceled");
 				}
 
 				@Override
@@ -202,14 +202,14 @@ public abstract class PapervActivity extends FragmentActivity {
 
 					@Override
 					public void onCancel() {
-						showLongToast("Tw post canceled");
+						showLongToast("Twitter post canceled");
 					}
 
 					@Override
 					public void onAfterPost(Activity parent,
 							SocialNetwork socialNetwork,
 							JSONObject responseObject) {
-						showLongToast("finished");
+						showLongToast("Story shared on Twitter");
 
 					}
 

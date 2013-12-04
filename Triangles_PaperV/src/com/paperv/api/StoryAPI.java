@@ -7,12 +7,12 @@ import org.json.JSONObject;
 
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.webkit.WebView.FindListener;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.paperv.core.Constants;
@@ -80,8 +80,9 @@ public class StoryAPI extends APIConnector {
 		imageLoader = new LazyImageLoader(activityInstance);
 		
 		ImageButton btnBack = (ImageButton)activityInstance.findViewById(R.id.btn_back);
-		ImageButton btnReglide = (ImageButton)activityInstance.findViewById(R.id.reglide_story);
-		ImageButton btnLike = (ImageButton)activityInstance.findViewById(R.id.like_story);
+		
+		
+		
 		Button follow = (Button)activityInstance.findViewById(R.id.follow_user);
 		
 		TextView userAvatar = (TextView)activityInstance.findViewById(R.id.user_image_2);
@@ -123,6 +124,43 @@ public class StoryAPI extends APIConnector {
 			commentsLayout.addView(cl);
 		}
 		
+		//Action Buttons
+		ImageView reglide = (ImageView)activityInstance.findViewById(R.id.image_2);
+		reglide.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				activityInstance.apiHandler.reglide(activityInstance, activityInstance.appInstance.getUserID(), cache.story_view.story_id);	
+			}
+		});
+		
+		ImageView like = (ImageView)activityInstance.findViewById(R.id.image_1);
+		like.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				activityInstance.apiHandler.like(activityInstance, activityInstance.appInstance.getUserID(), cache.story_view.story_id);	
+			}
+		});
+		
+		
+		ImageButton fbShare = (ImageButton)activityInstance.findViewById(R.id.reglide_story);
+		fbShare.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				activityInstance.linkAndPostFb(cache.story_view.story_name, "www.paperv.com", "PaperV");
+			}
+		});
+		
+		ImageButton twShare = (ImageButton)activityInstance.findViewById(R.id.like_story);
+		twShare.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				activityInstance.linkAndPostTw(cache.story_view.story_name, "www.paperv.com", "PaperV");
+			}
+		});
+		
 	}
+	
 
+	
 }
