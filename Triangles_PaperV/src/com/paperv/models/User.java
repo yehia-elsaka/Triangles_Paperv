@@ -4,9 +4,11 @@ import android.graphics.Bitmap;
 
 public class User {
 	
-	private String id;
-	private String name;
-	private String email;
+	public String id;
+	public String name;
+	public String email;
+	public String fullName;
+	public String imageURL;
 	private Bitmap image;
 	
 	
@@ -14,6 +16,19 @@ public class User {
 	{
 		
 	}
+
+	
+	
+	public User(String id, String name, String email, String fullName,
+			String imageURL) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.email = email;
+		this.fullName = fullName;
+		this.imageURL = imageURL;
+	}
+
 
 
 	public User(String id, String name, String email, Bitmap image) {

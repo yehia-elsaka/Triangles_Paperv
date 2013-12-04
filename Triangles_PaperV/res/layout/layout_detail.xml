@@ -9,7 +9,7 @@
         android:id="@+id/sub_tab"
         android:layout_width="fill_parent"
         android:layout_height="@dimen/height"
-        android:background="@color/black"
+        android:background="@color/transparent"
         android:gravity="center"
         android:orientation="horizontal" >
 
@@ -18,7 +18,7 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1"
-            android:background="@drawable/ui_button_purple"
+            android:background="@color/gray_79"
             android:contentDescription="@string/desc"
             android:src="@drawable/ico_left" />
 
@@ -27,18 +27,18 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1"
-            android:background="@drawable/ui_button_blue"
+            android:background="@color/gray_79"
             android:contentDescription="@string/desc"
-            android:src="@drawable/fb_glide" />
+            android:src="@drawable/fb_icon" />
 
         <ImageButton
             android:id="@+id/like_story"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1"
-            android:background="@drawable/ui_button_blue"
+            android:background="@color/gray_79"
             android:contentDescription="@string/desc"
-            android:src="@drawable/tw_glide" />
+            android:src="@drawable/tw_icon" />
     </LinearLayout>
 
     <com.paperv.tabs_utils.CustomScrollView
@@ -47,9 +47,9 @@
         android:layout_weight="1" >
 
         <LinearLayout
-            android:background="@color/gray_79"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:background="@color/gray_79"
             android:gravity="center_horizontal"
             android:orientation="vertical" >
 
@@ -68,10 +68,10 @@
             <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
                 android:layout_marginBottom="@dimen/dim_10"
                 android:layout_marginLeft="@dimen/dim_10"
                 android:layout_marginRight="@dimen/dim_10"
+                android:layout_marginTop="5dp"
                 android:layout_weight="1"
                 android:gravity="center_vertical|center_horizontal"
                 android:orientation="horizontal" >
@@ -80,15 +80,14 @@
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:layout_marginRight="10dp"
-                    android:gravity="left">
+                    android:gravity="left" >
 
                     <TextView
                         android:id="@+id/user_image_2"
-                        android:layout_gravity="center"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
-                        android:background="@drawable/avatar_2"
-                        />
+                        android:layout_gravity="center"
+                        android:background="@drawable/avatar_2" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -214,5 +213,10 @@
             </LinearLayout>
         </LinearLayout>
     </com.paperv.tabs_utils.CustomScrollView>
+
+    <include
+        android:id="@+id/comment_bar"
+        layout="@layout/comment_bar" >
+    </include>
 
 </LinearLayout>

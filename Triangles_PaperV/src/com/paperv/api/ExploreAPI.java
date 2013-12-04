@@ -23,8 +23,8 @@ public class ExploreAPI extends APIConnector {
 	}
 
 	@Override
-	public boolean custom_doInBackground(JSONArray jsonArr) {
-		JSONObject json = jsonArr.optJSONObject(0);
+	public boolean custom_doInBackground(JSONObject json) {
+		
 		boolean success = json.optBoolean("success");
 
 		JSONArray data = json.optJSONArray("data");

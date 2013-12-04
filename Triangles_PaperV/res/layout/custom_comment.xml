@@ -19,7 +19,7 @@
             android:layout_toRightOf="@+id/comment_owner_layout"
             android:text="Helal Ismail"
             android:textColor="@color/blue"
-            android:textSize="15sp"
+            android:textSize="12sp"
             android:textStyle="bold" />
 
         <LinearLayout
@@ -35,7 +35,7 @@
                 android:layout_gravity="center"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:background="@drawable/helal" />
+                android:background="@drawable/background" />
         </LinearLayout>
 
         <TextView
@@ -47,7 +47,7 @@
             android:padding="10dp"
             android:text="this is a comment!"
             android:textColor="@android:color/darker_gray"
-            android:textSize="10sp"
+            android:textSize="13sp"
             android:textStyle="bold" />
     </RelativeLayout>
 

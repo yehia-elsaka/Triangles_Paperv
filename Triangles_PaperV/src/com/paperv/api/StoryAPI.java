@@ -9,7 +9,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.webkit.WebView.FindListener;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -30,8 +32,8 @@ public class StoryAPI extends APIConnector {
 	}
 
 	@Override
-	public boolean custom_doInBackground(JSONArray jsonArr) {
-		JSONObject json = jsonArr.optJSONObject(0);
+	public boolean custom_doInBackground(JSONObject json) {
+		
 		boolean success = json.optBoolean("success");
 
 		try 
@@ -82,9 +84,7 @@ public class StoryAPI extends APIConnector {
 		ImageButton btnBack = (ImageButton)activityInstance.findViewById(R.id.btn_back);
 		
 		
-		
-		Button follow = (Button)activityInstance.findViewById(R.id.follow_user);
-		
+				
 		TextView userAvatar = (TextView)activityInstance.findViewById(R.id.user_image_2);
 		imageLoader.DisplayImage(cache.story_view.user_image, activityInstance, userAvatar);
 		
@@ -108,8 +108,8 @@ public class StoryAPI extends APIConnector {
 		TextView numComments = (TextView)activityInstance.findViewById(R.id.comments_number_2);
 		numComments.setText(cache.story_view.comments_number+"");
 		
-		LinearLayout commentsLayout = (LinearLayout)activityInstance.findViewById(R.id.comments_list);
-		LayoutInflater inflater = LayoutInflater.from(activityInstance);
+		final LinearLayout commentsLayout = (LinearLayout)activityInstance.findViewById(R.id.comments_list);
+		final LayoutInflater inflater = LayoutInflater.from(activityInstance);
 		for (int i = 0 ; i < cache.story_view.comments_number ; i ++){
 			Comment comment = cache.story_view.comments.get(i);
 			LinearLayout cl = (LinearLayout)inflater.inflate(R.layout.custom_comment, null);
@@ -159,6 +159,49 @@ public class StoryAPI extends APIConnector {
 			}
 		});
 		
+		Button followBtn = (Button)activityInstance.findViewById(R.id.follow_user);
+		followBtn.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				activityInstance.apiHandler.follow(activityInstance, activityInstance.appInstance.getUserID(), cache.story_view.owner_id);
+			}
+		});
+		
+		
+		ImageButton addComment = (ImageButton)activityInstance.findViewById(R.id.add_comment);
+		addComment.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				EditText commentField = (EditText)activityInstance.findViewById(R.id.comment);
+				String comment = commentField.getEditableText().toString();
+				if(comment.equalsIgnoreCase("") || comment == null)
+				{
+					// do nothing
+				}
+				else
+				{
+					// add comment
+					
+					LinearLayout cl = (LinearLayout)inflater.inflate(R.layout.custom_comment, null);
+					
+					TextView comment_owner_name = (TextView)cl.findViewById(R.id.comment_owner_name);
+					comment_owner_name.setText(cache.user.fullName);
+					
+					TextView comment_owner = (TextView)cl.findViewById(R.id.comment_owner);
+					imageLoader.DisplayImage(cache.user.imageURL, activityInstance, comment_owner);
+					
+					TextView comment_text = (TextView)cl.findViewById(R.id.comment_text);
+					comment_text.setText(comment);			
+					
+					commentsLayout.addView(cl);
+					
+					activityInstance.apiHandler.comment(activityInstance, activityInstance.appInstance.getUserID(), cache.story_view.story_id, comment);
+					
+					commentField.setText("");
+					
+				}
+			}
+		});
 	}
 	
 

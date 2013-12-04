@@ -60,7 +60,7 @@ public abstract class PapervActivity extends FragmentActivity {
 			int h = (int) (w * 1.2);
 			p = new Point(w, h);
 		} else {
-			int w = (int) (cache.screenWidth / 1.1);
+			int w = (int) (cache.screenWidth / 1.05);
 			int h = (int) (w * 1.2);
 			p = new Point(w, h);
 		}
@@ -92,6 +92,7 @@ public abstract class PapervActivity extends FragmentActivity {
 
 				@Override
 				public void onError(SocializeException error) {
+					
 					showLongToast("Facebook Link Error");
 				}
 			});

@@ -24,9 +24,9 @@ public class StoryLikesAPI extends APIConnector {
 	}
 
 	@Override
-	public boolean custom_doInBackground(JSONArray json) {
+	public boolean custom_doInBackground(JSONObject obj) {
 		try {
-			JSONObject obj = json.getJSONObject(0);
+
 			boolean success = obj.getBoolean("success");
 			JSONArray data = obj.getJSONArray("data");
 			for (int i = 0; i < data.length(); i++) {

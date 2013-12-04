@@ -11,6 +11,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import android.app.ProgressDialog;
 import android.graphics.Bitmap;
@@ -20,6 +21,7 @@ import android.os.AsyncTask;
 import com.paperv.core.CacheManager;
 import com.paperv.core.PapervActivity;
 import com.paperv.www.R;
+import com.socialize.google.gson.JsonObject;
 
 public abstract class APIConnector extends AsyncTask<Void, Void, Boolean> {
 
@@ -65,8 +67,8 @@ public abstract class APIConnector extends AsyncTask<Void, Void, Boolean> {
 				result = convertStreamToString(instream).replace("/r/n", "").replace("/n", "").trim();
 				instream.close();
 			}
-			JSONArray jsonArr = new JSONArray(result);
-			return custom_doInBackground(jsonArr);
+			JSONObject json = new JSONObject(result);
+			return custom_doInBackground(json);
 		} catch (Exception e) {
 			return false;
 		}
@@ -81,7 +83,7 @@ public abstract class APIConnector extends AsyncTask<Void, Void, Boolean> {
 	}
 
 	// ======= Abstract Functions =======
-	public abstract boolean custom_doInBackground(JSONArray json);
+	public abstract boolean custom_doInBackground(JSONObject json);
 
 	public abstract void custom_onPostExecute(boolean result);
 

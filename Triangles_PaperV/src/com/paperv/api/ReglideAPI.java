@@ -1,6 +1,5 @@
 package com.paperv.api;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.widget.TextView;
@@ -16,9 +15,8 @@ public class ReglideAPI extends APIConnector {
 	}
 
 	@Override
-	public boolean custom_doInBackground(JSONArray json) {
+	public boolean custom_doInBackground(JSONObject obj) {
 		try {
-			JSONObject obj = json.getJSONObject(0);
 			boolean success = obj.getBoolean("success");
 			return success;
 		} catch (Exception e) {

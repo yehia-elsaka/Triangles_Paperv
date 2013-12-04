@@ -1,6 +1,6 @@
 package com.paperv.api;
 
-import org.json.JSONArray;
+import org.json.JSONObject;
 
 import com.paperv.core.PapervActivity;
 
@@ -14,7 +14,7 @@ public class GlideAPI extends APIConnector{
 	}
 
 	@Override
-	public boolean custom_doInBackground(JSONArray json) {
+	public boolean custom_doInBackground(JSONObject json) {
 		
 		
 		return false;

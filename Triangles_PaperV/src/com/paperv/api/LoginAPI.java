@@ -23,9 +23,7 @@ public class LoginAPI extends APIConnector{
 	}
 
 	@Override
-	public boolean custom_doInBackground(JSONArray jsonArr) {
-		JSONObject json = jsonArr.optJSONObject(0);
-		Log.d("helal", json.toString());		
+	public boolean custom_doInBackground(JSONObject json) {
 		boolean success = json.optBoolean("success");
 		String user_id = json.optString("user_id");
 		if(success)
@@ -38,7 +36,7 @@ public class LoginAPI extends APIConnector{
 		String email = json.optString("email");
 		String user_image = json.optString("user_image");
 		
-		activityInstance.cache.user = new User(user_id, user_name, email, null	);
+		activityInstance.cache.user = new User(user_id, user_name, email, full_name, user_image);
 		return success;
 	}
 

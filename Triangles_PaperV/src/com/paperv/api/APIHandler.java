@@ -105,4 +105,23 @@ public class APIHandler {
 		likeAPI = new LikeAPI(activityInstance, true, url, "Sending Request ...");
 		likeAPI.execute();
 	}
+	
+	// 9 - Follow User
+	FollowAPI followAPI;
+	public void follow(PapervActivity activityInstance, String user_id, String target_id)
+	{
+		String url = Constants.API_FOLLOW+"user_id="+user_id+"&target_id="+target_id;
+		followAPI = new FollowAPI(activityInstance, true, url, "Sending Follow Request");
+		followAPI.execute();
+	}
+	
+	// 10 - Add Comment
+	CommentAPI commentAPI;
+	public void comment(PapervActivity activityInstance, String user_id, int story_id, String comment)
+	{
+		String commentText = comment.replaceAll(" ", "%20");
+		String url = Constants.API_ADD_COMMENT+"user_id="+user_id+"&story_id="+story_id+"&comment="+commentText;
+		commentAPI = new CommentAPI(activityInstance, false, url, "");
+		commentAPI.execute();
+	}
 }
