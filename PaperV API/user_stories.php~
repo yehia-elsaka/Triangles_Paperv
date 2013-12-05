@@ -54,7 +54,7 @@ while($row = mysql_fetch_array( $data ))
 }
 
 $response[] = array('success'=>true, 'data'=>$stories);
-$json = json_encode($response);
+ec$json = json_encode($response);
 $json = substr($json, 1);
 $json = substr($json, 0, -1);
 echo $json;

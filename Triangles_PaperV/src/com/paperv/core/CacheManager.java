@@ -48,6 +48,8 @@ public class CacheManager {
 	
 	public ArrayList<Story> feed_list = new ArrayList<Story>();
 	
+	public ArrayList<Story> user_feed_list = new ArrayList<Story>();
+	
 	public ArrayList<Story> userStories_list = new ArrayList<Story>();
 	
 	public ArrayList<Story> likes_list = new ArrayList<Story>();

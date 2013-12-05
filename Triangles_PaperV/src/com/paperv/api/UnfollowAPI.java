@@ -7,9 +7,9 @@ import android.widget.Button;
 import com.paperv.core.PapervActivity;
 import com.paperv.www.R;
 
-public class FollowAPI extends APIConnector{
+public class UnfollowAPI extends APIConnector{
 
-	public FollowAPI(PapervActivity activityInstance, boolean showDialog,
+	public UnfollowAPI(PapervActivity activityInstance, boolean showDialog,
 			String url, String dialogText) {
 		super(activityInstance, showDialog, url, dialogText);
 	}
@@ -24,14 +24,14 @@ public class FollowAPI extends APIConnector{
 	public void custom_onPostExecute(boolean result) {
 		if (result)
 		{
-			activityInstance.showLongToast("User followed");
+			activityInstance.showLongToast("User Unfollowed");
 			Button followBtn = (Button)activityInstance.findViewById(R.id.follow_user);
-			followBtn.setText("unfollow");
+			followBtn.setText("follow");
 		}
 		else
 		{
-			activityInstance.showLongToast("Follow request failed");
-		}
+			activityInstance.showLongToast("Unfollow request failed");
+		}		
 	}
 	
 

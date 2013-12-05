@@ -1,10 +1,8 @@
 package com.paperv.api;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.content.Intent;
-import android.util.Log;
 
 import com.paperv.core.PapervActivity;
 import com.paperv.models.User;
@@ -37,12 +35,12 @@ public class LoginAPI extends APIConnector{
 		String user_image = json.optString("user_image");
 		
 		activityInstance.cache.user = new User(user_id, user_name, email, full_name, user_image);
+		activityInstance.apiHandler.followings(activityInstance, user_id);
 		return success;
 	}
 
 	@Override
 	public void custom_onPostExecute(boolean result) {
-		
 		if(result){
 			activityInstance.appInstance.setRememberMe(rememberMe);
 			activityInstance.finish();

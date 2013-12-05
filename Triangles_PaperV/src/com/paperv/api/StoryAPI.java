@@ -9,7 +9,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.webkit.WebView.FindListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -21,6 +20,7 @@ import com.paperv.core.Constants;
 import com.paperv.core.PapervActivity;
 import com.paperv.lazy_adapter_utils.LazyImageLoader;
 import com.paperv.models.Comment;
+import com.paperv.models.User;
 import com.paperv.www.R;
 
 public class StoryAPI extends APIConnector {
@@ -124,6 +124,8 @@ public class StoryAPI extends APIConnector {
 			commentsLayout.addView(cl);
 		}
 		
+		
+		
 		//Action Buttons
 		ImageView reglide = (ImageView)activityInstance.findViewById(R.id.image_2);
 		reglide.setOnClickListener(new OnClickListener() {
@@ -159,11 +161,26 @@ public class StoryAPI extends APIConnector {
 			}
 		});
 		
+		boolean isFollowing = false;
+		for(int i = 0 ; i < cache.user.following.size(); i ++ )
+		{
+			User following = cache.user.following.get(i);
+			if(cache.story_view.owner_id == following.id)
+				isFollowing = true;
+		}
+		
 		Button followBtn = (Button)activityInstance.findViewById(R.id.follow_user);
+		if(isFollowing)
+			followBtn.setText("unfollow");
+		
+		final boolean flag = isFollowing;
 		followBtn.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				activityInstance.apiHandler.follow(activityInstance, activityInstance.appInstance.getUserID(), cache.story_view.owner_id);
+				if (!flag) // not following
+					activityInstance.apiHandler.follow(activityInstance, activityInstance.appInstance.getUserID(), cache.story_view.owner_id);
+				else
+					activityInstance.apiHandler.follow(activityInstance, activityInstance.appInstance.getUserID(), cache.story_view.owner_id);
 			}
 		});
 		
@@ -200,6 +217,14 @@ public class StoryAPI extends APIConnector {
 					commentField.setText("");
 					
 				}
+			}
+		});
+		
+		ImageButton backBtn = (ImageButton)activityInstance.findViewById(R.id.btn_back);
+		backBtn.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				activityInstance.finish();
 			}
 		});
 	}

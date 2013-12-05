@@ -115,7 +115,16 @@ public class APIHandler {
 		followAPI.execute();
 	}
 	
-	// 10 - Add Comment
+	// 10 - Unfollow User
+		UnfollowAPI unfollowAPI;
+		public void unfollow(PapervActivity activityInstance, String user_id, String target_id)
+		{
+			String url = Constants.API_UNFOLLOW+"user_id="+user_id+"&target_id="+target_id;
+			unfollowAPI = new UnfollowAPI(activityInstance, true, url, "Sending Unfollow Request");
+			unfollowAPI.execute();
+		}
+	
+	// 11 - Add Comment
 	CommentAPI commentAPI;
 	public void comment(PapervActivity activityInstance, String user_id, int story_id, String comment)
 	{
@@ -124,4 +133,25 @@ public class APIHandler {
 		commentAPI = new CommentAPI(activityInstance, false, url, "");
 		commentAPI.execute();
 	}
+	
+	// 12 - Get Followings
+	FollowingsAPI followingsAPI;
+	public void followings(PapervActivity activityInstance, String user_id)
+	{
+		String url = Constants.API_USER_FOLLOWING+"user_id="+user_id;
+		followingsAPI = new FollowingsAPI(activityInstance, false, url, "");
+		followingsAPI.execute();
+	}
+	
+	// 13 - User Feed
+		UserFeedAPI userFeedAPI;
+
+		public void userFeed(PapervActivity activityInstance, String user_id,
+				int page) {
+			String url = Constants.API_USER_STORIES + "user_id=" + user_id + "&page="
+					+ page;
+			userFeedAPI = new UserFeedAPI(activityInstance, true, url,
+					"Loading User Feed");
+			userFeedAPI.execute();
+		}
 }

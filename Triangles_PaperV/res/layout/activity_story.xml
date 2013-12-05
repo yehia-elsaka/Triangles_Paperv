@@ -42,7 +42,7 @@
                         android:id="@+id/comment_owner"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
-                        android:background="@drawable/helal" />
+                        android:background="@drawable/background" />
                 </LinearLayout>
             </FrameLayout>
 

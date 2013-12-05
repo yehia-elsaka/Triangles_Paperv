@@ -1,5 +1,7 @@
 package com.paperv.models;
 
+import java.util.ArrayList;
+
 import android.graphics.Bitmap;
 
 public class User {
@@ -10,6 +12,7 @@ public class User {
 	public String fullName;
 	public String imageURL;
 	private Bitmap image;
+	public ArrayList<User> following = new ArrayList<User>();
 	
 	
 	public User()

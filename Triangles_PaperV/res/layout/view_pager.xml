@@ -22,7 +22,7 @@
 	            	android:layout_marginTop="@dimen/dim_10"
 	                android:adjustViewBounds="true"
 	                android:scaleType="fitCenter"
-	                android:src="@drawable/brave"
+	                android:src="@drawable/background"
 	                android:contentDescription="@string/desc" />
 		             
 		             
