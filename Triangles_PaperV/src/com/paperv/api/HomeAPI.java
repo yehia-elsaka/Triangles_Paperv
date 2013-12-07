@@ -46,7 +46,6 @@ public class HomeAPI extends APIConnector {
 
 					stories.add(story);
 					CacheManager.getInstance().feed_list.add(story);
-					Log.d("helal", "feed : " + cache.feed_list.size());
 
 				} catch (Exception e) {
 
@@ -65,9 +64,6 @@ public class HomeAPI extends APIConnector {
 				.findViewById(R.id.feed_grid);
 		FeedHelper helper = (FeedHelper) grid.getAdapter();
 
-		for (int i = 0; i < stories.size(); i++) {
-			CacheManager.getInstance().feed_list.add(new Story());
-		}
 		helper.releod(cache.feed_list);
 	}
 

@@ -18,23 +18,25 @@ public class ReglideAPI extends APIConnector {
 	public boolean custom_doInBackground(JSONObject obj) {
 		try {
 			boolean success = obj.getBoolean("success");
+			toastValue = obj.optString("msg");
 			return success;
 		} catch (Exception e) {
+			toastValue = "Error regliding story!";
 			return false;
 		}
 	}
 
 	@Override
 	public void custom_onPostExecute(boolean result) {
+		activityInstance.showLongToast(toastValue);
+
 		if(result)
 		{
-			activityInstance.showLongToast("Story Reglided");
 			cache.story_view.reglide_number++;
 			TextView numReglides = (TextView)activityInstance.findViewById(R.id.reglides_number_2);
 			numReglides.setText(cache.story_view.reglide_number+"");
 		}
-		else
-			activityInstance.showLongToast("Request failed");
+
 	}
 
 }

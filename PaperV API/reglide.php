@@ -29,7 +29,13 @@ else
 $response[] = array('success'=>true, 'msg'=>'Story reglided successfully!');
 $query = "INSERT INTO phpfox_notification (type_id, item_id, user_id, owner_user_id, is_seen, is_hide, time_stamp) VALUES ('story_repost', $story_id, $story_user,$user_id, 0,0,UNIX_TIMESTAMP(now()) )";
 $result = mysql_query($query);
+
+$query = "UPDATE phpfox_story SET total_repost = total_repost + 1 WHERE story_id = $story_id"; 
+$result = mysql_query($query);
+
 }
+
+
 }
 
 

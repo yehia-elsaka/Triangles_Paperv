@@ -29,6 +29,7 @@ public class LoginActivity extends PapervActivity implements OnClickListener {
 	ImageView logotxt;
 	TextView or;
 	LinearLayout socialPanel;
+	TextView register;
 	
 	@Override
 	public void onCreateUI(Bundle savedInstanceState) {
@@ -44,6 +45,9 @@ public class LoginActivity extends PapervActivity implements OnClickListener {
 		or = (TextView)findViewById(R.id.or);
 		socialPanel = (LinearLayout)findViewById(R.id.social_panel);
 		remember_me = (CheckBox)findViewById(R.id.remember_me_btn);
+		register = (TextView)findViewById(R.id.register);
+		register.setOnClickListener(this);
+		
 		// === Dynamic dimenstions
 		logo.getLayoutParams().width = screenHeight / 5;
 		logo.getLayoutParams().height = screenHeight / 5;		
@@ -80,6 +84,10 @@ public class LoginActivity extends PapervActivity implements OnClickListener {
 					"Verifying user information", remember_me.isChecked());
 			break;
 
+		case R.id.register:
+			Intent intent = new Intent(mContext, Register.class);
+			startActivity(intent);
+			break;
 		default:
 			break;
 		}

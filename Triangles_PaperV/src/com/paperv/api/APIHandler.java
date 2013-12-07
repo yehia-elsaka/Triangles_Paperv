@@ -79,12 +79,12 @@ public class APIHandler {
 	}
 
 	// 6 - Likes Feed
-	StoryLikesAPI likesAPI;
+	UserLikesAPI likesAPI;
 
 	public void likes(PapervActivity activityInstance, String user_id, int page) {
-		String url = Constants.API_STORY_LIKES + "user_id=" + user_id + "&page="
+		String url = Constants.API_USER_LIKES + "user_id=" + user_id + "&page="
 				+ page;
-		likesAPI = new StoryLikesAPI(activityInstance, true, url, "Loading Likes Feed");
+		likesAPI = new UserLikesAPI(activityInstance, true, url, "Loading Likes Feed");
 		likesAPI.execute();
 	}
 	
@@ -101,7 +101,7 @@ public class APIHandler {
 	LikeAPI likeAPI;
 	public void like(PapervActivity activityInstance, String user_id, int story_id)
 	{
-		String url = Constants.API_LIKE+"user_id="+user_id+"&story_id="+story_id;
+		String url = Constants.API_LIKE+"user_id="+user_id+"&item_id="+story_id;
 		likeAPI = new LikeAPI(activityInstance, true, url, "Sending Request ...");
 		likeAPI.execute();
 	}

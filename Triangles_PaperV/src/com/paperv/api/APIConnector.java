@@ -17,6 +17,7 @@ import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.paperv.core.CacheManager;
 import com.paperv.core.PapervActivity;
@@ -31,6 +32,7 @@ public abstract class APIConnector extends AsyncTask<Void, Void, Boolean> {
 	ProgressDialog dialog = null;
 	String url;
 	String dialogText;
+	String toastValue = "";
 
 	public APIConnector(PapervActivity activityInstance, boolean showDialog,
 			String url, String dialogText) {
@@ -70,6 +72,7 @@ public abstract class APIConnector extends AsyncTask<Void, Void, Boolean> {
 			JSONObject json = new JSONObject(result);
 			return custom_doInBackground(json);
 		} catch (Exception e) {
+			Log.d("helal", "Exception : " + e.getMessage());
 			return false;
 		}
 	}

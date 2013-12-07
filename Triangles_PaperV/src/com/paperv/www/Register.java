@@ -16,25 +16,28 @@ public class Register extends PapervActivity {
 	String fullname;
 	String username;
 	String password;
+	String passwordConfirm;	
 	String email;
 	String image = "";
+	
 	EditText fullname_field;
 	EditText username_field;
-	EditText password_field;
 	EditText email_field;
+
+	EditText password_confirmation_field;
+	EditText password_field;
 
 	@Override
 	public void onCreateUI(Bundle savedInstanceState) {
-		setContentView(R.layout.signup);
-		getWindow().setSoftInputMode(
-				WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-		TextView page_title = (TextView) findViewById(R.id.page_title);
-		page_title.setText("Sign Up");
+		setContentView(R.layout.activity_register);
+		
 		fullname_field = (EditText) findViewById(R.id.full_name_field);
 		username_field = (EditText) findViewById(R.id.user_name_field);
 		email_field = (EditText) findViewById(R.id.email_field);
 		password_field = (EditText) findViewById(R.id.password_field);
-		Button create = (Button) findViewById(R.id.register);
+		password_confirmation_field = (EditText) findViewById(R.id.password_confirm_field);
+		
+		Button create = (Button) findViewById(R.id.reg_btn);
 		create.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -46,52 +49,27 @@ public class Register extends PapervActivity {
 						.replaceAll(" ", "%20");
 				password = password_field.getEditableText().toString()
 						.replaceAll(" ", "%20");
-				try {
-					apiHandler.register(Register.this, username, password, fullname, email, "Registering user info");
-				} catch (Exception e) {
-					showLongToast("Register request failed");
-				}
-			}
-
-		});
-
-		TextView terms = (TextView) findViewById(R.id.terms);
-		terms.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				Intent i = new Intent(mContext, AppTermsActivity.class);
-				startActivityForResult(i, 700);
-				overridePendingTransition(R.anim.slide_in_right,
-						R.anim.slide_out_left);
-
-			}
-
-		});
-
-		TextView privacy = (TextView) findViewById(R.id.privacy);
-		privacy.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
+				passwordConfirm = password_confirmation_field.getEditableText().toString()
+						.replaceAll(" ", "%20");
 				
-				Intent i = new Intent(mContext, AppPrivacyActivity.class);
-				startActivityForResult(i, 700);
-				overridePendingTransition(R.anim.slide_in_right,
-						R.anim.slide_out_left);
-
+				if(password.equalsIgnoreCase(passwordConfirm))
+				{
+					apiHandler.register(Register.this, username, password, fullname, email, "Signing up ... ");
+				}
+				else
+					showLongToast("Password confirmation doesn't match!");
 			}
 
 		});
+
+	
 
 	}
 
 	@Override
 	public void onBackPressed() {
-		// TODO Auto-generated method stub
 		super.onBackPressed();
 		finish();
-		Intent i = new Intent(mContext, StartActivity.class);
-		startActivityForResult(i, 700);
-		overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
 	}
 
 }

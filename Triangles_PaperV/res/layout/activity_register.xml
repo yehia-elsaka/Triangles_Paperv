@@ -1,0 +1,87 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@android:color/transparent" >
+
+    <LinearLayout
+        android:id="@+id/login_panel"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@drawable/background"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:padding="15dp" >
+
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/logo_new" />
+
+        <ImageView
+            android:id="@+id/logo_txt"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="-40dp"
+            android:src="@drawable/text_new" />
+
+        <EditText
+            android:id="@+id/fullname_field"
+            android:layout_width="fill_parent"
+            android:layout_height="40dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/text_field"
+            android:hint="Display name"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp" />
+
+        <EditText
+            android:id="@+id/username_field"
+            android:layout_width="fill_parent"
+            android:layout_height="40dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/text_field"
+            android:hint="Username"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp" />
+
+        <EditText
+            android:id="@+id/email_field"
+            android:layout_width="fill_parent"
+            android:layout_height="40dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/text_field"
+            android:hint="email"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp" />
+
+        <EditText
+            android:id="@+id/password_field"
+            android:layout_width="fill_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/text_field"
+            android:hint="Password"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:password="true"
+            android:layout_marginBottom="5dp" />
+
+        <EditText
+            android:id="@+id/password_confirm_field"
+            android:layout_width="fill_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/text_field"
+            android:hint="Confirm password"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:password="true" />
+
+        <Button
+            android:id="@+id/reg_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/register_btn" />
+    </LinearLayout>
+
+</RelativeLayout>

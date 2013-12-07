@@ -59,7 +59,7 @@ public class HomeTab extends PapervFragment{
 				if(condition1 && condition2 && condition3)
 				{
 					Log.d("helal", "condition true");
-					int pageNum = (totalItemsCount / 25)+1;
+					int pageNum = (totalItemsCount / 25);
 					loadMore(pageNum);
 					adapter.notifyDataSetChanged();
 				}
@@ -83,7 +83,7 @@ public class HomeTab extends PapervFragment{
 		
 		cache.feed_list = new ArrayList<Story>();
 		adapter.clear();
-		apiHandler.home(activityInstance, activityInstance.appInstance.getUserID(), 1);
+		apiHandler.home(activityInstance, activityInstance.appInstance.getUserID(), 0);
 	}
 
 

@@ -14,11 +14,11 @@ import com.paperv.helpers.FeedHelper;
 import com.paperv.models.Story;
 import com.paperv.www.R;
 
-public class StoryLikesAPI extends APIConnector {
+public class UserLikesAPI extends APIConnector {
 
 	public ArrayList<Story> stories = new ArrayList<Story>();
 
-	public StoryLikesAPI(PapervActivity activityInstance, boolean showDialog,
+	public UserLikesAPI(PapervActivity activityInstance, boolean showDialog,
 			String url, String dialogText) {
 		super(activityInstance, showDialog, url, dialogText);
 	}
@@ -64,10 +64,6 @@ public class StoryLikesAPI extends APIConnector {
 		GridView grid = (GridView) activityInstance
 				.findViewById(R.id.feed_grid);
 		FeedHelper helper = (FeedHelper) grid.getAdapter();
-
-		for (int i = 0; i < stories.size(); i++) {
-			CacheManager.getInstance().likes_list.add(new Story());
-		}
 		helper.releod(cache.likes_list);
 	}
 

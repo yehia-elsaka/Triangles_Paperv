@@ -67,9 +67,6 @@ public class ExploreAPI extends APIConnector {
 				.findViewById(R.id.feed_grid);
 		FeedHelper helper = (FeedHelper) grid.getAdapter();
 
-		for (int i = 0; i < stories.size(); i++) {
-			CacheManager.getInstance().explore_list.add(new Story());
-		}
 		helper.releod(cache.explore_list);
 	}
 

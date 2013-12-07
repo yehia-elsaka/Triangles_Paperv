@@ -70,6 +70,7 @@ while($media_row = mysql_fetch_array( $media_data ))
         $_photourl = "http://paperv.com/file/pic/photo/" . $media_row['destination'];
         $photo_url = str_replace('%s','',$_photourl,$count);    
 	$customRow['media'][$media_index]['image_url'] = $photo_url; 
+	$customRow['media'][$media_index]['video_url'] = ""; 	
 	$customRow['media'][$media_index]['caption'] = $caption_row['caption']; 
 	$media_index++;
 }

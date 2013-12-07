@@ -17,7 +17,7 @@
             android:orientation="horizontal" >
 
             
-            <ImageView
+            <TextView
                 android:id="@+id/profile_user_image"
                 android:layout_width="80dp"
 	            android:layout_height="90dp"
@@ -27,7 +27,7 @@
 	            android:adjustViewBounds="true"
 	            android:scaleType="fitCenter"
 	            android:layout_gravity="left"
-                android:src="@drawable/avatar_2" />
+                android:background="@drawable/avatar_2" />
             
             
             <LinearLayout

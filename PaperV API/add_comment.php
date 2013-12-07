@@ -40,7 +40,7 @@ else
 	}
 	
 	
-	$query = "UPDATE phpfox_story SET total_comment = ".$count."WHERE storey_id=".$story_id;
+	$query = "UPDATE phpfox_story SET total_comment = total_comment + 1 WHERE story_id=$story_id";
 
 	mysql_query($query);		
 

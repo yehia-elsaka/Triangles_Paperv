@@ -10,11 +10,13 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.GridView;
 import android.widget.AbsListView.OnScrollListener;
+import android.widget.TextView;
 
 import com.paperv.core.Constants;
 import com.paperv.core.PapervActivity;
 import com.paperv.core.PapervFragment;
 import com.paperv.helpers.FeedHelper;
+import com.paperv.lazy_adapter_utils.LazyImageLoader;
 import com.paperv.models.Story;
 import com.paperv.www.MainActivity;
 import com.paperv.www.R;
@@ -23,21 +25,11 @@ public class ProfileTab extends PapervFragment {
 	FeedHelper adapter;
 
 	
-//	@Override
-//	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-//			Bundle savedInstanceState) {
-//		MainActivity.page_title.setText("Profile");
-//		activityInstance.setContentView(R.layout.fragment_profile_feed);
-//		
-//		
-//		return null;
-//	}
-	
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		MainActivity.page_title.setText("Profile");
+		MainActivity.page_title.setText(cache.user.fullName+"");
 		
 		View v =  inflater.inflate(R.layout.fragment_profile_feed, null);
 		final GridView grid = (GridView) v.findViewById(R.id.feed_grid);
@@ -66,7 +58,7 @@ public class ProfileTab extends PapervFragment {
 				if(condition1 && condition2 && condition3)
 				{
 					Log.d("helal", "condition true");
-					int pageNum = (totalItemsCount / 25)+1;
+					int pageNum = (totalItemsCount / 25);
 					loadMore(pageNum);
 					adapter.notifyDataSetChanged();
 				}
@@ -75,6 +67,16 @@ public class ProfileTab extends PapervFragment {
 
 			}
 		});
+		
+		LazyImageLoader imgLoader = new LazyImageLoader(activityInstance);
+		TextView profileImage = (TextView)v.findViewById(R.id.profile_user_image);
+		imgLoader.DisplayImage(cache.user.imageURL, activityInstance, profileImage);
+		
+		TextView numStories = (TextView)v.findViewById(R.id.number_of_stories);
+		TextView numFollowers = (TextView)v.findViewById(R.id.number_of_followers);
+		TextView numFollowing = (TextView)v.findViewById(R.id.number_of_following);
+		
+		
 		return v;
 	}
 	
@@ -88,7 +90,7 @@ public class ProfileTab extends PapervFragment {
 	public void loadData() {
 		cache.user_feed_list = new ArrayList<Story>();
 		adapter.clear();
-		apiHandler.userFeed(activityInstance, activityInstance.appInstance.getUserID(), 1);
+		apiHandler.userFeed(activityInstance, activityInstance.appInstance.getUserID(), 0);
 
 	}
 

@@ -54,7 +54,7 @@ public class UserFeedAPI extends APIConnector {
 					activityInstance.cache.user_feed_list.add(story);
 
 				} catch (JSONException e) {
-					e.printStackTrace();
+					return false;
 				}
 
 			}
@@ -67,9 +67,6 @@ public class UserFeedAPI extends APIConnector {
 				.findViewById(R.id.feed_grid);
 		FeedHelper helper = (FeedHelper) grid.getAdapter();
 
-		for (int i = 0; i < stories.size(); i++) {
-			CacheManager.getInstance().user_feed_list.add(new Story());
-		}
 		helper.releod(cache.user_feed_list);
 	}
 

@@ -48,6 +48,22 @@ while($row = mysql_fetch_array( $data ))
              $photourl = str_replace('%s','',$_photourl,$count);    
      } 
      $customRow['photourl'] = $photourl;
+	
+
+	
+     $query_user = "select * from phpfox_user where user_id = '$owner_id'"; 
+     $data_user = mysql_query($query_user);
+     $user = mysql_fetch_array( $data_user);
+     if($user['user_image'] == '')
+	$_user_image = '';
+     else
+	     $_user_image = "http://paperv.com/file/pic/user/" . $user['user_image'];
+     $user_image = str_replace('%s','',$_user_image,$count);
+     $customRow['user_id'] = $owner_id;
+     $customRow['user_image'] = $user_image;
+     $customRow['user_fullname'] = $user['full_name'];
+
+
 
      $stories[$index] = $customRow;
      $index++;

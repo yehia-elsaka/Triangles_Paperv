@@ -27,6 +27,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.paperv.core.CacheManager;
+import com.paperv.core.PapervActivity;
 import com.paperv.models.MenuItem;
 import com.paperv.network.DataConnector;
 import com.paperv.tabs_adapters.MenuAdapter;
@@ -229,15 +230,16 @@ public class MenuFragment extends Fragment implements OnItemClickListener {
 		
 		else if (position == 6)
 		{
-			SharedPreferences.Editor editor = globalState.prefs.edit();
-			editor.remove("user_name");
-			editor.remove("password");
-			editor.putBoolean("remember_me", false);
-			editor.commit();
 			
-        	getActivity().finish();
+			PapervActivity activity = (PapervActivity)getActivity();
+			activity.appInstance.setRememberMe(false);
+			activity.appInstance.setUserId("");
+			activity.appInstance.setUserName("");
+			activity.appInstance.setPassword("");
+			
+        	activity.finish();
         	
-        	Intent i = new Intent(getActivity(), StartActivity.class);
+        	Intent i = new Intent(activity, LoginActivity.class);
         	startActivity(i); 
         	
 		}

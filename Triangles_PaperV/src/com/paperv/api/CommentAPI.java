@@ -2,7 +2,10 @@ package com.paperv.api;
 
 import org.json.JSONObject;
 
+import android.widget.TextView;
+
 import com.paperv.core.PapervActivity;
+import com.paperv.www.R;
 
 public class CommentAPI extends APIConnector{
 
@@ -20,11 +23,9 @@ public class CommentAPI extends APIConnector{
 	public void custom_onPostExecute(boolean result) {
 		if(result)
 		{
-			activityInstance.showLongToast("Comment success");
-		}
-		else
-		{
-			activityInstance.showLongToast("Comment failed");
+			cache.story_view.comments_number++;
+			TextView numComments = (TextView)activityInstance.findViewById(R.id.comments_number_2);
+			numComments.setText(cache.story_view.comments_number+"");
 		}
 	}
 	

@@ -2,7 +2,10 @@ package com.paperv.api;
 
 import org.json.JSONObject;
 
+import android.content.Intent;
+
 import com.paperv.core.PapervActivity;
+import com.paperv.www.LoginActivity;
 
 public class RegisterAPI extends APIConnector{
 
@@ -24,7 +27,12 @@ public class RegisterAPI extends APIConnector{
 	@Override
 	public void custom_onPostExecute(boolean result) {
 		if (result)
+		{
 			activityInstance.showLongToast("User registered successfully!");
+			Intent intent = new Intent(activityInstance, LoginActivity.class);
+			activityInstance.finish();
+			activityInstance.startActivity(intent);
+		}
 		else
 			activityInstance.showLongToast("Register failed .. username or email already exists");
 	}
