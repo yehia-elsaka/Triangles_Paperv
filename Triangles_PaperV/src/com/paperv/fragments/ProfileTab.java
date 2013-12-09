@@ -91,7 +91,7 @@ public class ProfileTab extends PapervFragment {
 		cache.user_feed_list = new ArrayList<Story>();
 		adapter.clear();
 		apiHandler.userFeed(activityInstance, activityInstance.appInstance.getUserID(), 0);
-
+		apiHandler.getProfile(activityInstance, activityInstance.appInstance.getUserID());
 	}
 
 	@Override

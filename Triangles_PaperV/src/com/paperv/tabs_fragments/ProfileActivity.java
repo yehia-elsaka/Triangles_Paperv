@@ -366,7 +366,7 @@ public class ProfileActivity extends Fragment implements
 			}
 		});
 		
-		edit_button = (LinearLayout) this.vw_header.findViewById(R.id.edit_button);
+		/*edit_button = (LinearLayout) this.vw_header.findViewById(R.id.edit_button);
 		edit_button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Perform action on click
@@ -375,7 +375,7 @@ public class ProfileActivity extends Fragment implements
         		showEditView(_isEdit);
             	
             }
-        });
+        });*/
 		
 		
 		viewPager = (ViewPager) this.vw_detail.findViewById(R.id.view_pager);

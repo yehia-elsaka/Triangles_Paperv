@@ -115,68 +115,7 @@ public class FeedHelper extends BaseAdapter {
 
 	}
 	
-	public View loadStory2(final Story story, LayoutInflater inflater){
-		RelativeLayout l = (RelativeLayout) inflater.inflate(R.layout.custom_story, null);
-		
-		Point p = ((PapervActivity) mContext).getFeedDimensions();
-		l.setLayoutParams(new AbsListView.LayoutParams(p.x, 550));
-
-		// update with story details
-
-		TextView storyTitle = (TextView) l.findViewById(R.id.story_title);
-		storyTitle.setText(story.story_name);
-
-		RelativeLayout rl = (RelativeLayout) l.findViewById(R.id.story_image);
-		rl.setLayoutParams(new RelativeLayout.LayoutParams(360, 265));
-		RelativeLayout.LayoutParams params = (android.widget.RelativeLayout.LayoutParams) rl
-				.getLayoutParams();
-		params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
-		rl.setLayoutParams(params);
-
-		rl.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				Intent storyDetails = new Intent(mContext, StoryActivity.class);
-				storyDetails.putExtra("story_id", story.story_id);
-				storyDetails.putExtra("photo_url", story.photo_url);
-				mContext.startActivity(storyDetails);
-			}
-		});
-
-		TextView textView = (TextView) l.findViewById(R.id.story_photo);
-		textView.setLayoutParams(new RelativeLayout.LayoutParams(314, 205));
-		RelativeLayout.LayoutParams params2 = (android.widget.RelativeLayout.LayoutParams) textView
-				.getLayoutParams();
-		params2.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
-		textView.setLayoutParams(params2);
-
-		loader.DisplayImage(story.photo_url, (PapervActivity) mContext,
-				textView);
-
-		TextView storyOwner = (TextView) l.findViewById(R.id.story_owner);
-		storyOwner.setText(story.user_name);
-
-		TextView numLikes = (TextView) l.findViewById(R.id.num_likes);
-		numLikes.setText(story.likes_number + "");
-
-		TextView numReglides = (TextView) l.findViewById(R.id.num_reglides);
-		numReglides.setText(story.reglide_number + "");
-
-		TextView numComments = (TextView) l.findViewById(R.id.num_comments);
-		numComments.setText(story.comments_number + "");
-
-		LinearLayout ownerPhotoLayout = (LinearLayout) l
-				.findViewById(R.id.user_img);
-
-		ownerPhotoLayout.setLayoutParams(new RelativeLayout.LayoutParams(100,
-				100));
-		TextView ownerPhoto = (TextView) l.findViewById(R.id.owner_photo);
-		ownerPhoto.setLayoutParams(new LayoutParams(100, 100));
-		loader.DisplayImage(story.user_image, (PapervActivity) mContext,
-				ownerPhoto);
-
-		return l;
-	}
+	
 	
 
 }

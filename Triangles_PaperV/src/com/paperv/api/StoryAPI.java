@@ -5,12 +5,15 @@ import java.util.ArrayList;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.webkit.WebView.FindListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -18,8 +21,10 @@ import android.widget.TextView;
 
 import com.paperv.core.Constants;
 import com.paperv.core.PapervActivity;
+import com.paperv.helpers.MediaAdapter;
 import com.paperv.lazy_adapter_utils.LazyImageLoader;
 import com.paperv.models.Comment;
+import com.paperv.models.PhotoItem;
 import com.paperv.models.User;
 import com.paperv.www.R;
 
@@ -68,6 +73,26 @@ public class StoryAPI extends APIConnector {
 				cache.story_view.comments.add(comment);
 			}
 			
+			cache.story_view.photos = new ArrayList<PhotoItem>();
+			JSONArray mediaArr = data.optJSONArray("media");
+			for(int i = 0 ; i < mediaArr.length(); i ++)
+			{
+				JSONObject mediaObj = mediaArr.optJSONObject(i);
+				String caption = mediaObj.optString("caption");
+				String type = mediaObj.optString("type");
+				String item_url="";
+				if (type.equalsIgnoreCase("uploadphoto"))
+				{
+					item_url = mediaObj.optString("image_url");
+				}
+				else
+				{
+					item_url = mediaObj.optString("video_url");
+				}
+				PhotoItem item = new PhotoItem(item_url, caption, type);
+				cache.story_view.photos.add(item);
+			}
+			
 		} catch (Exception e) {
 			Log.d(Constants.TAG, "ERROR => " + e.getMessage());
 		}
@@ -81,8 +106,9 @@ public class StoryAPI extends APIConnector {
 
 		imageLoader = new LazyImageLoader(activityInstance);
 		
-		ImageButton btnBack = (ImageButton)activityInstance.findViewById(R.id.btn_back);
-		
+		ViewPager pager = (ViewPager)activityInstance.findViewById(R.id.view_pager);
+		MediaAdapter mediaAdapter = new MediaAdapter(activityInstance);
+		pager.setAdapter(mediaAdapter);
 		
 				
 		TextView userAvatar = (TextView)activityInstance.findViewById(R.id.user_image_2);

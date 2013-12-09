@@ -73,5 +73,7 @@ public class CacheManager {
 	
 	public int screenWidth;
 	public int screenHeight;
+	
+	public String selected_user_id = "";
 
 }

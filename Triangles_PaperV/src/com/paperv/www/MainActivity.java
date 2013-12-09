@@ -25,10 +25,7 @@ import com.paperv.fragments.ExploreTab;
 import com.paperv.fragments.HomeTab;
 import com.paperv.fragments.LikesTab;
 import com.paperv.fragments.ProfileTab;
-import com.paperv.tabs_fragments.ExploreActivity;
 import com.paperv.tabs_fragments.GlideActivity;
-import com.paperv.tabs_fragments.LikesActivity;
-import com.paperv.tabs_fragments.ProfileActivity;
 import com.paperv.tabs_utils.Utils;
 import com.slidingmenu.lib.SlidingMenu;
 

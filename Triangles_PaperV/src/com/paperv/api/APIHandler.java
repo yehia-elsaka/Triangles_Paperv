@@ -154,4 +154,14 @@ public class APIHandler {
 					"Loading User Feed");
 			userFeedAPI.execute();
 		}
+		
+	// 14 - Profile 
+		private ProfileAPI profileAPI;
+		public void getProfile(PapervActivity activityInstance, String user_id)
+		{
+			String url = Constants.API_USER_PROFILE+"profile_id="+user_id;
+			profileAPI = new ProfileAPI(activityInstance, false, url, "Loading profile ...");
+			profileAPI.execute();
+		}
+	
 }

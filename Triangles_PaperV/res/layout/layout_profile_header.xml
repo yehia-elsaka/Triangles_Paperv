@@ -158,43 +158,6 @@
 			            </LinearLayout>
 		            
 		            </LinearLayout>
-		            
-		            
-		            <LinearLayout
-		                android:id = "@+id/edit_button"
-			            android:layout_width="fill_parent"
-			            android:layout_height="fill_parent"
-			            android:layout_weight="1"
-			            android:gravity="center"
-			            android:orientation="horizontal" 
-			            android:background="@color/blue">
-			            
-		                <TextView
-				            android:id="@+id/text7"
-				            android:layout_width="wrap_content"
-				            android:layout_height="wrap_content"
-				            android:layout_margin="@dimen/dim_5"
-				            android:ellipsize="end"
-				            android:lines="1"
-				            android:layout_weight="0.8"
-				            android:text="Edit Your Profile .. "
-				            android:tag="bold"
-				            android:gravity="center"
-				            android:textColor="@color/white"
-				            android:textSize="@dimen/tex_size_large"
-				            android:textStyle="bold" />
-		                
-		                <ImageView
-				            android:id="@+id/image_1"
-				            android:layout_width="wrap_content"
-				            android:layout_height="wrap_content"
-				            android:layout_margin="@dimen/dim_10"
-				            android:adjustViewBounds="true"
-				            android:contentDescription="@string/desc"
-				            android:gravity="right"
-				            android:src="@drawable/ico_right" />
-			            
-		            </LinearLayout>
             
             
         </LinearLayout>
