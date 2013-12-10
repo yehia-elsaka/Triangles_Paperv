@@ -75,7 +75,7 @@ public abstract class PapervActivity extends FragmentActivity {
 		FragmentTransaction fragmentTransaction = getSupportFragmentManager()
 				.beginTransaction();
 		
-		fragmentTransaction.replace(0, new ProfileTab(this));
+		fragmentTransaction.add(0, new ProfileTab(this));
 		fragmentTransaction
 				.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
 		fragmentTransaction.commit();
