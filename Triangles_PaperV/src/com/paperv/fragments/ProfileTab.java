@@ -8,8 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
-import android.widget.GridView;
 import android.widget.AbsListView.OnScrollListener;
+import android.widget.GridView;
 import android.widget.TextView;
 
 import com.paperv.core.Constants;
@@ -23,13 +23,20 @@ import com.paperv.www.R;
 
 public class ProfileTab extends PapervFragment {
 	FeedHelper adapter;
-
-	
+	String userID;
+	public ProfileTab(PapervActivity activiy) {
+		activityInstance = activiy;
+		userID =activityInstance.appInstance.getUserID();
+		
+	}
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		MainActivity.page_title.setText(cache.user.fullName+"");
+		MainActivity.page_title.setText("Profile");
+		
+		if(cache.selected_user_id != null && !cache.selected_user_id.equalsIgnoreCase(""))
+			userID = cache.selected_user_id;
 		
 		View v =  inflater.inflate(R.layout.fragment_profile_feed, null);
 		final GridView grid = (GridView) v.findViewById(R.id.feed_grid);
@@ -90,13 +97,13 @@ public class ProfileTab extends PapervFragment {
 	public void loadData() {
 		cache.user_feed_list = new ArrayList<Story>();
 		adapter.clear();
-		apiHandler.userFeed(activityInstance, activityInstance.appInstance.getUserID(), 0);
-		apiHandler.getProfile(activityInstance, activityInstance.appInstance.getUserID());
+		apiHandler.userFeed(activityInstance, userID, 0);
+		apiHandler.getProfile(activityInstance, userID);
 	}
 
 	@Override
 	public void loadMore(int pageNum) {
-		apiHandler.userFeed(activityInstance, activityInstance.appInstance.getUserID(), pageNum);
+		apiHandler.userFeed(activityInstance, userID, pageNum);
 
 	}
 	

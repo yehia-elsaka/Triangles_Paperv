@@ -9,9 +9,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Point;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.widget.Toast;
 
 import com.paperv.api.APIHandler;
+import com.paperv.fragments.ProfileTab;
 import com.paperv.network.DataConnector;
 import com.socialize.Socialize;
 import com.socialize.api.SocializeSession;
@@ -68,6 +70,17 @@ public abstract class PapervActivity extends FragmentActivity {
 		return p;
 	}
 
+	public void openProfileTab(String userID) {
+		cache.selected_user_id = userID;
+		FragmentTransaction fragmentTransaction = getSupportFragmentManager()
+				.beginTransaction();
+		
+		fragmentTransaction.replace(0, new ProfileTab(this));
+		fragmentTransaction
+				.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+		fragmentTransaction.commit();
+	}
+
 	public void linkAndPostFb(final String msg, final String link,
 			final String name) {
 		if (FacebookUtils.isLinkedForWrite(this)) {
@@ -92,7 +105,7 @@ public abstract class PapervActivity extends FragmentActivity {
 
 				@Override
 				public void onError(SocializeException error) {
-					
+
 					showLongToast("Facebook Link Error");
 				}
 			});
@@ -157,7 +170,8 @@ public abstract class PapervActivity extends FragmentActivity {
 		super.onDestroy();
 	}
 
-	public void linkAndPostTw(final String msg,final String link,final String name) {
+	public void linkAndPostTw(final String msg, final String link,
+			final String name) {
 
 		if (TwitterUtils.isLinked(this)) {
 			postTw(msg, link, name);

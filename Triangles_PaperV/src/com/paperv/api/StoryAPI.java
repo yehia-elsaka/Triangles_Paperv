@@ -10,13 +10,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.webkit.WebView.FindListener;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 
 import com.paperv.core.Constants;
@@ -106,17 +105,33 @@ public class StoryAPI extends APIConnector {
 
 		imageLoader = new LazyImageLoader(activityInstance);
 		
-		ViewPager pager = (ViewPager)activityInstance.findViewById(R.id.view_pager);
-		MediaAdapter mediaAdapter = new MediaAdapter(activityInstance);
-		pager.setAdapter(mediaAdapter);
+		final TextView storyImage = (TextView)activityInstance.findViewById(R.id.story_image);
+		storyImage.getLayoutParams().height = cache.screenHeight/3;
+		imageLoader.DisplayImage(cache.story_view.photo_url, activityInstance, storyImage);
 		
-				
+		LinearLayout thumbsLayout = (LinearLayout)activityInstance.findViewById(R.id.thumbs_layout);
+		for(int i = 0 ; i < cache.story_view.photos.size(); i ++)
+		{
+			TextView tv = new TextView(activityInstance);
+			LinearLayout.LayoutParams params = new LayoutParams(60,75);
+			params.setMargins(10, 10, 10, 10);
+			tv.setLayoutParams(params);
+			final String itemURL = cache.story_view.photos.get(i).getItem_url();
+			imageLoader.DisplayImage(itemURL, activityInstance, tv);
+			tv.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View arg0) {
+					imageLoader.DisplayImage(itemURL, activityInstance, storyImage);
+				}
+			});
+			
+			thumbsLayout.addView(tv);
+			
+		}
+		
 		TextView userAvatar = (TextView)activityInstance.findViewById(R.id.user_image_2);
 		imageLoader.DisplayImage(cache.story_view.user_image, activityInstance, userAvatar);
 		
-		TextView storyImage = (TextView)activityInstance.findViewById(R.id.story_image);
-		storyImage.getLayoutParams().height = cache.screenHeight/3;
-		imageLoader.DisplayImage(cache.story_view.photo_url, activityInstance, storyImage);
 		
 		
 		TextView userName = (TextView)activityInstance.findViewById(R.id.author_name);
@@ -137,13 +152,20 @@ public class StoryAPI extends APIConnector {
 		final LinearLayout commentsLayout = (LinearLayout)activityInstance.findViewById(R.id.comments_list);
 		final LayoutInflater inflater = LayoutInflater.from(activityInstance);
 		for (int i = 0 ; i < cache.story_view.comments_number ; i ++){
-			Comment comment = cache.story_view.comments.get(i);
+			final Comment comment = cache.story_view.comments.get(i);
 			LinearLayout cl = (LinearLayout)inflater.inflate(R.layout.custom_comment, null);
 			
 			TextView comment_owner_name = (TextView)cl.findViewById(R.id.comment_owner_name);
 			comment_owner_name.setText(comment.user_full_name);			
+			
 			TextView comment_owner = (TextView)cl.findViewById(R.id.comment_owner);
 			imageLoader.DisplayImage(comment.user_image_url, activityInstance, comment_owner);
+			comment_owner.setOnClickListener(new OnClickListener() {		
+				@Override
+				public void onClick(View arg0) {
+					activityInstance.openProfileTab(comment.user_id);
+				}
+			});
 			
 			TextView comment_text = (TextView)cl.findViewById(R.id.comment_text);
 			comment_text.setText(comment.comment_text);			
