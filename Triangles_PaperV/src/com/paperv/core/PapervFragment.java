@@ -1,6 +1,7 @@
 package com.paperv.core;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View.OnClickListener;
 
 import com.paperv.api.APIHandler;
@@ -25,13 +26,13 @@ public abstract class PapervFragment extends android.support.v4.app.Fragment imp
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
     	activityInstance = (PapervActivity)getActivity();
+
     }
     
     @Override
     public void onResume() {
     	super.onResume();
     	loadData();
-
     }
     
 	

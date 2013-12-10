@@ -2,6 +2,7 @@ package com.paperv.fragments;
 
 import java.util.ArrayList;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,22 +22,24 @@ import com.paperv.models.Story;
 import com.paperv.www.MainActivity;
 import com.paperv.www.R;
 
+@SuppressLint("ValidFragment")
 public class ProfileTab extends PapervFragment {
 	FeedHelper adapter;
 	String userID;
+
+
 	public ProfileTab(PapervActivity activiy) {
 		activityInstance = activiy;
 		userID =activityInstance.appInstance.getUserID();
-		
+
 	}
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		MainActivity.page_title.setText("Profile");
+
 		
-		if(cache.selected_user_id != null && !cache.selected_user_id.equalsIgnoreCase(""))
-			userID = cache.selected_user_id;
 		
 		View v =  inflater.inflate(R.layout.fragment_profile_feed, null);
 		final GridView grid = (GridView) v.findViewById(R.id.feed_grid);

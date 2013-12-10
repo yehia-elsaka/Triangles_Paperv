@@ -162,7 +162,7 @@ public class ProfileActivity extends Fragment implements
 			return null;
 		}
 		LinearLayout theLayout = (LinearLayout) inflater.inflate(
-				R.layout.activity_profile, container, false);
+				R.layout.activity_edit_profile, container, false);
 		
 		LinearLayout tabs = (LinearLayout) getActivity().findViewById(R.id.tabs_bar);
 		comments_bar = tabs.getChildAt(0);

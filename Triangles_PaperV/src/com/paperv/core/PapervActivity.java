@@ -7,15 +7,14 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Point;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentTransaction;
 import android.widget.Toast;
 
 import com.paperv.api.APIHandler;
-import com.paperv.fragments.ProfileTab;
 import com.paperv.network.DataConnector;
-import com.paperv.www.R;
+import com.paperv.www.UserProfileActivity;
 import com.socialize.Socialize;
 import com.socialize.api.SocializeSession;
 import com.socialize.api.action.share.SocialNetworkShareListener;
@@ -73,13 +72,8 @@ public abstract class PapervActivity extends FragmentActivity {
 
 	public void openProfileTab(String userID) {
 		cache.selected_user_id = userID;
-		FragmentTransaction fragmentTransaction = getSupportFragmentManager()
-				.beginTransaction();
-		
-		fragmentTransaction.add(R.layout.fragment_profile_feed, new ProfileTab(this));
-		fragmentTransaction
-				.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-		fragmentTransaction.commit();
+		Intent intent = new Intent(this, UserProfileActivity.class);
+		startActivity(intent);
 	}
 
 	public void linkAndPostFb(final String msg, final String link,
