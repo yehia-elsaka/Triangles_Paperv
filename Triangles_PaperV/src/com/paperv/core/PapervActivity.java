@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.paperv.api.APIHandler;
 import com.paperv.fragments.ProfileTab;
 import com.paperv.network.DataConnector;
+import com.paperv.www.R;
 import com.socialize.Socialize;
 import com.socialize.api.SocializeSession;
 import com.socialize.api.action.share.SocialNetworkShareListener;
@@ -75,7 +76,7 @@ public abstract class PapervActivity extends FragmentActivity {
 		FragmentTransaction fragmentTransaction = getSupportFragmentManager()
 				.beginTransaction();
 		
-		fragmentTransaction.add(0, new ProfileTab(this));
+		fragmentTransaction.add(R.layout.fragment_profile_feed, new ProfileTab(this));
 		fragmentTransaction
 				.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
 		fragmentTransaction.commit();
