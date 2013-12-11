@@ -109,6 +109,11 @@ public class StoryAPI extends APIConnector {
 		storyImage.getLayoutParams().height = cache.screenHeight/3;
 		imageLoader.DisplayImage(cache.story_view.photo_url, activityInstance, storyImage);
 		
+		MediaAdapter adapter = new MediaAdapter(activityInstance);
+		ViewPager pager = (ViewPager)activityInstance.findViewById(R.id.pager);
+		pager.setAdapter(adapter);
+		
+		
 		LinearLayout thumbsLayout = (LinearLayout)activityInstance.findViewById(R.id.thumbs_layout);
 		for(int i = 0 ; i < cache.story_view.photos.size(); i ++)
 		{

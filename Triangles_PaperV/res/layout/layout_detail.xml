@@ -34,12 +34,18 @@
         <ImageButton
             android:id="@+id/like_story"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@color/gray_79"
             android:contentDescription="@string/desc"
             android:src="@drawable/tw_icon" />
     </LinearLayout>
+
+    <android.support.v4.view.ViewPager
+        android:visibility="gone"
+        android:id="@+id/pager"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
 
     <com.paperv.tabs_utils.CustomScrollView
         android:layout_width="fill_parent"
@@ -53,32 +59,25 @@
             android:gravity="center_horizontal"
             android:orientation="vertical" >
 
-            <FrameLayout
-                android:id="@+id/slider_frame"
+            <TextView
+                android:id="@+id/story_image"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:padding="10dp"
+                android:visibility="visible" />
+
+            <HorizontalScrollView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content" >
 
-                <TextView
-                    android:id="@+id/story_image"
-                    android:layout_width="fill_parent"
+                <LinearLayout
+                    android:id="@+id/thumbs_layout"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:padding="10dp" />
+                    android:orientation="horizontal" />
+            </HorizontalScrollView>
 
-          
-            </FrameLayout>
-
-                  <HorizontalScrollView
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content" >
-
-                    <LinearLayout
-                        android:id="@+id/thumbs_layout"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal" />
-                </HorizontalScrollView>
-            
             <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
